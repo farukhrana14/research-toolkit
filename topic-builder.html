@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Topic Selection Workshop - BBA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        section {
+            padding: 50px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            scroll-margin-top: 0;
+        }
+
+        section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        section h3 {
+            color: #4a5568;
+            font-size: 1.3em;
+            margin: 30px 0 15px 0;
+        }
+
+        .instruction {
+            background: #edf2f7;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .examples-box {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .examples-box h3 {
+            color: #48bb78;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .example-item {
+            background: white;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #48bb78;
+            font-size: 0.95em;
+            color: #2d3748;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .selection-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .selection-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .selection-card.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .lens-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .lens-tag {
+            background: #edf2f7;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .lens-tag:hover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .lens-tag.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .verb-grid, .adjective-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .verb-btn, .adjective-btn {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .verb-btn:hover, .adjective-btn:hover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .verb-btn.selected, .adjective-btn.selected {
+            background: #48bb78;
+            color: white;
+            border-color: #48bb78;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #final-statement {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin: 30px 0;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+        }
+
+        #final-statement .statement-text {
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #667eea;
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        .next-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 30px 0;
+            transition: all 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #final-statement {
+                font-size: 1.1em;
+                padding: 30px 20px;
+            }
+
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            section {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Research Topic Selection Workshop</h1>
+            <p>Research Methodology Course - BBA Program | February 2026</p>
+        </div>
+
+        <!-- Step 1: Domain -->
+        <section id="step1">
+            <h2><span class="step-number">1</span> Domain Lock</h2>
+            <div class="instruction">
+                Select ONE domain only. No interdisciplinary topics.
+            </div>
+
+            <div class="selection-grid">
+                <div class="selection-card" onclick="selectDomain('Marketing')">Marketing</div>
+                <div class="selection-card" onclick="selectDomain('Finance')">Finance</div>
+                <div class="selection-card" onclick="selectDomain('HRM')">HRM</div>
+                <div class="selection-card" onclick="selectDomain('Management')">Management</div>
+                <div class="selection-card" onclick="selectDomain('Supply Chain')">Supply Chain</div>
+                <div class="selection-card" onclick="selectDomain('Accounting')">Accounting</div>
+            </div>
+
+            <button class="next-btn" id="btn-step1" onclick="scrollToStep('examples')" disabled>See Examples →</button>
+        </section>
+
+        <!-- Examples Section -->
+        <section id="examples" class="hidden">
+            <h2><span class="step-number">💡</span> Example Templates for <span id="domain-name">Your Domain</span></h2>
+            <div class="instruction">
+                Here are validated research statement examples for your domain. Use these as inspiration!
+            </div>
+
+            <div class="examples-box" id="examples-container">
+                <!-- Examples will be populated here by JavaScript -->
+            </div>
+
+            <button class="next-btn" onclick="scrollToStep('step2')">Start Building My Topic →</button>
+        </section>
+
+        <!-- Step 2: Context -->
+        <section id="step2">
+            <h2><span class="step-number">2</span> Context Specification</h2>
+            <div class="instruction">
+                Choose ONE realistic organizational context where you can reach 100-150 respondents.
+            </div>
+
+            <div class="selection-grid">
+                <div class="selection-card" onclick="selectContext('SMEs')">SMEs</div>
+                <div class="selection-card" onclick="selectContext('Digital platforms')">Digital platforms</div>
+                <div class="selection-card" onclick="selectContext('Banks')">Banks</div>
+                <div class="selection-card" onclick="selectContext('Private universities')">Private universities</div>
+                <div class="selection-card" onclick="selectContext('FMCG companies')">FMCG companies</div>
+                <div class="selection-card" onclick="selectContext('Retail stores')">Retail stores</div>
+                <div class="selection-card" onclick="selectContext('Telecommunication')">Telecommunication</div>
+                <div class="selection-card" onclick="selectContext('E-commerce')">E-commerce</div>
+                <div class="selection-card" onclick="selectContext('Ride-sharing services')">Ride-sharing services</div>
+                <div class="selection-card" onclick="selectContext('Mobile banking')">Mobile banking</div>
+                <div class="selection-card" onclick="selectContext('Garment factories')">Garment factories</div>
+                <div class="selection-card" onclick="selectContext('IT companies')">IT companies</div>
+            </div>
+
+            <input type="text" class="custom-input" id="customContext" placeholder="Or type your own context..." onchange="selectContext(this.value)">
+
+            <button class="next-btn" id="btn-step2" onclick="scrollToStep('step3')" disabled>Next Step →</button>
+        </section>
+
+        <!-- Step 3: Problem Lens -->
+        <section id="step3">
+            <h2><span class="step-number">3</span> Problem Lens Selection</h2>
+
+            <div class="instruction">
+                Choose ONE lens that matches your <strong id="current-domain">domain</strong>. These lenses are pre-filtered for relevance.
+            </div>
+
+            <div id="lens-container" class="lens-container">
+                <!-- Lenses will be populated here based on domain -->
+            </div>
+
+            <button class="next-btn" id="btn-step3" onclick="scrollToStep('step3b')" disabled>Choose Action Verb →</button>
+        </section>
+
+        <!-- Step 3B: Action Verb -->
+        <section id="step3b">
+            <h2><span class="step-number">4</span> Action Verb Selection</h2>
+            <div class="instruction">
+                What will you do? Choose ONE action.
+            </div>
+
+            <div class="verb-grid">
+                <button class="verb-btn" onclick="selectVerb('examine')">Examine</button>
+                <button class="verb-btn" onclick="selectVerb('assess')">Assess</button>
+                <button class="verb-btn" onclick="selectVerb('evaluate')">Evaluate</button>
+                <button class="verb-btn" onclick="selectVerb('compare')">Compare</button>
+                <button class="verb-btn" onclick="selectVerb('identify')">Identify</button>
+            </div>
+
+            <button class="next-btn" id="btn-step3b" onclick="scrollToStep('step3c')" disabled>Choose Problem Nature →</button>
+        </section>
+
+        <!-- Step 3C: Problem Adjective -->
+        <section id="step3c">
+            <h2><span class="step-number">5</span> Problem Nature Selection</h2>
+            <div class="instruction">
+                What's happening with "<strong id="selected-lens-display">your lens</strong>"? Choose 1-2 adjectives that make sense.
+            </div>
+
+            <div id="adjective-container" class="adjective-grid">
+                <!-- Adjectives will be filtered based on lens selection -->
+            </div>
+
+            <button class="next-btn" id="btn-step3c" onclick="scrollToStep('step4')" disabled>See My Statement →</button>
+        </section>
+
+        <!-- Final Statement -->
+        <section id="step4">
+            <h2><span class="step-number">✓</span> Your Research Problem Statement</h2>
+
+            <div id="final-statement">
+                <div class="statement-text">Make your selections above to see your complete statement...</div>
+            </div>
+
+            <div class="instruction" style="margin-top: 30px;">
+                <strong>Next Steps:</strong><br>
+                1. Define 2-4 independent variables (IVs) that might influence your lens<br>
+                2. Find 5 empirical papers (2016-2026) studying similar variables<br>
+                3. Convert to final title template: "An empirical study of [DV] influenced by [IV1], [IV2], [IV3]: Evidence from [Context] in Bangladesh"
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Domain-lens mapping
+        const domainLenses = {
+            'Marketing': [
+                'Customer satisfaction',
+                'Customer loyalty',
+                'Customer experience',
+                'Perceived value',
+                'Brand image',
+                'Brand equity',
+                'Purchase intention',
+                'Brand switching intention',
+                'eWOM intention',
+                'Service quality',
+                'Digital trust',
+                'Perceived ease of use',
+                'Perceived usefulness',
+                'Adoption intention'
+            ],
+            'Finance': [
+                'Investment intention',
+                'Financial literacy',
+                'Risk perception',
+                'Digital trust',
+                'Adoption intention',
+                'Perceived value',
+                'Security concern',
+                'Privacy concern',
+                'Customer trust',
+                'Service quality',
+                'Customer satisfaction'
+            ],
+            'HRM': [
+                'Job satisfaction',
+                'Employee motivation',
+                'Organizational commitment',
+                'Turnover intention',
+                'Workplace stress',
+                'Burnout',
+                'Work-life balance',
+                'Employee engagement',
+                'Psychological safety',
+                'Training effectiveness',
+                'Career growth perception',
+                'Compensation satisfaction',
+                'Leadership perception',
+                'Employee well-being'
+            ],
+            'Supply Chain': [
+                'Supplier relationship quality',
+                'Process efficiency',
+                'Service speed perception',
+                'Delivery performance',
+                'Logistics service quality',
+                'Waiting time perception',
+                'Error rate perception',
+                'Supply chain integration',
+                'Inventory management effectiveness',
+                'Customer satisfaction'
+            ],
+            'Management': [
+                'Organizational performance',
+                'Decision-making effectiveness',
+                'Change readiness',
+                'Innovation capability',
+                'Communication effectiveness',
+                'Strategic alignment',
+                'Team collaboration',
+                'Leadership effectiveness',
+                'Employee engagement',
+                'Organizational culture'
+            ],
+            'Accounting': [
+                'Financial reporting quality',
+                'Audit quality',
+                'Compliance effectiveness',
+                'Internal control effectiveness',
+                'Budgeting accuracy',
+                'Cost management effectiveness',
+                'Financial transparency',
+                'Fraud detection effectiveness'
+            ]
+        };
+
+        // Lens-adjective compatibility mapping
+        const lensAdjectives = {
+            // Satisfaction/Quality/Trust/Loyalty lenses
+            'satisfaction': ['low', 'declining', 'inconsistent', 'unreliable'],
+            'quality': ['low', 'declining', 'inconsistent', 'ineffective', 'unreliable'],
+            'trust': ['low', 'declining', 'risky', 'insecure'],
+            'loyalty': ['low', 'declining', 'inconsistent'],
+            'experience': ['low', 'declining', 'inconsistent', 'ineffective'],
+            'value': ['low', 'declining', 'unclear'],
+            'image': ['low', 'declining', 'inconsistent'],
+            'equity': ['low', 'declining', 'inconsistent'],
+
+            // Intention/Adoption lenses
+            'intention': ['low', 'declining', 'inconsistent', 'resistant'],
+            'adoption': ['low', 'declining', 'resistant'],
+
+            // Stress/Burnout/People lenses
+            'stress': ['high', 'increasing', 'widespread'],
+            'burnout': ['high', 'increasing', 'widespread'],
+            'conflict': ['high', 'increasing', 'unclear'],
+            'ambiguity': ['high', 'unclear', 'inconsistent'],
+
+            // Process/Speed/Efficiency lenses
+            'efficiency': ['low', 'declining', 'inefficient', 'ineffective'],
+            'speed': ['low', 'delayed', 'inefficient'],
+            'performance': ['low', 'declining', 'inconsistent', 'ineffective'],
+            'time': ['high', 'delayed', 'inefficient'],
+            'error': ['high', 'increasing', 'inconsistent'],
+
+            // Risk/Concern lenses
+            'risk': ['high', 'risky', 'insecure', 'unclear'],
+            'concern': ['high', 'risky', 'insecure'],
+            'security': ['low', 'risky', 'insecure'],
+            'privacy': ['low', 'risky', 'insecure'],
+
+            // Engagement/Motivation lenses
+            'engagement': ['low', 'declining', 'inconsistent'],
+            'motivation': ['low', 'declining', 'inconsistent'],
+            'commitment': ['low', 'declining', 'inconsistent'],
+
+            // Other specific lenses
+            'literacy': ['low', 'unclear', 'ineffective'],
+            'transparency': ['low', 'unclear', 'inconsistent'],
+            'collaboration': ['low', 'ineffective', 'fragmented'],
+            'communication': ['low', 'ineffective', 'unclear'],
+            'culture': ['unclear', 'inconsistent', 'fragmented'],
+            'readiness': ['low', 'unclear', 'inconsistent'],
+            'capability': ['low', 'declining', 'ineffective'],
+            'alignment': ['low', 'unclear', 'inconsistent'],
+            'well-being': ['low', 'declining', 'inconsistent'],
+            'balance': ['low', 'declining', 'inconsistent'],
+            'safety': ['low', 'declining', 'risky'],
+            'relationship': ['low', 'declining', 'inconsistent'],
+            'delivery': ['low', 'delayed', 'inefficient'],
+            'logistics': ['low', 'inefficient', 'unreliable'],
+            'waiting': ['high', 'delayed', 'inefficient'],
+            'inventory': ['low', 'inefficient', 'ineffective'],
+            'integration': ['low', 'unclear', 'inconsistent'],
+            'reporting': ['low', 'unclear', 'inconsistent'],
+            'audit': ['low', 'ineffective', 'inconsistent'],
+            'compliance': ['low', 'ineffective', 'unclear'],
+            'control': ['low', 'ineffective', 'unclear'],
+            'budgeting': ['low', 'unclear', 'inconsistent'],
+            'cost': ['high', 'ineffective', 'unclear'],
+            'fraud': ['low', 'ineffective', 'unclear']
+        };
+
+        // Example templates per domain
+        const domainExamples = {
+            'Marketing': [
+                'I want to examine why customer satisfaction is declining among e-commerce users in Marketing domain in Bangladesh.',
+                'I want to assess why brand image is inconsistent among FMCG companies in Marketing domain in Bangladesh.',
+                'I want to evaluate why digital trust is low among mobile banking users in Marketing domain in Bangladesh.',
+                'I want to examine why purchase intention is low among retail store customers in Marketing domain in Bangladesh.',
+                'I want to assess why customer loyalty is declining among telecommunication users in Marketing domain in Bangladesh.',
+                'I want to examine why perceived ease of use is low among digital platform users in Marketing domain in Bangladesh.',
+                'I want to evaluate why service quality is inconsistent among ride-sharing service users in Marketing domain in Bangladesh.',
+                'I want to examine why eWOM intention is low among e-commerce customers in Marketing domain in Bangladesh.',
+                'I want to assess why brand switching intention is high among FMCG consumers in Marketing domain in Bangladesh.',
+                'I want to examine why adoption intention is low among mobile banking users in Marketing domain in Bangladesh.'
+            ],
+            'Finance': [
+                'I want to examine why investment intention is low among retail investors in Finance domain in Bangladesh.',
+                'I want to assess why financial literacy is low among SME owners in Finance domain in Bangladesh.',
+                'I want to evaluate why risk perception is high among mobile banking users in Finance domain in Bangladesh.',
+                'I want to examine why digital trust is low among fintech app users in Finance domain in Bangladesh.',
+                'I want to assess why customer trust is declining among bank customers in Finance domain in Bangladesh.',
+                'I want to examine why security concern is high among digital payment users in Finance domain in Bangladesh.',
+                'I want to evaluate why adoption intention is low among insurance customers in Finance domain in Bangladesh.',
+                'I want to assess why privacy concern is high among mobile banking users in Finance domain in Bangladesh.',
+                'I want to examine why perceived value is low among investment service users in Finance domain in Bangladesh.',
+                'I want to evaluate why customer satisfaction is declining among bank customers in Finance domain in Bangladesh.'
+            ],
+            'HRM': [
+                'I want to examine why job satisfaction is low among garment factory employees in HRM domain in Bangladesh.',
+                'I want to assess why burnout is high among IT company employees in HRM domain in Bangladesh.',
+                'I want to evaluate why turnover intention is high among private university faculty in HRM domain in Bangladesh.',
+                'I want to examine why work-life balance is low among banking sector employees in HRM domain in Bangladesh.',
+                'I want to assess why employee engagement is declining among retail store employees in HRM domain in Bangladesh.',
+                'I want to examine why workplace stress is high among telecommunication employees in HRM domain in Bangladesh.',
+                'I want to evaluate why organizational commitment is low among SME employees in HRM domain in Bangladesh.',
+                'I want to assess why training effectiveness is low among manufacturing employees in HRM domain in Bangladesh.',
+                'I want to examine why compensation satisfaction is low among private university staff in HRM domain in Bangladesh.',
+                'I want to evaluate why psychological safety is low among tech startup employees in HRM domain in Bangladesh.'
+            ],
+            'Supply Chain': [
+                'I want to examine why delivery performance is low among e-commerce logistics in Supply Chain domain in Bangladesh.',
+                'I want to assess why process efficiency is low among garment factories in Supply Chain domain in Bangladesh.',
+                'I want to evaluate why service speed is delayed among ride-sharing platforms in Supply Chain domain in Bangladesh.',
+                'I want to examine why supplier relationship quality is low among FMCG companies in Supply Chain domain in Bangladesh.',
+                'I want to assess why waiting time is high among retail stores in Supply Chain domain in Bangladesh.',
+                'I want to examine why error rate is high among pharmaceutical distribution in Supply Chain domain in Bangladesh.',
+                'I want to evaluate why logistics service quality is inconsistent among e-commerce platforms in Supply Chain domain in Bangladesh.',
+                'I want to assess why inventory management is ineffective among retail chains in Supply Chain domain in Bangladesh.',
+                'I want to examine why customer satisfaction is low among food delivery services in Supply Chain domain in Bangladesh.',
+                'I want to evaluate why supply chain integration is low among manufacturing firms in Supply Chain domain in Bangladesh.'
+            ],
+            'Management': [
+                'I want to examine why organizational performance is declining among SMEs in Management domain in Bangladesh.',
+                'I want to assess why decision-making effectiveness is low among private universities in Management domain in Bangladesh.',
+                'I want to evaluate why change readiness is low among banking sector in Management domain in Bangladesh.',
+                'I want to examine why innovation capability is low among IT companies in Management domain in Bangladesh.',
+                'I want to assess why communication effectiveness is low among garment factories in Management domain in Bangladesh.',
+                'I want to examine why employee engagement is declining among retail chains in Management domain in Bangladesh.',
+                'I want to evaluate why strategic alignment is unclear among FMCG companies in Management domain in Bangladesh.',
+                'I want to assess why team collaboration is low among tech startups in Management domain in Bangladesh.',
+                'I want to examine why leadership effectiveness is inconsistent among pharmaceutical companies in Management domain in Bangladesh.',
+                'I want to evaluate why organizational culture is unclear among e-commerce platforms in Management domain in Bangladesh.'
+            ],
+            'Accounting': [
+                'I want to examine why financial reporting quality is low among SMEs in Accounting domain in Bangladesh.',
+                'I want to assess why audit quality is inconsistent among manufacturing firms in Accounting domain in Bangladesh.',
+                'I want to evaluate why compliance effectiveness is low among pharmaceutical companies in Accounting domain in Bangladesh.',
+                'I want to examine why internal control effectiveness is low among retail chains in Accounting domain in Bangladesh.',
+                'I want to assess why budgeting accuracy is low among private universities in Accounting domain in Bangladesh.',
+                'I want to examine why cost management is ineffective among garment factories in Accounting domain in Bangladesh.',
+                'I want to evaluate why financial transparency is low among NGOs in Accounting domain in Bangladesh.',
+                'I want to assess why fraud detection effectiveness is low among banking sector in Accounting domain in Bangladesh.'
+            ]
+        };
+
+        // State management
+        let selections = {
+            domain: '',
+            context: '',
+            lens: '',
+            verb: '',
+            adjectives: []
+        };
+
+        // Progress bar
+        function updateProgress() {
+            const totalSteps = 5;
+            let completed = 0;
+            if (selections.domain) completed++;
+            if (selections.context) completed++;
+            if (selections.lens) completed++;
+            if (selections.verb) completed++;
+            if (selections.adjectives.length > 0) completed++;
+
+            const progress = (completed / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Domain selection
+        function selectDomain(domain) {
+            selections.domain = domain;
+
+            // Update UI
+            document.querySelectorAll('#step1 .selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            document.getElementById('btn-step1').disabled = false;
+
+            // Populate examples
+            populateExamples(domain);
+
+            // Update current domain display
+            document.getElementById('current-domain').textContent = domain;
+
+            updateProgress();
+            updateStatement();
+        }
+
+        // Populate example templates
+        function populateExamples(domain) {
+            document.getElementById('domain-name').textContent = domain;
+            const container = document.getElementById('examples-container');
+            const examples = domainExamples[domain] || [];
+
+            container.innerHTML = '<h3>Sample Research Statements (for inspiration only)</h3>';
+            examples.forEach(example => {
+                const div = document.createElement('div');
+                div.className = 'example-item';
+                div.textContent = example;
+                container.appendChild(div);
+            });
+        }
+
+        // Context selection
+        function selectContext(context) {
+            selections.context = context;
+
+            // Update UI
+            document.querySelectorAll('#step2 .selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            if (event.target && event.target.classList && event.target.classList.contains('selection-card')) {
+                event.target.classList.add('selected');
+            }
+
+            document.getElementById('btn-step2').disabled = false;
+
+            // IMPORTANT: Populate lenses immediately when context is selected
+            populateLenses();
+
+            updateProgress();
+            updateStatement();
+        }
+
+        // Populate lenses based on domain
+        function populateLenses() {
+            const container = document.getElementById('lens-container');
+            const lenses = domainLenses[selections.domain] || [];
+
+            console.log('Populating lenses for domain:', selections.domain);
+            console.log('Lenses:', lenses);
+
+            container.innerHTML = '';
+            lenses.forEach(lens => {
+                const span = document.createElement('span');
+                span.className = 'lens-tag';
+                span.textContent = lens;
+                span.onclick = function() { selectLens(lens); };
+                container.appendChild(span);
+            });
+        }
+
+        // Lens selection
+        function selectLens(lens) {
+            selections.lens = lens;
+
+            // Update UI
+            document.querySelectorAll('.lens-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            document.getElementById('btn-step3').disabled = false;
+            document.getElementById('selected-lens-display').textContent = lens;
+
+            updateProgress();
+            updateStatement();
+        }
+
+        // Verb selection
+        function selectVerb(verb) {
+            selections.verb = verb;
+
+            // Update UI
+            document.querySelectorAll('.verb-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            document.getElementById('btn-step3b').disabled = false;
+
+            // Populate adjectives based on lens
+            populateAdjectives();
+
+            updateProgress();
+            updateStatement();
+        }
+
+        // Populate adjectives based on lens
+        function populateAdjectives() {
+            const container = document.getElementById('adjective-container');
+            const lensLower = selections.lens.toLowerCase();
+
+            // Find matching adjectives
+            let adjectives = [];
+            for (const [key, values] of Object.entries(lensAdjectives)) {
+                if (lensLower.includes(key)) {
+                    adjectives = values;
+                    break;
+                }
+            }
+
+            // Default adjectives if no match
+            if (adjectives.length === 0) {
+                adjectives = ['low', 'declining', 'inconsistent', 'ineffective'];
+            }
+
+            container.innerHTML = '';
+            adjectives.forEach(adj => {
+                const button = document.createElement('button');
+                button.className = 'adjective-btn';
+                button.textContent = adj.charAt(0).toUpperCase() + adj.slice(1);
+                button.onclick = function() { selectAdjective(adj); };
+                container.appendChild(button);
+            });
+        }
+
+        // Adjective selection (multiple)
+        function selectAdjective(adjective) {
+            const index = selections.adjectives.indexOf(adjective);
+
+            if (index > -1) {
+                // Remove if already selected
+                selections.adjectives.splice(index, 1);
+                event.target.classList.remove('selected');
+            } else {
+                // Add if not selected (max 2)
+                if (selections.adjectives.length < 2) {
+                    selections.adjectives.push(adjective);
+                    event.target.classList.add('selected');
+                }
+            }
+
+            document.getElementById('btn-step3c').disabled = selections.adjectives.length === 0;
+            updateProgress();
+            updateStatement();
+        }
+
+        // Update final statement
+        function updateStatement() {
+            const { domain, context, lens, verb, adjectives } = selections;
+
+            if (!domain || !context || !lens || !verb || adjectives.length === 0) {
+                return;
+            }
+
+            const adjectiveText = adjectives.join(' and ');
+
+            const statement = `I want to <span class="highlight">${verb}</span> why <span class="highlight">${lens}</span> is <span class="highlight">${adjectiveText}</span> among <span class="highlight">${context}</span> users/employees in <span class="highlight">${domain}</span> domain in Bangladesh.`;
+
+            document.getElementById('final-statement').innerHTML = `<div class="statement-text">${statement}</div>`;
+        }
+
+        // Scroll to step
+        function scrollToStep(stepId) {
+            const section = document.getElementById(stepId);
+            section.classList.remove('hidden');
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
