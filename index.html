@@ -1,56 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Methodology Toolkit</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #333;
-        }
-        .subtitle {
-            color: #666;
-            font-style: italic;
-            margin-bottom: 30px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            margin: 15px 0;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Methodology Toolkit</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6fb;
+      color: #222;
+      min-height: 100vh;
+      padding: 48px 20px 60px;
+    }
+    .header {
+      max-width: 860px;
+      margin: 0 auto 48px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #666;
+      font-style: italic;
+      font-size: 1rem;
+    }
+    .toolkit {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .cluster {
+      margin-bottom: 48px;
+    }
+    .cluster + .cluster {
+      padding-top: 36px;
+      border-top: 1.5px solid #e0e6f7;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 4px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 22px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.2s, transform 0.15s;
+      text-decoration: none;
+      color: inherit;
+      border: 1.5px solid transparent;
+    }
+    .card.live:hover {
+      box-shadow: 0 6px 24px rgba(67,97,238,0.13);
+      transform: translateY(-2px);
+      border-color: #c3cdf7;
+    }
+    .card.soon {
+      opacity: 0.55;
+      cursor: default;
+      pointer-events: none;
+    }
+    .card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .card-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge-live {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 20px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-soon {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #f0f0f0;
+      color: #888;
+      border-radius: 20px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.55;
+    }
+    .card.live .card-title span:first-child {
+      color: #1a1a2e;
+    }
+    @media (max-width: 540px) {
+      .header h1 { font-size: 1.5rem; }
+      .card { padding: 18px 16px; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Research Methodology Toolkit</h1>
-    <p class="subtitle">Interactive tools for emerging business and social science researchers</p>
-    
-    <h2>Available Tools</h2>
-    <ul>
-        <li>📊 <a href="topic-builder.html">Research Topic Builder</a> - Construct problem statements for BBA research</li>
-    </ul>
-    
-    <h2>Coming Soon</h2>
-    <ul>
-        <li>📈 Statistical Analysis Tools</li>
-        <li>📚 Literature Review Matrix</li>
-        <li>🧪 Hypothesis Generator</li>
-    </ul>
+
+<div class="header">
+  <h1>Research Methodology Toolkit</h1>
+  <p>Interactive tools for emerging business and social science researchers</p>
+</div>
+
+<div class="toolkit">
+
+  <!-- Cluster 1: Research Design -->
+  <div class="cluster">
+    <div class="card-grid">
+
+      <a href="https://research-toolkit.netlify.app/topic-builder" class="card live">
+        <div class="card-icon">📊</div>
+        <div class="card-title">
+          <span>Research Topic Builder</span>
+          <span class="badge-live">Live</span>
+        </div>
+        <div class="card-desc">Construct well-defined problem statements for BBA research projects.</div>
+      </a>
+
+      <div class="card soon">
+        <div class="card-icon">🧪</div>
+        <div class="card-title">
+          <span>Hypothesis Generator</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Formulate testable hypotheses from your research variables.</div>
+      </div>
+
+      <div class="card soon">
+        <div class="card-icon">📚</div>
+        <div class="card-title">
+          <span>Literature Review Matrix</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Organise and map themes across your reviewed articles.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Cluster 2: Data & Submission -->
+  <div class="cluster">
+    <div class="card-grid">
+
+      <a href="how-to-submit-articles.html" class="card live">
+        <div class="card-icon">📋</div>
+        <div class="card-title">
+          <span>Cited Articles Submission Guideline</span>
+          <span class="badge-live">Live</span>
+        </div>
+        <div class="card-desc">Step-by-step instructions to collect, name, and submit article PDFs on Google Drive.</div>
+      </a>
+
+      <div class="card soon">
+        <div class="card-icon">📈</div>
+        <div class="card-title">
+          <span>Statistical Analysis Tools</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Descriptive stats, correlation, and basic inferential analysis for research data.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

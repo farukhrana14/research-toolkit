@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cited Articles Submission Guideline</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6fb; color: #222; min-height: 100vh; }
+
+  #modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; pointer-events: all;
+  }
+  #modal-card {
+    background: #fff; border-radius: 14px; padding: 40px 36px; max-width: 460px; width: 92%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18); text-align: center;
+    position: relative; z-index: 1001; pointer-events: all;
+  }
+  #modal-card h2 { font-size: 1.45rem; margin-bottom: 10px; color: #1a1a2e; }
+  #modal-card p { color: #555; margin-bottom: 28px; font-size: 0.97rem; line-height: 1.6; }
+  .btn-primary {
+    display: block; width: 100%; padding: 14px; background: #4361ee;
+    color: #fff; border: none; border-radius: 8px; font-size: 1.05rem;
+    font-weight: 600; cursor: pointer; margin-bottom: 14px; transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #3451d1; }
+  .btn-skip {
+    background: none; border: none; color: #888; font-size: 0.9rem;
+    cursor: pointer; text-decoration: underline; padding: 4px; display: inline-block;
+  }
+  .btn-skip:hover { color: #444; }
+
+  #form-section {
+    display: none; max-width: 540px; margin: 40px auto; background: #fff;
+    border-radius: 14px; padding: 36px; box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  }
+  #form-section h2 { font-size: 1.3rem; margin-bottom: 6px; color: #1a1a2e; }
+  #form-section p { color: #666; font-size: 0.92rem; margin-bottom: 24px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.93rem; color: #333; }
+  .form-group input, .form-group textarea {
+    width: 100%; padding: 10px 12px; border: 1.5px solid #d0d7e8;
+    border-radius: 7px; font-size: 0.95rem; transition: border 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #4361ee; }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-hint { font-size: 0.82rem; color: #888; margin-top: 4px; }
+  #btn-generate {
+    width: 100%; padding: 13px; background: #4361ee; color: #fff;
+    border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; margin-top: 6px; transition: background 0.2s;
+  }
+  #btn-generate:hover { background: #3451d1; }
+
+  #instruction-area { display: none; max-width: 720px; margin: 0 auto; padding: 30px 16px 60px; }
+
+  .top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px; flex-wrap: wrap; gap: 10px;
+  }
+  .top-bar h1 { font-size: 1.3rem; color: #1a1a2e; }
+  #edit-details-btn {
+    background: none; border: 1.5px solid #4361ee; color: #4361ee;
+    border-radius: 6px; padding: 6px 14px; font-size: 0.85rem;
+    cursor: pointer; font-weight: 600; transition: all 0.2s;
+  }
+  #edit-details-btn:hover { background: #4361ee; color: #fff; }
+  #edit-details-btn.hidden { display: none; }
+
+  #progress-bar-wrap { margin-bottom: 24px; }
+  #progress-label { font-size: 0.85rem; color: #666; margin-bottom: 6px; }
+  #progress-track { background: #e0e6f7; border-radius: 99px; height: 8px; }
+  #progress-fill { background: #4361ee; height: 8px; border-radius: 99px; transition: width 0.3s; }
+
+  .step-card { display: none; background: #fff; border-radius: 12px; padding: 30px 28px; box-shadow: 0 3px 18px rgba(0,0,0,0.08); margin-bottom: 10px; }
+  .step-card.active { display: block; }
+  .step-card h2 { font-size: 1.15rem; color: #1a1a2e; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #e8ecf8; }
+  .step-card h3 { font-size: 1rem; color: #2d3a6b; margin: 18px 0 8px; }
+  .step-card p { line-height: 1.7; margin-bottom: 10px; font-size: 0.95rem; }
+  .step-card ol, .step-card ul { padding-left: 20px; margin-bottom: 10px; }
+  .step-card li { margin-bottom: 7px; line-height: 1.65; font-size: 0.95rem; }
+
+  #pdf-question { background: #eef2ff; border: 1.5px solid #c3cdf7; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+  #pdf-question p { font-weight: 600; margin-bottom: 14px; color: #2d3a6b; font-size: 0.97rem; }
+  .pdf-q-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-yes { padding: 9px 22px; background: #4361ee; color: #fff; border: none; border-radius: 7px; font-size: 0.92rem; font-weight: 600; cursor: pointer; }
+  .btn-yes:hover { background: #3451d1; }
+  .btn-no { padding: 9px 22px; background: #fff; color: #4361ee; border: 1.5px solid #4361ee; border-radius: 7px; font-size: 0.92rem; font-weight: 600; cursor: pointer; }
+  .btn-no:hover { background: #eef2ff; }
+
+  .warning { background: #fff4e5; border-left: 4px solid #f4a020; border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 0.92rem; color: #7a4500; }
+  .warning strong { color: #c45000; }
+  .danger { background: #fff0f0; border-left: 4px solid #e03c3c; border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 0.92rem; color: #7a0000; }
+  .danger strong { color: #c00; }
+  .code-block { background: #f0f3fb; border: 1px solid #d0d7ee; border-radius: 7px; padding: 12px 16px; font-family: monospace; font-size: 0.92rem; margin: 12px 0; color: #1a1a2e; word-break: break-all; overflow-x: auto; white-space: pre-wrap; }
+  .highlight-box { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 0.92rem; color: #1b5e20; }
+
+  .naming-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.9rem; }
+  .naming-table th { background: #eef2ff; padding: 9px 12px; text-align: left; color: #2d3a6b; border: 1px solid #d0d7ee; }
+  .naming-table td { padding: 8px 12px; border: 1px solid #e4e8f2; }
+  .naming-table tr:nth-child(even) td { background: #f8f9fe; }
+
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.94rem; }
+  .checklist li input[type=checkbox] { width: 18px; height: 18px; accent-color: #4361ee; margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; }
+  .btn-nav { padding: 11px 28px; border-radius: 8px; font-size: 0.97rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-back { background: #e8ecf8; color: #4361ee; }
+  .btn-back:hover { background: #d0d7ee; }
+  .btn-next { background: #4361ee; color: #fff; margin-left: auto; }
+  .btn-next:hover { background: #3451d1; }
+
+  .email-list { background: #f0f3fb; border-radius: 7px; padding: 10px 14px; margin: 10px 0; font-size: 0.93rem; }
+  .email-list span { display: inline-block; background: #dde3f8; border-radius: 4px; padding: 2px 8px; margin: 3px 4px 3px 0; font-family: monospace; color: #2d3a6b; }
+
+  @keyframes circle-draw { to { stroke-dashoffset: 0; } }
+  @keyframes check-draw { to { stroke-dashoffset: 0; } }
+
+  @media (max-width: 520px) {
+    .step-card { padding: 20px 16px; }
+    #form-section { padding: 24px 16px; }
+    .nav-buttons { flex-direction: column; }
+    .btn-next { margin-left: 0; }
+    .code-block { font-size: 0.78rem; padding: 10px 10px; }
+    .naming-table { font-size: 0.78rem; }
+    .email-list span { font-size: 0.78rem; }
+    .step-card h2 { font-size: 1rem; }
+    #modal-card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="modal-overlay">
+  <div id="modal-card">
+    <h2>📂 Cited Articles Submission Guideline</h2>
+    <p>This guide walks you through collecting, naming, and submitting your article PDFs on Google Drive.<br><br>Want instructions written specifically for your group?</p>
+    <button class="btn-primary" id="btn-personalize">✅ Yes, personalize for me</button>
+    <button class="btn-skip" id="btn-general">Skip — show general instructions</button>
+  </div>
+</div>
+
+<div id="form-section">
+  <h2>Set Up Your Instructions</h2>
+  <p>Fill in your details. Your instructions will use these exact values throughout.</p>
+  <div class="form-group">
+    <label>Your Group Name</label>
+    <input type="text" id="f-group" placeholder="e.g. TeamSunrise">
+  </div>
+  <div class="form-group">
+    <label>Your Email Address</label>
+    <input type="email" id="f-student" placeholder="yourname@university.edu.bd">
+  </div>
+  <div class="form-group">
+    <label>Teacher's Email Address</label>
+    <input type="email" id="f-teacher" placeholder="teacher@university.edu.bd">
+  </div>
+  <div class="form-group">
+    <label>All Group Members' Email Addresses</label>
+    <textarea id="f-members" placeholder="member1@university.edu.bd, member2@university.edu.bd, member3@university.edu.bd"></textarea>
+    <div class="form-hint">Separate each email with a comma or press Enter after each one.</div>
+  </div>
+  <button id="btn-generate">Generate My Instructions →</button>
+</div>
+
+<div id="instruction-area">
+  <div class="top-bar">
+    <h1>📂 Cited Articles Submission Guideline</h1>
+    <button id="edit-details-btn">✏️ Edit my details</button>
+  </div>
+  <div id="progress-bar-wrap">
+    <div id="progress-label">Step 1 of 7</div>
+    <div id="progress-track"><div id="progress-fill" style="width:14.2%"></div></div>
+  </div>
+
+  <div class="step-card active" id="step-0">
+    <h2>Before You Begin</h2>
+    <p>Read this carefully before starting. Every step is mandatory.</p>
+    <ul>
+      <li>Use your <strong><span class="g-university-email">@university.edu.bd</span></strong> Google account for everything. Sign out of personal Gmail first if needed.</li>
+      <li>Upload <strong>only journal articles you have directly cited</strong> in your literature review. Every cited article must have a PDF in the folder.</li>
+      <li>Each group uploads approximately <strong>25 articles</strong>.</li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step0-back">← Change option</button>
+      <button class="btn-nav btn-next" id="step0-next">Start →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-1">
+    <h2>Part 1 — Collect Your Articles as PDF Files</h2>
+    <div id="pdf-question">
+      <p>🗂 Have you already downloaded all your articles as PDF files?</p>
+      <div class="pdf-q-btns">
+        <button class="btn-yes" id="btn-have-pdfs">Yes, I have them all →</button>
+        <button class="btn-no" id="btn-need-pdfs">No, I need to get them</button>
+      </div>
+    </div>
+    <div id="part1-content" style="display:none;">
+      <h3>Step 1 — Google Scholar</h3>
+      <p>Go to <strong>scholar.google.com</strong> and search the article title. If a <strong>[PDF]</strong> link appears to the right, click it and download. If not, continue below.</p>
+      <h3>Step 2 — JSTOR via University Library</h3>
+      <p>Sign in with your <strong><span class="g-university-email">@university.edu.bd</span></strong> account. Access JSTOR through your university library portal. Search and download the PDF if available.</p>
+      <h3>Step 3 — ResearchGate</h3>
+      <p>Go to <strong>researchgate.net</strong>, search the exact article title. If a Download button is available, download the PDF.</p>
+      <h3>Step 4 — Check Journal Free Access Programs</h3>
+      <p>Find the journal's official website. Look for sections titled <em>Open Access</em>, <em>Developing Countries Access</em>, <em>Research4Life</em>, or <em>HINARI</em>. Bangladesh qualifies for several such programs. Register and download if available.</p>
+      <h3>Step 5 — Email the Author</h3>
+      <p>Find the author's email on the abstract page or ResearchGate. Send this message:</p>
+      <div class="code-block">Subject: Request for Article PDF<br><br>Dear Dr. [Last Name],<br><br>I am a BBA student at [University Name]. I am conducting research and would greatly benefit from reading your article "[Full Article Title]" published in [Journal Name, Year]. Could you kindly share a PDF copy?<br><br>Thank you,<br>[Your Name]</div>
+      <h3>Step 6 — Save an HTML Article as PDF</h3>
+      <p>If the journal displays the article as a webpage with no download button:</p>
+      <ol>
+        <li>Press <strong>Ctrl + P</strong> (Windows) or <strong>Cmd + P</strong> (Mac) on the article page.</li>
+        <li>In the Destination/Printer field, select <strong>Save as PDF</strong> or <strong>Microsoft Print to PDF</strong>.</li>
+        <li>Click Save, name the file correctly (see Part 2), and save to your computer.</li>
+      </ol>
+      <div class="warning"><strong>⚠️ Last Resort:</strong> If none of the above works, replace that article with one you can access freely through Google Scholar, JSTOR, or open-access journals.</div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step1-back">← Back</button>
+      <button class="btn-nav btn-next" id="step1-next">Next →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-2">
+    <h2>Part 2 — Name Every PDF File Correctly</h2>
+    <p>Rename every file before uploading using this exact format:</p>
+    <div class="code-block">PublicationYear_AuthorLastName_AuthorFirstName.pdf</div>
+    <h3>Rules</h3>
+    <ul>
+      <li>Use the <strong>year the article was published</strong>, not the download year.</li>
+      <li><strong>Last name first</strong>, then first name, separated by underscore.</li>
+      <li>If two or more authors (or et al.), use <strong>only the first author's</strong> last and first name.</li>
+      <li><strong>No spaces.</strong> Underscores only. No special characters, commas, or brackets.</li>
+    </ul>
+    <h3>Examples</h3>
+    <div style="overflow-x:auto;"><table class="naming-table">
+      <tr><th>Article Citation</th><th>Correct File Name</th></tr>
+      <tr><td>Rahman, T. &amp; Karim, S. (2021)</td><td>2021_Rahman_Tariq.pdf</td></tr>
+      <tr><td>Smith, J. (2019)</td><td>2019_Smith_John.pdf</td></tr>
+      <tr><td>Hossain et al. (2023)</td><td>2023_Hossain_Farhan.pdf</td></tr>
+    </table></div>
+    <h3>How to Rename</h3>
+    <ol>
+      <li>Right-click the PDF file on your computer.</li>
+      <li>Click <strong>Rename</strong>.</li>
+      <li>Type the correct name and press <strong>Enter</strong>.</li>
+    </ol>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step2-back">← Back</button>
+      <button class="btn-nav btn-next" id="step2-next">Next →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-3">
+    <h2>Part 3 — Create the Folder Structure on Google Drive</h2>
+    <p>Go to <strong>drive.google.com</strong>. Confirm you are signed in with your <strong><span class="g-university-email">@university.edu.bd</span></strong> account.</p>
+    <ol>
+      <li>Click <strong>+ New</strong> → <strong>New Folder</strong> → name it <strong class="g-group-name">TeamSunrise</strong> → click <strong>Create</strong>.</li>
+      <li>Open the <strong class="g-group-name">TeamSunrise</strong> folder.</li>
+      <li>Click <strong>+ New</strong> → <strong>New Folder</strong> → name it <strong>LiteratureReview</strong> → click <strong>Create</strong>.</li>
+      <li>Open <strong>LiteratureReview</strong>.</li>
+      <li>Click <strong>+ New</strong> → <strong>New Folder</strong> → name it <strong>Articles</strong> → click <strong>Create</strong>.</li>
+    </ol>
+    <p>Your folder path must be exactly:</p>
+    <div class="code-block"><span class="g-group-name">TeamSunrise</span> / LiteratureReview / Articles</div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step3-back">← Back</button>
+      <button class="btn-nav btn-next" id="step3-next">Next →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-4">
+    <h2>Part 4 — Upload All PDF Files</h2>
+    <ol>
+      <li>Open the <strong>Articles</strong> folder on Google Drive.</li>
+      <li>Click <strong>+ New</strong> → <strong>File Upload</strong>.</li>
+      <li>Select all renamed PDF files and click <strong>Open</strong>.</li>
+      <li>Wait until all files finish uploading. Do not close the browser tab while uploading.</li>
+      <li>Count the files to confirm all articles are present.</li>
+    </ol>
+    <div class="highlight-box">✅ All PDFs must be inside <strong>Articles</strong> — not in LiteratureReview or <span class="g-group-name">TeamSunrise</span> directly.</div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step4-back">← Back</button>
+      <button class="btn-nav btn-next" id="step4-next">Next →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-5">
+    <h2>Part 5 — Share the Folder</h2>
+    <p>Share the <strong><span class="g-group-name">TeamSunrise</span></strong> folder — the outermost one, not the inner folders.</p>
+    <ol>
+      <li>Go to your Google Drive main page.</li>
+      <li>Click the <strong class="g-group-name">TeamSunrise</strong> folder once to select it (do not open it).</li>
+      <li>Click the <strong>Share</strong> button.</li>
+      <li>In the sharing window, find the <em>"Add people and groups"</em> text box.</li>
+      <li>Type <strong class="g-teacher-email">teacher@university.edu.bd</strong> → press Enter → set permission to <strong>Editor</strong> → click <strong>Send</strong>.</li>
+      <li>Repeat for every group member email listed below.</li>
+    </ol>
+    <div class="email-list">
+      <strong>Group members to share with:</strong><br><br>
+      <span id="members-display">your group members' emails</span>
+    </div>
+    <div class="danger"><strong>⛔ Do NOT click "Copy link."</strong> Type each email address individually in the Share window. A copied link is not acceptable.</div>
+    <div class="highlight-box">✅ Google automatically sends a notification email to each person you add. No separate message needed.</div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-back" id="step5-back">← Back</button>
+      <button class="btn-nav btn-next" id="step5-next">Next →</button>
+    </div>
+  </div>
+
+  <div class="step-card" id="step-6">
+    <h2>Final Checklist</h2>
+    <p>Tick every item. Your submission is complete only when all boxes are checked.</p>
+    <ul class="checklist">
+      <li><input type="checkbox"> Using <span class="g-university-email">@university.edu.bd</span> Google account</li>
+      <li><input type="checkbox"> All articles are directly cited in the literature review</li>
+      <li><input type="checkbox"> Every PDF renamed in <code>Year_LastName_FirstName.pdf</code> format</li>
+      <li><input type="checkbox"> First author used for multi-author articles</li>
+      <li><input type="checkbox"> Folder structure: <code><span class="g-group-name">TeamSunrise</span>/LiteratureReview/Articles</code></li>
+      <li><input type="checkbox"> All PDFs are inside the <strong>Articles</strong> folder</li>
+      <li><input type="checkbox"> The <strong><span class="g-group-name">TeamSunrise</span></strong> folder (outermost) is shared</li>
+      <li><input type="checkbox"> <strong><span class="g-teacher-email">teacher@university.edu.bd</span></strong> added with Editor access</li>
+      <li><input type="checkbox"> All group members added with Editor access</li>
+      <li><input type="checkbox"> Shared by typing emails directly — not by copying a link</li>
+    </ul>
+    <div class="highlight-box" style="margin-top:20px;">✅ Tick all boxes above to unlock the Finish button.</div>
+    <div class="nav-buttons" style="align-items:center;">
+      <button class="btn-nav btn-back" id="step6-back">← Back</button>
+      <button class="btn-nav btn-next" id="btn-finish" disabled style="opacity:0.35;cursor:not-allowed;background:#4361ee;color:#fff;">Finish ✓</button>
+    </div>
+  </div>
+
+  <!-- COMPLETION MODAL -->
+  <div id="done-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:44px 36px;max-width:420px;width:92%;text-align:center;position:relative;z-index:2001;">
+      <div id="checkmark-wrap" style="margin-bottom:18px;">
+        <svg viewBox="0 0 52 52" style="width:72px;height:72px;">
+          <circle cx="26" cy="26" r="25" fill="none" stroke="#4361ee" stroke-width="2" style="stroke-dasharray:157;stroke-dashoffset:157;animation:circle-draw 0.6s ease forwards;"/>
+          <path fill="none" stroke="#4361ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27 l8 8 l16-16" style="stroke-dasharray:40;stroke-dashoffset:40;animation:check-draw 0.4s ease 0.6s forwards;"/>
+        </svg>
+      </div>
+      <h2 style="font-size:1.6rem;color:#1a1a2e;margin-bottom:10px;">You did it! 🎉</h2>
+      <p style="color:#555;font-size:0.97rem;line-height:1.7;margin-bottom:28px;">Your literature review articles have been collected, named, organised, and shared on Google Drive. Submission complete.</p>
+      <a href="https://research-toolkit.netlify.app" style="display:block;width:100%;padding:13px;background:#4361ee;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;box-sizing:border-box;">← Back to Research Toolkit</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 7;
+  let current = 0;
+
+  function resetChecklist() {
+    document.querySelectorAll('.checklist input[type=checkbox]').forEach(function(cb) { cb.checked = false; });
+    var fb = document.getElementById('btn-finish');
+    if (fb) { fb.disabled = true; fb.style.opacity = '0.35'; fb.style.cursor = 'not-allowed'; }
+  }
+
+  function updateView() {
+    document.querySelectorAll('.step-card').forEach(function(card, i) {
+      card.classList.toggle('active', i === current);
+    });
+    document.getElementById('progress-label').textContent = 'Step ' + (current + 1) + ' of ' + TOTAL;
+    document.getElementById('progress-fill').style.width = ((current + 1) / TOTAL * 100) + '%';
+    if (current === 1) {
+      document.getElementById('pdf-question').style.display = 'block';
+      document.getElementById('part1-content').style.display = 'none';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goNext() { if (current < TOTAL - 1) { current++; updateView(); } }
+  function goBack() {
+    if (current > 0) {
+      current--;
+      updateView();
+      if (current === 1) {
+        document.getElementById('pdf-question').style.display = 'block';
+        document.getElementById('part1-content').style.display = 'none';
+      }
+    }
+  }
+
+  function applyData(group, teacher, domain, memberEmails) {
+    document.querySelectorAll('.g-group-name').forEach(function(el) { el.textContent = group; });
+    document.querySelectorAll('.g-teacher-email').forEach(function(el) { el.textContent = teacher; });
+    document.querySelectorAll('.g-university-email').forEach(function(el) { el.textContent = domain; });
+    var html;
+    if (memberEmails.length === 0) {
+      html = '<span style="color:#888;font-style:italic;">No group members entered. If you have group members, go back and edit your details to add their emails.</span>';
+    } else {
+      html = memberEmails.map(function(e) { return '<span>' + e + '</span>'; }).join(' ');
+    }
+    document.getElementById('members-display').innerHTML = html;
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+
+    // Modal buttons
+    document.getElementById('btn-personalize').addEventListener('click', function() {
+      document.getElementById('modal-overlay').style.display = 'none';
+      document.getElementById('form-section').style.display = 'block';
+      // Do NOT restore localStorage here — show a clean form
+      // localStorage is only restored when coming from Edit my details
+      document.getElementById('f-group').value = '';
+      document.getElementById('f-student').value = '';
+      document.getElementById('f-teacher').value = '';
+      document.getElementById('f-members').value = '';
+    });
+
+    document.getElementById('btn-general').addEventListener('click', function() {
+      resetChecklist();
+      document.getElementById('modal-overlay').style.display = 'none';
+      document.getElementById('edit-details-btn').classList.add('hidden');
+      document.getElementById('instruction-area').style.display = 'block';
+      current = 0; updateView();
+    });
+
+    // Form generate
+    document.getElementById('btn-generate').addEventListener('click', function() {
+      var group = document.getElementById('f-group').value.trim();
+      var teacherRaw = document.getElementById('f-teacher').value.trim();
+      if (!group) { alert('Please enter your group name.'); return; }
+      if (!teacherRaw) { alert('Please enter the teacher email address.'); return; }
+      group = group || 'TeamSunrise';
+      var student = document.getElementById('f-student').value.trim();
+      var teacher = teacherRaw || 'teacher@university.edu.bd';
+      var membersRaw = document.getElementById('f-members').value.trim();
+      localStorage.setItem('lr_guide_data', JSON.stringify({ group: group, student: student, teacher: teacher, members: membersRaw }));
+      var domain = student && student.indexOf('@') > -1 ? '@' + student.split('@')[1] : '@university.edu.bd';
+      var memberList = membersRaw.split(String.fromCharCode(10)).join(',').split(',').map(function(e){return e.trim();}).filter(function(e){
+        return e.length > 0 && e !== student && e !== teacher;
+      });
+      applyData(group, teacher, domain, memberList);
+      resetChecklist();
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('instruction-area').style.display = 'block';
+      current = 0; updateView();
+    });
+
+    // Edit details
+    document.getElementById('edit-details-btn').addEventListener('click', function() {
+      document.getElementById('instruction-area').style.display = 'none';
+      document.getElementById('form-section').style.display = 'block';
+      var saved = localStorage.getItem('lr_guide_data');
+      if (saved) {
+        var d = JSON.parse(saved);
+        if (d.group) document.getElementById('f-group').value = d.group;
+        if (d.student) document.getElementById('f-student').value = d.student;
+        if (d.teacher) document.getElementById('f-teacher').value = d.teacher;
+        if (d.members) document.getElementById('f-members').value = d.members;
+      }
+    });
+
+    // PDF question
+    document.getElementById('btn-have-pdfs').addEventListener('click', function() {
+      current = 2; updateView();
+    });
+    document.getElementById('btn-need-pdfs').addEventListener('click', function() {
+      document.getElementById('pdf-question').style.display = 'none';
+      document.getElementById('part1-content').style.display = 'block';
+    });
+
+    // Nav buttons — explicit per step, no inline onclick
+    document.getElementById('step0-back').addEventListener('click', function() {
+      document.getElementById('instruction-area').style.display = 'none';
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('modal-overlay').style.display = 'flex';
+      current = 0;
+    });
+    document.getElementById('step0-next').addEventListener('click', goNext);
+    document.getElementById('step1-back').addEventListener('click', goBack);
+    document.getElementById('step1-next').addEventListener('click', goNext);
+    document.getElementById('step2-back').addEventListener('click', goBack);
+    document.getElementById('step2-next').addEventListener('click', goNext);
+    document.getElementById('step3-back').addEventListener('click', goBack);
+    document.getElementById('step3-next').addEventListener('click', goNext);
+    document.getElementById('step4-back').addEventListener('click', goBack);
+    document.getElementById('step4-next').addEventListener('click', goNext);
+    document.getElementById('step5-back').addEventListener('click', goBack);
+    document.getElementById('step5-next').addEventListener('click', goNext);
+    document.getElementById('step6-back').addEventListener('click', function() {
+      resetChecklist();
+      goBack();
+    });
+
+    // Finish button — activates when all checkboxes ticked
+    var checkboxes = document.querySelectorAll('.checklist input[type=checkbox]');
+    var finishBtn = document.getElementById('btn-finish');
+    function checkAllTicked() {
+      var allTicked = Array.prototype.every.call(checkboxes, function(cb) { return cb.checked; });
+      if (allTicked) {
+        finishBtn.disabled = false;
+        finishBtn.style.opacity = '1';
+        finishBtn.style.cursor = 'pointer';
+      } else {
+        finishBtn.disabled = true;
+        finishBtn.style.opacity = '0.35';
+        finishBtn.style.cursor = 'not-allowed';
+      }
+    }
+    Array.prototype.forEach.call(checkboxes, function(cb) {
+      cb.addEventListener('change', checkAllTicked);
+    });
+
+    // Done modal
+    finishBtn.addEventListener('click', function() {
+      var modal = document.getElementById('done-modal');
+      modal.style.display = 'flex';
+    });
+  });
+</script>
+</body>
+</html>
