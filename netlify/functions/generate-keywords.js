@@ -10,7 +10,7 @@ exports.handler = async function(event) {
   const prompt = `Return ONLY a valid JSON array of 10 academic keyword search strings for: ${body.topic || 'consumer behaviour'}. No markdown. No explanation. Pure JSON array only.`;
 
   const payload = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   return new Promise((resolve) => {
     const req = https.request(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) } }, (res) => {
