@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Conduct Your Literature Review — Research Methodology Toolkit</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f9;color:#1a1a2e;line-height:1.7}
+  a{color:#2563eb}
+
+  /* MODAL */
+  #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:28px 16px;overflow-y:auto}
+  #modal-card{background:#fff;border-radius:16px;padding:36px 32px;max-width:540px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  #modal-card h2{font-size:1.35rem;color:#1a1a2e;margin-bottom:10px}
+  #modal-card p{color:#555;font-size:.95rem;margin-bottom:22px}
+  .btn-primary{display:inline-block;background:#2563eb;color:#fff;border:none;padding:13px 26px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;text-align:center;transition:background .2s}
+  .btn-primary:hover{background:#1d4ed8}
+  .btn-skip{display:block;text-align:center;margin-top:14px;color:#888;font-size:.9rem;cursor:pointer;text-decoration:underline;background:none;border:none;width:100%}
+  .btn-skip:hover{color:#444}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;font-size:.88rem;font-weight:600;color:#374151;margin-bottom:5px}
+  .form-group input,.form-group textarea{width:100%;padding:10px 13px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.95rem;font-family:inherit;transition:border-color .2s}
+  .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#2563eb}
+  .form-group textarea{resize:vertical;min-height:70px}
+  .form-hint{font-size:.8rem;color:#9ca3af;margin-top:4px}
+  #modal-form{display:none}
+  #modal-form h3{font-size:1.1rem;margin-bottom:18px;color:#1a1a2e}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,#1a1a2e 0%,#2563eb 100%);color:#fff;padding:36px 20px 28px;text-align:center}
+  header .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 14px;font-size:.8rem;letter-spacing:.5px;margin-bottom:14px}
+  header h1{font-size:1.7rem;font-weight:700;margin-bottom:8px}
+  header p{font-size:.97rem;opacity:.85;max-width:560px;margin:0 auto}
+
+  /* PROGRESS */
+  #progress-bar-wrap{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #progress-label{font-size:.85rem;color:#555;white-space:nowrap}
+  #progress-track{flex:1;min-width:120px;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+  #progress-fill{height:100%;background:#2563eb;border-radius:4px;transition:width .4s ease}
+  #progress-pct{font-size:.82rem;font-weight:600;color:#2563eb;white-space:nowrap}
+
+  /* MAIN */
+  main{max-width:860px;margin:28px auto;padding:0 16px 60px}
+
+  /* FIX-17: persona banner with edit button */
+  #persona-banner{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 18px;margin-bottom:22px;font-size:.9rem;color:#1e40af;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  #persona-banner-text{flex:1}
+  #btn-edit-profile{display:inline-flex;align-items:center;gap:6px;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s}
+  #btn-edit-profile:hover{background:#1d4ed8}
+  /* Always-visible personalise button when no profile */
+  #btn-personalise-visible{display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 18px;margin-bottom:22px;width:100%;text-align:left;cursor:pointer;font-size:.9rem;color:#1e40af;font-family:inherit}
+  #btn-personalise-visible:hover{background:#dbeafe}
+
+  /* ACCORDION */
+  .accordion-item{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:16px;overflow:hidden}
+  .accordion-header{display:flex;align-items:center;gap:14px;padding:18px 22px;cursor:pointer;user-select:none;border:none;width:100%;background:none;text-align:left}
+  .accordion-header:hover{background:#f8fafc}
+  .acc-num{width:34px;height:34px;border-radius:50%;background:#eff6ff;color:#2563eb;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .acc-title{flex:1;font-weight:600;font-size:1.05rem;color:#1a1a2e}
+  .acc-check{width:22px;height:22px;border:2px solid #d1d5db;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s}
+  .acc-check.done{background:#22c55e;border-color:#22c55e;color:#fff}
+  .acc-chevron{font-size:.8rem;color:#9ca3af;transition:transform .25s;flex-shrink:0}
+  .accordion-item.open .acc-chevron{transform:rotate(180deg)}
+  .accordion-body{display:none;padding:0 22px 24px;border-top:1px solid #f1f5f9}
+  .accordion-item.open .accordion-body{display:block}
+
+  /* CONTENT */
+  .accordion-body h4{font-size:.97rem;font-weight:700;color:#1e40af;margin:20px 0 8px}
+  .accordion-body p{font-size:.93rem;color:#374151;margin-bottom:10px}
+  .accordion-body ul,.accordion-body ol{padding-left:22px;margin-bottom:12px}
+  .accordion-body li{font-size:.93rem;color:#374151;margin-bottom:5px}
+  .info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:.9rem;color:#1e40af}
+  .warn-box{background:#fefce8;border-left:4px solid #eab308;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:.9rem;color:#854d0e}
+  .reject-box{background:#fef2f2;border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:.9rem;color:#991b1b}
+  .code-block{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-family:'Courier New',monospace;font-size:.85rem;color:#1e293b;white-space:pre-wrap;overflow-x:auto;margin:12px 0}
+
+  /* DONE BUTTON */
+  .mark-done-btn{display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:#f0fdf4;border:2px solid #22c55e;color:#16a34a;border-radius:8px;padding:9px 20px;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s}
+  .mark-done-btn:hover{background:#dcfce7}
+  .mark-done-btn.done-state{background:#22c55e;color:#fff;border-color:#22c55e}
+
+  /* KEYWORD TOOL */
+  #kw-tool{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:18px 0}
+  #kw-result-wrap{margin-top:18px;display:none}
+  #kw-result-wrap h5{font-size:.9rem;font-weight:700;color:#1e40af;margin-bottom:10px}
+  .kw-table-scroll{overflow-x:auto}
+  #kw-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:480px}
+  #kw-table th{background:#1e40af;color:#fff;padding:8px 12px;text-align:left}
+  #kw-table th:first-child{width:40px}
+  #kw-table th:last-child{width:130px}
+  #kw-table td{padding:8px 12px;border-bottom:1px solid #e5e7eb;font-family:'Courier New',monospace;vertical-align:top}
+  #kw-table td:first-child{color:#6b7280;font-family:inherit;text-align:center}
+  #kw-table td:last-child{font-family:inherit;color:#6b7280;white-space:nowrap}
+  #kw-table tr:nth-child(even) td{background:#f8fafc}
+  .kw-copy-btn{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;border-radius:7px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;margin-top:10px;transition:all .2s}
+  .kw-copy-btn:hover{background:#dbeafe}
+
+  /* AI SECTION */
+  #ai-section{margin-top:22px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px}
+  #ai-section h5{font-size:.95rem;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+  #ai-section p{font-size:.87rem;color:#555;margin-bottom:12px}
+  #btn-ai-generate{display:inline-flex;align-items:center;gap:8px;background:#2563eb;color:#fff;border:none;border-radius:9px;padding:11px 22px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s}
+  #btn-ai-generate:hover:not(:disabled){background:#1d4ed8}
+  #btn-ai-generate:disabled{background:#93c5fd;cursor:not-allowed}
+  #ai-result{margin-top:14px;display:none}
+  #ai-keywords-list{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px;font-size:.88rem;line-height:1.9;display:none}
+  #ai-error-box{background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;font-size:.88rem;color:#991b1b;display:none}
+
+  /* PROMPT BOX */
+  #prompt-box-wrap{margin-top:22px}
+  #prompt-box-wrap h5{font-size:.95rem;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+  #prompt-box-wrap p{font-size:.87rem;color:#555;margin-bottom:10px}
+  #prompt-box{width:100%;min-height:180px;padding:14px;border:1.5px solid #d1d5db;border-radius:10px;font-size:.85rem;font-family:'Courier New',monospace;line-height:1.7;resize:vertical;background:#fff;transition:border-color .3s,box-shadow .3s}
+  #prompt-box.highlight{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.2)}
+  #btn-copy-prompt{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;border-radius:7px;padding:8px 16px;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:8px;transition:all .2s}
+  #btn-copy-prompt:hover{background:#dbeafe}
+
+  /* METHODOLOGY TABLE */
+  .method-table-wrap{overflow-x:auto;margin:12px 0}
+  .method-table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px;table-layout:fixed}
+  .method-table th{background:#1e40af;color:#fff;padding:9px 12px;text-align:left}
+  .method-table th:nth-child(1){width:12%}
+  .method-table th:nth-child(2){width:13%}
+  .method-table th:nth-child(3){width:11%}
+  .method-table th:nth-child(4){width:10%}
+  .method-table th:nth-child(5){width:9%}
+  .method-table th:nth-child(6){width:13%}
+  .method-table th:nth-child(7){width:32%}
+  .method-table td{padding:9px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top;word-wrap:break-word}
+  .method-table td:nth-child(1){white-space:nowrap}
+  .method-table td:nth-child(5){white-space:nowrap}
+  .method-table tr:nth-child(even) td{background:#f8fafc}
+  .method-table tr.placeholder-row td{color:#9ca3af;font-style:italic;text-align:center}
+  .table-note{font-size:.8rem;color:#9ca3af;margin-top:6px;font-style:italic}
+
+  /* GAP CALLOUT */
+  .gap-callout{background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:20px 22px;margin:18px 0}
+  .gap-callout-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .gap-callout-header span{font-size:1.1rem}
+  .gap-callout-header h5{font-size:1rem;font-weight:700;color:#92400e;margin:0}
+  .gap-callout p{font-size:.9rem;color:#78350f;margin-bottom:10px}
+  .gap-template{background:#fff;border:1.5px solid #f59e0b;border-radius:8px;padding:14px 18px;font-size:.95rem;font-weight:600;color:#1a1a2e;line-height:1.8;margin-top:8px}
+  .gap-template em{color:#2563eb;font-style:normal;font-weight:700}
+
+  /* COMPLETION MODAL */
+  #completion-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px}
+  #completion-modal.show{display:flex}
+  #completion-card{background:#fff;border-radius:18px;padding:40px 32px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .check-svg{width:72px;height:72px;margin:0 auto 20px}
+  .check-circle{fill:none;stroke:#22c55e;stroke-width:4;stroke-dasharray:201;stroke-dashoffset:201;animation:drawCircle .6s ease forwards}
+  .check-tick{fill:none;stroke:#22c55e;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:drawTick .4s ease .5s forwards}
+  @keyframes drawCircle{to{stroke-dashoffset:0}}
+  @keyframes drawTick{to{stroke-dashoffset:0}}
+  #completion-card h2{font-size:1.5rem;color:#1a1a2e;margin-bottom:8px}
+  #completion-card p{font-size:.95rem;color:#555;margin-bottom:22px}
+  #btn-exit{background:#2563eb;color:#fff;border:none;padding:13px 28px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;width:100%}
+  #btn-exit:hover{background:#1d4ed8}
+
+  @media(max-width:600px){
+    header h1{font-size:1.35rem}
+    #modal-card{padding:26px 20px}
+    .accordion-header{padding:14px 16px}
+    .accordion-body{padding:0 16px 20px}
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div id="modal-overlay" style="display:none">
+  <div id="modal-card">
+    <div id="modal-intro">
+      <h2>📚 Personalise Your Literature Review Guide</h2>
+      <p>Enter your study details once and this guide will use your actual topic, variables, and objectives throughout — including your keyword table and AI prompt.</p>
+      <button class="btn-primary" id="btn-personalize">✅ Yes, personalise for me</button>
+      <button class="btn-skip" id="btn-skip">Skip — show general instructions</button>
+    </div>
+    <div id="modal-form">
+      <h3>Tell us about your study</h3>
+      <div class="form-group">
+        <label>Group Name</label>
+        <input type="text" id="f-group" placeholder="e.g. Group Alpha">
+      </div>
+      <div class="form-group">
+        <label>Research Topic</label>
+        <input type="text" id="f-topic" placeholder="e.g. Impact of social media on purchase intention">
+      </div>
+      <div class="form-group">
+        <label>Problem Statement</label>
+        <textarea id="f-problem" placeholder="Briefly state the research problem your study addresses"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Research Objectives</label>
+        <textarea id="f-objectives" placeholder="List your objectives, one per line"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Independent Variables</label>
+        <input type="text" id="f-iv" placeholder="e.g. Social Media Use, Peer Influence, Brand Trust">
+        <div class="form-hint">Separate multiple variables with commas</div>
+      </div>
+      <div class="form-group">
+        <label>Dependent Variable</label>
+        <input type="text" id="f-dv" placeholder="e.g. Purchase Intention">
+      </div>
+      <button class="btn-primary" id="btn-generate-instructions">Save &amp; Personalise →</button>
+      <button class="btn-skip" id="btn-back-intro">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="badge">Research Methodology Toolkit</div>
+  <h1>How to Conduct Your Literature Review</h1>
+  <p>A step-by-step guide — from understanding what a literature review is, to identifying sources, extracting findings, and spotting research gaps.</p>
+</header>
+
+<!-- PROGRESS -->
+<div id="progress-bar-wrap">
+  <span id="progress-label">Progress:</span>
+  <div id="progress-track"><div id="progress-fill" style="width:0%"></div></div>
+  <span id="progress-pct">0 / 5 parts done</span>
+</div>
+
+<!-- MAIN -->
+<main>
+  <!-- FIX-17: persona banner with edit button -->
+  <div id="persona-banner">
+    <span id="persona-banner-text"></span>
+    <button id="btn-edit-profile">✏️ Edit Profile</button>
+  </div>
+  <!-- FIX-17: visible personalise button when no profile -->
+  <button id="btn-personalise-visible">✏️ Personalise My Guide — click to enter your topic and variables</button>
+
+  <!-- PART 1 -->
+  <div class="accordion-item open" id="acc-1">
+    <button class="accordion-header" data-part="1">
+      <span class="acc-num">1</span>
+      <span class="acc-title">What Is a Literature Review and Why Does It Matter?</span>
+      <span class="acc-check" id="check-1">✓</span>
+      <span class="acc-chevron">▼</span>
+    </button>
+    <div class="accordion-body">
+      <h4>What you are actually doing</h4>
+      <p>A literature review is not a summary of articles. It is an organised, analytical account of what researchers have already found about <strong id="p1-topic">your topic and its variables</strong>. Your job is to show how previous studies relate to each other — and to identify what has not yet been answered.</p>
+      <div class="info-box">🎯 <strong>The goal:</strong> By the end of your literature review, a reader should understand (1) how your variables have been defined and measured, (2) what findings already exist, and (3) why your specific study is still needed.</div>
+      <h4>What counts as valid literature</h4>
+      <ul>
+        <li>✅ Peer-reviewed journal articles (primary source — always preferred)</li>
+        <li>✅ Book chapters from academic publishers (e.g. Springer, Elsevier, Routledge, Sage)</li>
+        <li>❌ Blogs, personal websites, or internet news articles — <strong>never cite these</strong></li>
+        <li>❌ Wikipedia or encyclopedias — not peer-reviewed, not citable</li>
+        <li>❌ Unpublished theses unless from a verified institutional repository</li>
+      </ul>
+      <div class="reject-box"><strong>Reject any source that:</strong> has no named author, has no year of publication, is not hosted on an academic platform, or cannot be found via Google Scholar.</div>
+      <h4>Publication window</h4>
+      <p>Use sources published between <strong id="p1-year-range">the last 10 years</strong> and the current year (<strong id="p1-current-year"></strong>). Older foundational theories (e.g. TAM, Ajzen's TPB) may be cited if they are the original source of a concept — but must be acknowledged as seminal works, not recent evidence.</p>
+      <h4>How many sources do you need?</h4>
+      <ul>
+        <li>Download 35–45 articles at the start (your candidate pool)</li>
+        <li>After reading and assessing relevance, keep 20–25 for your final review</li>
+        <li>Fewer than 15 sources is insufficient for a Research Methodology literature review</li>
+      </ul>
+      <button class="mark-done-btn" id="done-btn-1" data-part="1">Part 1 Done ✓</button>
+    </div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="accordion-item" id="acc-2">
+    <button class="accordion-header" data-part="2">
+      <span class="acc-num">2</span>
+      <span class="acc-title">Setting Inclusion and Exclusion Criteria</span>
+      <span class="acc-check" id="check-2">✓</span>
+      <span class="acc-chevron">▼</span>
+    </button>
+    <div class="accordion-body">
+      <h4>Why criteria must be defined before you search</h4>
+      <p>Without predefined criteria, students pick articles they happen to like or ones that are easy to understand. That is selection bias. Define your criteria first — then apply them consistently to every article you find.</p>
+      <h4>Inclusion criteria — include an article ONLY if:</h4>
+      <ul>
+        <li>It is a peer-reviewed journal article or an academic book chapter</li>
+        <li>It is published within the last 10 years (or is a named seminal work)</li>
+        <li>It directly addresses at least one of your variables: <strong id="p2-vars">your independent, dependent, or control variables</strong></li>
+        <li>The full text is available (not just an abstract)</li>
+        <li>It has a clearly stated research method (quantitative, qualitative, or mixed)</li>
+      </ul>
+      <h4>Exclusion criteria — exclude an article if:</h4>
+      <ul>
+        <li>It is a blog post, news article, opinion column, or website content</li>
+        <li>It has no identifiable author or publication year</li>
+        <li>It is not peer-reviewed (e.g. working papers without institutional backing)</li>
+        <li>The full text is behind a paywall you cannot access via your institution</li>
+        <li>It addresses a different context entirely (e.g. a study on industrial machinery when your topic is <strong id="p2-topic">consumer behaviour</strong>)</li>
+      </ul>
+      <div class="warn-box">📋 <strong>Document your criteria.</strong> Write them down before you begin searching. Your supervisor may ask you to justify why certain articles were excluded.</div>
+      <h4>Organise your articles into two folders</h4>
+      <div class="code-block" id="p2-folders">PrimaryArticlesDownloaded/   ← everything you downloaded (35–45 articles)
+SelectedArticles/             ← articles that passed your criteria (20–25 articles)
+
+Rule: Copy articles into SelectedArticles — do NOT move or cut-paste from PrimaryArticlesDownloaded.</div>
+      <button class="mark-done-btn" id="done-btn-2" data-part="2">Part 2 Done ✓</button>
+    </div>
+  </div>
+
+  <!-- PART 3 -->
+  <div class="accordion-item" id="acc-3">
+    <button class="accordion-header" data-part="3">
+      <span class="acc-num">3</span>
+      <span class="acc-title">Generating Search Keywords</span>
+      <span class="acc-check" id="check-3">✓</span>
+      <span class="acc-chevron">▼</span>
+    </button>
+    <div class="accordion-body">
+      <h4>Why keywords matter</h4>
+      <p>Academic databases do not read sentences. They match keywords. If you search with vague or incorrect terms, you miss relevant literature. You need systematic keyword combinations — not a single search phrase.</p>
+      <div class="info-box">Use Boolean operators: <strong>AND</strong> (narrows results — both terms must appear) · <strong>OR</strong> (broadens results — either term appears) · <strong>NOT</strong> (excludes a term). Always combine at least two of your core terms per search.</div>
+
+      <div id="kw-tool">
+        <h4 style="margin-top:0;font-size:1rem;color:#1a1a2e">⚙️ Keyword Combination Generator</h4>
+        <p style="font-size:.87rem;color:#555;margin-bottom:14px">Your variables are pre-filled from your profile. Edit any field then click <strong>Generate Combinations</strong>.</p>
+        <div class="form-group">
+          <label>Research Topic</label>
+          <input type="text" id="kw-topic" placeholder="e.g. social media marketing, consumer behaviour">
+          <div class="form-hint">Used in AI prompt only — not in keyword combinations</div>
+        </div>
+        <div class="form-group">
+          <label>Dependent Variable</label>
+          <input type="text" id="kw-dv" placeholder="e.g. Purchase Intention">
+        </div>
+        <div class="form-group">
+          <label>Control Variables <span style="font-weight:400;color:#9ca3af">(optional — enter manually if you have control variables)</span></label>
+          <input type="text" id="kw-cv" placeholder="e.g. age, gender, income level">
+          <div class="form-hint">Comma-separated. Paired with DV only in combinations.</div>
+        </div>
+        <div class="form-group">
+          <label>Independent Variables</label>
+          <input type="text" id="kw-iv" placeholder="e.g. Social Media Use, Peer Influence">
+          <div class="form-hint">Comma-separated</div>
+        </div>
+        <button class="btn-primary" id="btn-gen-kw" style="width:auto;padding:11px 24px;font-size:.92rem">Generate Combinations</button>
+        <div id="kw-result-wrap">
+          <h5>📊 Keyword Combinations</h5>
+          <div class="kw-table-scroll">
+            <table id="kw-table">
+              <thead><tr><th>#</th><th>Search String</th><th>Logic</th></tr></thead>
+              <tbody id="kw-tbody"></tbody>
+            </table>
+          </div>
+          <button class="kw-copy-btn" id="btn-copy-kw">📋 Copy All Combinations</button>
+        </div>
+      </div>
+
+      <div id="ai-section">
+        <h5>🤖 AI-Refined Keyword Suggestions</h5>
+        <p>Click once to get AI-generated keyword suggestions based on your study profile. One call per session — button locks after use.</p>
+        <button id="btn-ai-generate">✨ Generate with AI</button>
+        <div id="ai-result">
+          <div id="ai-error-box"></div>
+          <div id="ai-keywords-list"></div>
+        </div>
+      </div>
+
+      <div id="prompt-box-wrap">
+        <h5>📝 Ready-to-Use AI Prompt</h5>
+        <p>Copy and paste this into ChatGPT, Gemini, or any AI assistant. Always available — no API key needed.</p>
+        <textarea id="prompt-box" readonly></textarea>
+        <button id="btn-copy-prompt">📋 Copy Prompt</button>
+      </div>
+
+      <h4>Where to search</h4>
+      <ul>
+        <li><strong>Google Scholar</strong> — <a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer">scholar.google.com</a></li>
+        <li><strong>Scopus</strong> — <a href="https://www.scopus.com" target="_blank" rel="noopener noreferrer">scopus.com</a></li>
+        <li><strong>JSTOR</strong> — <a href="https://www.jstor.org" target="_blank" rel="noopener noreferrer">jstor.org</a></li>
+        <li><strong>ResearchGate</strong> — <a href="https://www.researchgate.net" target="_blank" rel="noopener noreferrer">researchgate.net</a></li>
+        <li><strong>Semantic Scholar</strong> — <a href="https://www.semanticscholar.org" target="_blank" rel="noopener noreferrer">semanticscholar.org</a></li>
+      </ul>
+      <div class="warn-box">⚠️ <strong>Never search only once.</strong> Run at least 6–8 different keyword combinations across at least 2 databases. Record every search string you use.</div>
+      <button class="mark-done-btn" id="done-btn-3" data-part="3">Part 3 Done ✓</button>
+    </div>
+  </div>
+
+  <!-- PART 4 -->
+  <div class="accordion-item" id="acc-4">
+    <button class="accordion-header" data-part="4">
+      <span class="acc-num">4</span>
+      <span class="acc-title">Reading, Highlighting, and Extracting Information</span>
+      <span class="acc-check" id="check-4">✓</span>
+      <span class="acc-chevron">▼</span>
+    </button>
+    <div class="accordion-body">
+      <h4>How to read an academic article efficiently</h4>
+      <p>Do not read from start to finish on the first pass. Use the <strong>strategic reading sequence</strong> below:</p>
+      <ol>
+        <li><strong>Title and abstract</strong> — decides in 60 seconds whether this article belongs in your pool</li>
+        <li><strong>Introduction</strong> — identifies the research problem and variables</li>
+        <li><strong>Literature Review section</strong> — shows you how others defined and measured your variables</li>
+        <li><strong>Methodology section</strong> — reveals sample size, data collection method, statistical tools used</li>
+        <li><strong>Results and Discussion</strong> — the actual findings: what relationships were found, how strong</li>
+        <li><strong>Conclusion and limitations</strong> — what the authors say still needs to be studied (these are your research gaps)</li>
+      </ol>
+      <h4>Highlighting — colour-coded system</h4>
+      <ul>
+        <li>🟡 <strong>Yellow</strong> — definitions of your variables</li>
+        <li>🔵 <strong>Blue</strong> — measurement tools and scales used</li>
+        <li>🟢 <strong>Green</strong> — key findings and statistical results</li>
+        <li>🔴 <strong>Red / Pink</strong> — research gaps mentioned by the authors</li>
+      </ul>
+      <div class="warn-box">⚠️ <strong>Save after every session</strong> — Press Ctrl+S after adding highlights. Do not rely on auto-save.</div>
+      <h4>The extraction document</h4>
+      <p>Create a single shared document named: <span class="code-block" id="p4-extraction-name" style="display:inline;padding:2px 8px">ExtractionDoc_[GroupName].docx</span></p>
+      <p style="margin-top:10px">For each article, record:</p>
+      <ol>
+        <li><strong id="p4-s1">Variable Definitions</strong> — how each variable is defined in this article</li>
+        <li><strong id="p4-s2">Measurement / Scale</strong> — what instrument or scale was used</li>
+        <li><strong id="p4-s3">Methodology Used</strong> — quantitative / qualitative / mixed; sample size; country</li>
+        <li><strong id="p4-s4">Key Findings</strong> — what the study found (include statistics if available)</li>
+        <li><strong id="p4-s5">Research Gaps</strong> — what the authors said still needs investigation</li>
+      </ol>
+      <div class="info-box">💡 Summarise each section in 2–4 sentences in your own words. Copying verbatim is plagiarism even in a working document.</div>
+      <h4>Methodology comparison table</h4>
+      <div class="method-table-wrap">
+        <table class="method-table">
+          <thead>
+            <tr>
+              <th>Author (Year)</th>
+              <th>IV(s)</th>
+              <th>DV</th>
+              <th>CV</th>
+              <th>Method</th>
+              <th>Sample</th>
+              <th>Key Finding</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Smith &amp; Lee (2022)</td>
+              <td id="p4-dummy-iv1">Social Media Use</td>
+              <td id="p4-dummy-dv1">Purchase Intention</td>
+              <td id="p4-dummy-cv1">Age, Gender</td>
+              <td>Quantitative</td>
+              <td>n = 320, university students, Malaysia</td>
+              <td>Social media use had a significant positive effect on purchase intention (β = 0.47, p &lt; 0.05)</td>
+            </tr>
+            <tr>
+              <td>Rahman et al. (2023)</td>
+              <td id="p4-dummy-iv2">Peer Influence, Brand Trust</td>
+              <td id="p4-dummy-dv2">Purchase Intention</td>
+              <td id="p4-dummy-cv2">Income Level</td>
+              <td>Mixed Method</td>
+              <td>n = 150, young adults, Bangladesh</td>
+              <td>Brand trust was a stronger predictor than peer influence; contextual factors moderated the relationship</td>
+            </tr>
+            <tr class="placeholder-row">
+              <td colspan="7">↑ Replace these rows with your actual articles. Add one row per selected article.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">* Dummy data shown for illustration only.</p>
+      <button class="mark-done-btn" id="done-btn-4" data-part="4">Part 4 Done ✓</button>
+    </div>
+  </div>
+
+  <!-- PART 5 -->
+  <div class="accordion-item" id="acc-5">
+    <button class="accordion-header" data-part="5">
+      <span class="acc-num">5</span>
+      <span class="acc-title">Identifying Research Gaps and Final Checklist</span>
+      <span class="acc-check" id="check-5">✓</span>
+      <span class="acc-chevron">▼</span>
+    </button>
+    <div class="accordion-body">
+      <h4>What is a research gap?</h4>
+      <p>A research gap is a question that existing literature has not fully answered. Your study must be justified by at least one clear gap.</p>
+      <h4>Three types of gaps to look for</h4>
+      <ul>
+        <li><strong>Contextual gap</strong> — Your study is set in <strong id="p5-context">a different or under-researched context</strong> — this is a valid gap.</li>
+        <li><strong>Variable gap</strong> — The relationship between <strong id="p5-iv">your independent variable</strong> and <strong id="p5-dv">your dependent variable</strong><span id="p5-cv-gap"></span> has not been studied together in existing literature.</li>
+        <li><strong>Methodological gap</strong> — Prior studies used qualitative methods; your study applies quantitative testing. Or vice versa.</li>
+      </ul>
+      <div class="gap-callout">
+        <div class="gap-callout-header">
+          <span>✍️</span>
+          <h5>How to Write Your Gap Statement</h5>
+        </div>
+        <p>End your literature review with a dedicated paragraph naming the gap your study addresses:</p>
+        <div class="gap-template">
+          "Despite substantial research on <em id="gap-topic">[your topic]</em>, limited studies have examined…"
+        </div>
+        <p style="margin-top:10px;font-size:.85rem;color:#92400e">Complete the sentence by naming the specific relationship, context, or variable combination that prior studies have not addressed.</p>
+      </div>
+      <h4>Contradictions in the literature</h4>
+      <p>If two studies found opposite results, highlight it. Contradictions are themselves a justification for further research.</p>
+      <h4>Final completion checklist</h4>
+      <ul style="list-style:none;padding:0">
+        <li>☐ Inclusion and exclusion criteria documented before searching</li>
+        <li>☐ Keyword combinations generated and recorded</li>
+        <li>☐ 35–45 articles downloaded into <code>PrimaryArticlesDownloaded</code></li>
+        <li>☐ All articles screened; 20–25 copied to <code id="p5-selected-folder">SelectedArticles</code></li>
+        <li>☐ All selected articles read using the strategic reading sequence</li>
+        <li>☐ All articles highlighted and <strong>saved</strong></li>
+        <li>☐ Extraction document completed with all five sections per article</li>
+        <li>☐ Methodology comparison table filled</li>
+        <li>☐ At least 3 research gaps identified and recorded</li>
+      </ul>
+      <div class="warn-box">📌 Once all items above are done, you are ready to write the literature review section of your research report.</div>
+      <button class="mark-done-btn" id="done-btn-5" data-part="5">Part 5 Done ✓</button>
+    </div>
+  </div>
+</main>
+
+<!-- COMPLETION MODAL -->
+<div id="completion-modal">
+  <div id="completion-card">
+    <svg class="check-svg" viewBox="0 0 64 64">
+      <circle class="check-circle" cx="32" cy="32" r="30"/>
+      <polyline class="check-tick" points="18,34 27,43 46,22"/>
+    </svg>
+    <h2>Literature Review Done! 🎉</h2>
+    <p id="completion-msg">All five parts completed. You are ready to write your literature review section.</p>
+    <button id="btn-exit">← Return to Toolkit</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const LS_KEY = 'lr_guide_v2';
+  let state = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  if(!state.done) state.done = {};
+  const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
+
+  /* ── FIX-15: CLEAN FUNCTIONS — strip brackets on full string before split ── */
+  function cleanField(str){
+    return str
+      .replace(/\([^)]*\)/g, '')   // remove balanced (...)
+      .replace(/\([^)]*$/gm, '')   // remove unmatched ( to end of string
+      .replace(/\)/g, '')          // remove any remaining orphaned )
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /* FIX-16: silent 40-char trim — colon/semicolon split first, then 4-word fallback */
+  function trimCoreConcept(term){
+    if(term.length <= 40) return term;
+    const colonSplit = term.split(/[:;]/)[0].trim();
+    if(colonSplit.length > 0 && colonSplit.length <= 40) return colonSplit;
+    return term.split(/\s+/).slice(0, 4).join(' ');
+  }
+
+  function cleanTermList(str){
+    const cleaned = cleanField(str);
+    return cleaned.split(',')
+      .map(s => trimCoreConcept(s.trim()))
+      .filter(Boolean);
+  }
+
+  /* ── MODAL HELPERS ── */
+  const overlay   = document.getElementById('modal-overlay');
+  const introDiv  = document.getElementById('modal-intro');
+  const formDiv   = document.getElementById('modal-form');
+
+  function openModal(showForm){
+    document.body.style.overflow = 'hidden';
+    overlay.style.display = 'flex';
+    if(showForm){
+      introDiv.style.display = 'none';
+      formDiv.style.display  = 'block';
+    } else {
+      introDiv.style.display = 'block';
+      formDiv.style.display  = 'none';
+    }
+  }
+
+  function closeModal(){
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function populateFormFromProfile(p){
+    if(!p) return;
+    document.getElementById('f-group').value      = p.group      || '';
+    document.getElementById('f-topic').value      = p.topic      || '';
+    document.getElementById('f-problem').value    = p.problem    || '';
+    document.getElementById('f-objectives').value = p.objectives || '';
+    document.getElementById('f-iv').value         = p.iv         || '';
+    document.getElementById('f-dv').value         = p.dv         || '';
+  }
+
+  /* ── MODAL EVENTS ── */
+  document.getElementById('btn-personalize').addEventListener('click', () => {
+    introDiv.style.display = 'none';
+    formDiv.style.display  = 'block';
+  });
+
+  /* FIX-17: Skip clears profile and renders generic */
+  document.getElementById('btn-skip').addEventListener('click', () => {
+    state.profile = null;
+    save();
+    closeModal();
+    applyProfile(null);
+  });
+
+  document.getElementById('btn-back-intro').addEventListener('click', () => {
+    formDiv.style.display  = 'none';
+    introDiv.style.display = 'block';
+  });
+
+  /* FIX-17: Edit profile button */
+  document.getElementById('btn-edit-profile').addEventListener('click', () => {
+    populateFormFromProfile(state.profile);
+    openModal(true);
+  });
+
+  /* FIX-17: Visible personalise button (shown when no profile) */
+  document.getElementById('btn-personalise-visible').addEventListener('click', () => {
+    openModal(false);
+  });
+
+  /* Save profile — FIX-10+15+16: strip at storage */
+  document.getElementById('btn-generate-instructions').addEventListener('click', () => {
+    const rawIv = document.getElementById('f-iv').value.trim();
+    const rawDv = document.getElementById('f-dv').value.trim();
+
+    const profile = {
+      group:      document.getElementById('f-group').value.trim()      || 'Your Group',
+      topic:      cleanField(document.getElementById('f-topic').value.trim()) || 'your research topic',
+      problem:    document.getElementById('f-problem').value.trim()    || 'your problem statement',
+      objectives: document.getElementById('f-objectives').value.trim() || 'your research objectives',
+      iv:         cleanTermList(rawIv).join(', ') || 'your independent variables',
+      dv:         trimCoreConcept(cleanField(rawDv)) || 'your dependent variable',
+      cv:         ''
+    };
+    state.profile = profile;
+    save();
+    closeModal();
+    applyProfile(profile);
+  });
+
+  /* ── APPLY PROFILE ── */
+  function applyProfile(p){
+    const cy = new Date().getFullYear();
+    document.getElementById('p1-current-year').textContent = cy;
+    document.getElementById('p1-year-range').textContent   = (cy - 10) + '–' + cy;
+
+    const banner   = document.getElementById('persona-banner');
+    const noProfile = document.getElementById('btn-personalise-visible');
+
+    if(!p){
+      banner.style.display    = 'none';
+      noProfile.style.display = 'block';
+      prefillKwTool('', '', '', '');
+      buildPrompt('your research topic','your problem statement','your research objectives','your independent variables','your dependent variable','');
+      return;
+    }
+
+    /* FIX-17: show banner, hide personalise button */
+    banner.style.display    = 'flex';
+    noProfile.style.display = 'none';
+    document.getElementById('persona-banner-text').innerHTML =
+      '📌 <strong>' + escHtml(p.group) + '</strong> &nbsp;|&nbsp; Topic: ' + escHtml(p.topic) +
+      ' &nbsp;|&nbsp; IV(s): ' + escHtml(p.iv) + ' &nbsp;|&nbsp; DV: ' + escHtml(p.dv);
+
+    const ivList    = p.iv.split(',').map(s => s.trim()).filter(Boolean);
+    const ivDisplay = ivList.join(', ');
+
+    // Part 1
+    document.getElementById('p1-topic').textContent = p.topic;
+
+    // Part 2
+    document.getElementById('p2-vars').textContent  = ivDisplay + ', ' + p.dv + (p.cv ? ', ' + p.cv + ' (control)' : '');
+    document.getElementById('p2-topic').textContent = p.topic;
+    document.getElementById('p2-folders').textContent =
+      p.group + '_PrimaryArticlesDownloaded/   \u2190 everything downloaded (35\u201345 articles)\n' +
+      p.group + '_SelectedArticles/             \u2190 articles passing criteria (20\u201325 articles)\n\n' +
+      'Rule: Copy into ' + p.group + '_SelectedArticles \u2014 do NOT cut-paste.';
+
+    // Part 3
+    prefillKwTool(p.topic, p.dv, '', p.iv);
+    buildPrompt(p.topic, p.problem, p.objectives, p.iv, p.dv, p.cv || '');
+
+    // Part 4
+    document.getElementById('p4-extraction-name').textContent = 'ExtractionDoc_' + p.group + '.docx';
+    document.getElementById('p4-s1').textContent = 'Variable Definitions (IV: ' + ivDisplay + ' / DV: ' + p.dv + (p.cv ? ' / CV: ' + p.cv : '') + ')';
+    document.getElementById('p4-s2').textContent = 'Measurement / Scale for ' + p.dv;
+    document.getElementById('p4-s3').textContent = 'Methodology Used';
+    document.getElementById('p4-s4').textContent = 'Key Findings on ' + p.dv;
+    document.getElementById('p4-s5').textContent = 'Research Gaps Mentioned';
+
+    document.getElementById('p4-dummy-iv1').textContent = ivList[0] || 'Independent Variable 1';
+    document.getElementById('p4-dummy-iv2').textContent = ivList.length > 1 ? ivList.slice(0,2).join(', ') : (ivList[0] || 'IV1, IV2');
+    document.getElementById('p4-dummy-dv1').textContent = p.dv;
+    document.getElementById('p4-dummy-dv2').textContent = p.dv;
+    document.getElementById('p4-dummy-cv1').textContent = p.cv || '—';
+    document.getElementById('p4-dummy-cv2').textContent = p.cv || '—';
+
+    // Part 5
+    document.getElementById('p5-context').textContent = 'a context relevant to ' + p.topic;
+    document.getElementById('p5-iv').textContent      = ivDisplay;
+    document.getElementById('p5-dv').textContent      = p.dv;
+    document.getElementById('p5-cv-gap').textContent  = p.cv ? ', controlling for ' + p.cv + ',' : '';
+    document.getElementById('p5-selected-folder').textContent = p.group + '_SelectedArticles';
+    document.getElementById('gap-topic').textContent  = p.topic;
+  }
+
+  function escHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── KEYWORD TOOL ── */
+  function prefillKwTool(topic, dv, cv, iv){
+    document.getElementById('kw-topic').value = topic;
+    document.getElementById('kw-dv').value    = dv;
+    document.getElementById('kw-cv').value    = cv;
+    document.getElementById('kw-iv').value    = iv;
+  }
+
+  function syncFromKwFields(){
+    const topic = document.getElementById('kw-topic').value.trim();
+    const dv    = document.getElementById('kw-dv').value.trim();
+    const cv    = document.getElementById('kw-cv').value.trim();
+    const iv    = document.getElementById('kw-iv').value.trim();
+    const p     = state.profile || {};
+    buildPrompt(
+      topic       || p.topic       || 'your research topic',
+      p.problem   || 'your problem statement',
+      p.objectives|| 'your research objectives',
+      iv          || p.iv          || 'your independent variables',
+      dv          || p.dv          || 'your dependent variable',
+      cv          || p.cv          || ''
+    );
+    window._kwLive = {topic, dv, cv, iv};
+  }
+
+  document.getElementById('btn-gen-kw').addEventListener('click', () => {
+    syncFromKwFields();
+    generateCombinations();
+  });
+
+  /* FIX-15+16: clean before split, trim long terms */
+  function generateCombinations(){
+    const ivTerms = cleanTermList(document.getElementById('kw-iv').value);
+    const dvTerms = cleanTermList(document.getElementById('kw-dv').value);
+    const cvTerms = cleanTermList(document.getElementById('kw-cv').value);
+
+    if(ivTerms.length === 0 || dvTerms.length === 0){
+      alert('Please enter at least one Independent Variable and one Dependent Variable.');
+      return;
+    }
+
+    const combos = [];
+    const addUniq = (str, logic) => { if(!combos.find(c => c.str === str)) combos.push({str, logic}); };
+
+    ivTerms.forEach(iv => dvTerms.forEach(dv =>
+      addUniq('"' + iv + '" AND "' + dv + '"', 'IV AND DV')));
+
+    for(let i = 0; i < ivTerms.length; i++)
+      for(let j = i + 1; j < ivTerms.length; j++)
+        addUniq('"' + ivTerms[i] + '" AND "' + ivTerms[j] + '"', 'IV AND IV');
+
+    if(ivTerms.length > 1){
+      const orStr = '(' + ivTerms.map(v => '"' + v + '"').join(' OR ') + ')';
+      dvTerms.forEach(dv => addUniq(orStr + ' AND "' + dv + '"', 'OR(IVs) AND DV'));
+    }
+
+    cvTerms.forEach(cv => dvTerms.forEach(dv =>
+      addUniq('"' + cv + '" AND "' + dv + '"', 'CV AND DV')));
+
+    ivTerms.forEach(iv => dvTerms.forEach(dv => cvTerms.forEach(cv =>
+      addUniq('"' + iv + '" AND "' + dv + '" AND "' + cv + '"', 'IV AND DV AND CV'))));
+
+    const tbody = document.getElementById('kw-tbody');
+    tbody.innerHTML = '';
+    combos.forEach((c, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + (i+1) + '</td><td>' + escHtml(c.str) + '</td><td>' + c.logic + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('kw-result-wrap').style.display = 'block';
+  }
+
+  document.getElementById('btn-copy-kw').addEventListener('click', () => {
+    const rows = document.querySelectorAll('#kw-tbody tr');
+    const text = Array.from(rows).map(r => r.cells[1].textContent).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('btn-copy-kw').textContent = '✅ Copied!';
+      setTimeout(() => { document.getElementById('btn-copy-kw').textContent = '📋 Copy All Combinations'; }, 2000);
+    });
+  });
+
+  /* ── AI GENERATION ── */
+  const btnAI = document.getElementById('btn-ai-generate');
+  if(sessionStorage.getItem('ai_kw_used')){
+    btnAI.disabled = true;
+    btnAI.textContent = '✓ AI Keywords Generated (once per session)';
+  }
+
+  btnAI.addEventListener('click', async () => {
+    if(btnAI.disabled) return;
+    btnAI.disabled = true;
+    btnAI.textContent = '⏳ Generating...';
+    const aiResult = document.getElementById('ai-result');
+    const aiError  = document.getElementById('ai-error-box');
+    const aiList   = document.getElementById('ai-keywords-list');
+    aiResult.style.display = 'none';
+    aiError.style.display  = 'none';
+    aiList.style.display   = 'none';
+
+    const live = window._kwLive || {};
+    const p    = state.profile  || {};
+    const body = {
+      topic:               live.topic  || p.topic || document.getElementById('kw-topic').value,
+      problemStatement:    p.problem   || '',
+      objectives:          p.objectives|| '',
+      independentVariables:live.iv     || p.iv    || document.getElementById('kw-iv').value,
+      dependentVariable:   live.dv     || p.dv    || document.getElementById('kw-dv').value,
+      controlVariables:    live.cv     || p.cv    || document.getElementById('kw-cv').value || ''
+    };
+
+    try {
+      const res  = await fetch('/.netlify/functions/generate-keywords', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(res.ok && data.keywords){
+        aiList.innerHTML = '<strong>AI-Suggested Keywords:</strong><br><br>' + data.keywords.map(k => '• ' + escHtml(k)).join('<br>');
+        aiList.style.display   = 'block';
+        aiResult.style.display = 'block';
+        sessionStorage.setItem('ai_kw_used','1');
+        btnAI.textContent = '✓ AI Keywords Generated (once per session)';
+      } else {
+        showAIError('AI generation unavailable. Use the prompt below with ChatGPT or Gemini.', aiError, aiResult);
+        highlightPromptBox();
+      }
+    } catch(e){
+      showAIError('AI generation unavailable. Use the prompt below with ChatGPT or Gemini.', aiError, aiResult);
+      highlightPromptBox();
+      btnAI.disabled = false;
+      btnAI.textContent = '✨ Generate with AI';
+    }
+  });
+
+  function showAIError(msg, box, wrap){
+    box.textContent = '⚠️ ' + msg;
+    box.style.display  = 'block';
+    wrap.style.display = 'block';
+  }
+  function highlightPromptBox(){
+    const pb = document.getElementById('prompt-box');
+    pb.classList.add('highlight');
+    pb.scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(() => pb.classList.remove('highlight'), 3000);
+  }
+
+  /* ── PROMPT BOX ── */
+  function buildPrompt(topic, problem, objectives, iv, dv, cv){
+    const cvLine = cv ? '\n- Control Variables: ' + cv : '';
+    document.getElementById('prompt-box').value =
+`You are an academic research assistant specialising in literature reviews.
+
+My research study has the following details:
+- Research Topic: ${topic}
+- Problem Statement: ${problem}
+- Research Objectives: ${objectives}
+- Independent Variables: ${iv}
+- Dependent Variable: ${dv}${cvLine}
+
+Please generate:
+1. A list of 20–25 specific academic search keywords and keyword combinations for Google Scholar, Scopus, and JSTOR.
+2. Include both AND and OR Boolean combinations.
+3. Include synonyms and related academic terms for each variable.
+4. Group keywords by variable.
+5. Format each string exactly as typed into an academic database search box.
+
+Focus on peer-reviewed literature only.`;
+  }
+
+  document.getElementById('btn-copy-prompt').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('prompt-box').value).then(() => {
+      document.getElementById('btn-copy-prompt').textContent = '✅ Copied!';
+      setTimeout(() => { document.getElementById('btn-copy-prompt').textContent = '📋 Copy Prompt'; }, 2000);
+    });
+  });
+
+  /* ── ACCORDION TOGGLE ── */
+  document.querySelectorAll('.accordion-header').forEach(btn => {
+    btn.addEventListener('click', () => btn.closest('.accordion-item').classList.toggle('open'));
+  });
+
+  /* ── FIX-09: DONE BUTTONS ── */
+  function openAccordion(n){ const el = document.getElementById('acc-'+n); if(el) el.classList.add('open'); }
+  function closeAccordion(n){ const el = document.getElementById('acc-'+n); if(el) el.classList.remove('open'); }
+  function scrollToAccordion(n){
+    const el  = document.getElementById('acc-'+n);
+    if(!el) return;
+    const barH = document.getElementById('progress-bar-wrap').offsetHeight;
+    setTimeout(() => {
+      const top = el.getBoundingClientRect().top + window.scrollY - barH - 12;
+      window.scrollTo({top, behavior:'smooth'});
+    }, 150);
+  }
+
+  document.querySelectorAll('.mark-done-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const part = parseInt(btn.dataset.part);
+      if(!state.done[String(part)]){
+        state.done[String(part)] = true;
+        save();
+        applyDoneVisual(String(part));
+        updateProgress();
+      }
+      closeAccordion(part);
+      if(part < 5){ openAccordion(part+1); scrollToAccordion(part+1); }
+      else { checkCompletion(); }
+    });
+  });
+
+  function applyDoneVisual(part){
+    if(!state.done[part]) return;
+    const btn = document.getElementById('done-btn-'+part);
+    const chk = document.getElementById('check-'+part);
+    if(btn){ btn.textContent = '✅ Part '+part+' Done'; btn.classList.add('done-state'); }
+    if(chk)  chk.classList.add('done');
+  }
+
+  function updateProgress(){
+    const done = Object.values(state.done).filter(Boolean).length;
+    document.getElementById('progress-fill').style.width = Math.round((done/5)*100)+'%';
+    document.getElementById('progress-pct').textContent  = done+' / 5 parts done';
+  }
+
+  function checkCompletion(){
+    if(Object.values(state.done).filter(Boolean).length >= 5){
+      const p = state.profile;
+      if(p && p.group && p.group !== 'Your Group')
+        document.getElementById('completion-msg').textContent =
+          p.group+' — all five parts completed. You are ready to write your literature review section.';
+      document.getElementById('completion-modal').classList.add('show');
+    }
+  }
+
+  document.getElementById('btn-exit').addEventListener('click', () => {
+    window.location.href = 'https://research-toolkit.netlify.app';
+  });
+
+  /* ── INIT ── */
+  const cy = new Date().getFullYear();
+  document.getElementById('p1-current-year').textContent = cy;
+  document.getElementById('p1-year-range').textContent   = (cy-10)+'–'+cy;
+
+  updateProgress();
+  for(let i=1; i<=5; i++) applyDoneVisual(String(i));
+
+  /* FIX-17: init logic — profile exists: load silently; no profile: show modal */
+  if(state.profile){
+    applyProfile(state.profile);
+  } else {
+    buildPrompt('your research topic','your problem statement','your research objectives','your independent variables','your dependent variable','');
+    document.getElementById('btn-personalise-visible').style.display = 'block';
+    openModal(false);
+  }
+
+})();
+</script>
+</body>
+</html>
