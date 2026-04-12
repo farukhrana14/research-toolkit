@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Statistical Analysis Tools | Research Methodology Toolkit</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2a37;
+      --muted: #5b6777;
+      --border: #d9e2ec;
+      --accent: #1f4e79;
+      --accent-soft: #eaf2fb;
+      --success-bg: #e8f7ef;
+      --success-text: #157347;
+      --coming-bg: #f3f4f6;
+      --coming-text: #6b7280;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 40px);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .top-links {
+      display: flex;
+      justify-content: center;
+      margin: 0 0 26px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--accent);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+    }
+
+    .back-link:hover {
+      background: var(--accent-soft);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card,
+    .card-disabled {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #bfd0e4;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
+    }
+
+    .card-disabled {
+      opacity: 0.92;
+      cursor: not-allowed;
+    }
+
+    .card h2,
+    .card-disabled h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: var(--accent);
+      line-height: 1.25;
+    }
+
+    .card p,
+    .card-disabled p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .status.live {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .status.coming {
+      background: var(--coming-bg);
+      color: var(--coming-text);
+    }
+
+    .page-note {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card,
+      .card-disabled {
+        min-height: auto;
+      }
+
+      .hero {
+        margin-bottom: 22px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-links">
+      <a class="back-link" href="/">← Back to Home</a>
+    </div>
+
+    <header class="hero">
+      <h1>Statistical Analysis Tools</h1>
+      <p>
+        Simple academic tools for descriptive and inferential analysis in research.
+        Start with the Z Test Decision Tool; other tools will be activated later.
+      </p>
+    </header>
+
+    <main class="grid">
+      <a class="card" href="/stat_tools/z_test.html">
+        <div>
+          <h2>Z Test Decision Tool</h2>
+          <p>
+            Perform one-sample and two-sample Z-based mean comparison with clear
+            decision output for classroom and research training use.
+          </p>
+        </div>
+        <span class="status live">Live</span>
+      </a>
+
+      <div class="card-disabled" aria-disabled="true">
+        <div>
+          <h2>t test</h2>
+          <p>
+            Compare means using t-based procedures for small samples and related
+            classroom applications.
+          </p>
+        </div>
+        <span class="status coming">Coming Soon</span>
+      </div>
+
+      <div class="card-disabled" aria-disabled="true">
+        <div>
+          <h2>correlation</h2>
+          <p>
+            Examine direction and strength of association between variables with
+            clean, student-friendly output.
+          </p>
+        </div>
+        <span class="status coming">Coming Soon</span>
+      </div>
+
+      <div class="card-disabled" aria-disabled="true">
+        <div>
+          <h2>descriptive statistics</h2>
+          <p>
+            Generate summary measures such as mean, median, standard deviation,
+            and frequency-oriented outputs.
+          </p>
+        </div>
+        <span class="status coming">Coming Soon</span>
+      </div>
+
+      <div class="card-disabled" aria-disabled="true">
+        <div>
+          <h2>reliability</h2>
+          <p>
+            Support internal consistency checking and reliability-oriented analysis
+            for research instruments.
+          </p>
+        </div>
+        <span class="status coming">Coming Soon</span>
+      </div>
+
+      <div class="card-disabled" aria-disabled="true">
+        <div>
+          <h2>regression helper</h2>
+          <p>
+            Assist with basic interpretation and setup for regression-based
+            research analysis.
+          </p>
+        </div>
+        <span class="status coming">Coming Soon</span>
+      </div>
+    </main>
+
+    <div class="page-note">
+      Part of the Research Methodology Toolkit
+    </div>
+  </div>
+</body>
+</html>

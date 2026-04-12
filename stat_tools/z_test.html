@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Z Test Decision Templates</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --border: #d7deea;
+      --text: #1f2a37;
+      --muted: #5b6777;
+      --accent: #1f4e79;
+      --accent-soft: #eaf2fb;
+      --danger: #b42318;
+      --danger-soft: #fff3f2;
+      --shadow: 0 8px 24px rgba(31, 42, 55, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.4;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .app-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #ffffff, #fbfdff);
+    }
+
+    .title {
+      margin: 0 0 6px;
+      font-size: clamp(22px, 4vw, 28px);
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .topbar {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--accent-soft);
+      display: grid;
+      grid-template-columns: minmax(140px, 220px) 1fr;
+      gap: 12px 14px;
+      align-items: center;
+    }
+
+    .topbar label {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid #b9c6d8;
+      border-radius: 10px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.12);
+    }
+
+    .panel {
+      display: none;
+      padding: 20px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 18px;
+    }
+
+    .grid-one-custom {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px 28px;
+      align-items: start;
+    }
+
+    .column-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 11px 18px;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    button:hover {
+      opacity: 0.95;
+    }
+
+    .result-box {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fcfdff;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin-top: 10px;
+    }
+
+    .result-item {
+      padding: 12px;
+      border: 1px solid #e4eaf2;
+      border-radius: 10px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .result-label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 17px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .decision {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      background: #eef6ff;
+      border: 1px solid #cfe0f5;
+      color: var(--accent);
+      word-break: break-word;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: #fff3f2;
+      border: 1px solid #f3c7c2;
+      color: var(--danger);
+    }
+
+    dialog.modal {
+      border: none;
+      border-radius: 16px;
+      padding: 0;
+      width: min(92vw, 460px);
+      max-width: 460px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+    }
+
+    dialog.modal::backdrop {
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .modal-card {
+      background: #fff;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .modal-header {
+      padding: 18px 20px 12px;
+      background: var(--danger-soft);
+      border-bottom: 1px solid #f3c7c2;
+    }
+
+    .modal-title {
+      margin: 0;
+      color: var(--danger);
+      font-size: 20px;
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .modal-actions {
+      padding: 0 20px 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      min-width: 96px;
+    }
+
+    @media (max-width: 820px) {
+      .grid-one-custom,
+      .grid,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 10px;
+      }
+
+      .header,
+      .topbar,
+      .panel {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        font-size: 18px;
+      }
+
+      .result-value {
+        font-size: 16px;
+      }
+
+      .decision {
+        font-size: 17px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      select,
+      input[type="number"] {
+        font-size: 16px;
+        padding: 11px 12px;
+      }
+
+      .modal-header,
+      .modal-body,
+      .modal-actions {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app-card">
+      <div class="header">
+        <h1 class="title">Z Test Decision Templates</h1>
+        <p class="subtitle">Standalone offline calculator for simplified classroom one-sample and two-sample Z tests.</p>
+      </div>
+
+      <div class="topbar">
+        <label for="testType">Select Test</label>
+        <select id="testType">
+          <option value="one">One Sample Z Test</option>
+          <option value="two">Two Sample Z Test</option>
+        </select>
+      </div>
+
+      <div id="panel-one" class="panel active">
+        <h2 class="section-title">One Sample Z Test</h2>
+
+        <div class="grid-one-custom">
+          <div class="column-stack">
+            <div class="field">
+              <label for="one-sample-mean">Sample Mean</label>
+              <input type="number" id="one-sample-mean" step="any" inputmode="decimal" />
+            </div>
+
+            <div class="field">
+              <label for="one-sd">Sample SD</label>
+              <input type="number" id="one-sd" step="any" min="0" inputmode="decimal" />
+            </div>
+
+            <div class="field">
+              <label for="one-n">Sample Size</label>
+              <input type="number" id="one-n" step="1" min="1" inputmode="numeric" />
+            </div>
+
+            <div class="field">
+              <label for="one-alpha">Alpha</label>
+              <input type="number" id="one-alpha" step="any" min="0" max="1" value="0.05" inputmode="decimal" />
+            </div>
+          </div>
+
+          <div class="column-stack">
+            <div class="field">
+              <label for="one-benchmark-mean">Benchmark Mean</label>
+              <input type="number" id="one-benchmark-mean" step="any" inputmode="decimal" />
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="calc-one">Calculate</button>
+          <button type="button" class="secondary" id="clear-one">Clear</button>
+        </div>
+
+        <div id="msg-one" class="message error"></div>
+
+        <div class="result-box">
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="result-label">Standard Error</span>
+              <div class="result-value" id="one-se">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Z statistic</span>
+              <div class="result-value" id="one-z">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Two-tailed p-value</span>
+              <div class="result-value" id="one-p">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Final decision</span>
+              <div class="result-value" id="one-decision-inline">—</div>
+            </div>
+          </div>
+
+          <div class="decision" id="one-decision">Click Calculate to view the result.</div>
+        </div>
+      </div>
+
+      <div id="panel-two" class="panel">
+        <h2 class="section-title">Two Sample Z Test</h2>
+
+        <div class="grid">
+          <div class="field">
+            <label for="two-mean1">Mean 1</label>
+            <input type="number" id="two-mean1" step="any" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label for="two-mean2">Mean 2</label>
+            <input type="number" id="two-mean2" step="any" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label for="two-sd1">SD 1</label>
+            <input type="number" id="two-sd1" step="any" min="0" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label for="two-sd2">SD 2</label>
+            <input type="number" id="two-sd2" step="any" min="0" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label for="two-n1">Sample Size 1</label>
+            <input type="number" id="two-n1" step="1" min="1" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="two-n2">Sample Size 2</label>
+            <input type="number" id="two-n2" step="1" min="1" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="two-alpha">Alpha</label>
+            <input type="number" id="two-alpha" step="any" min="0" max="1" value="0.05" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="calc-two">Calculate</button>
+          <button type="button" class="secondary" id="clear-two">Clear</button>
+        </div>
+
+        <div id="msg-two" class="message error"></div>
+
+        <div class="result-box">
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="result-label">Standard Error</span>
+              <div class="result-value" id="two-se">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Z statistic</span>
+              <div class="result-value" id="two-z">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Two-tailed p-value</span>
+              <div class="result-value" id="two-p">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Final decision</span>
+              <div class="result-value" id="two-decision-inline">—</div>
+            </div>
+          </div>
+
+          <div class="decision" id="two-decision">Click Calculate to view the result.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="warningModal" class="modal" aria-labelledby="modalTitle" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Sample Size Restriction</h3>
+      </div>
+      <div class="modal-body" id="modalMessage">
+        Sample size must be at least 30 for this simplified Z test template.
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="closeModal">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const testType = document.getElementById('testType');
+    const panelOne = document.getElementById('panel-one');
+    const panelTwo = document.getElementById('panel-two');
+    const warningModal = document.getElementById('warningModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const closeModal = document.getElementById('closeModal');
+
+    function togglePanels() {
+      const isOne = testType.value === 'one';
+      panelOne.classList.toggle('active', isOne);
+      panelTwo.classList.toggle('active', !isOne);
+    }
+
+    testType.addEventListener('change', togglePanels);
+
+    function showModal(message) {
+      modalMessage.textContent = message;
+      if (typeof warningModal.showModal === 'function') {
+        warningModal.showModal();
+      } else {
+        alert(message);
+      }
+    }
+
+    closeModal.addEventListener('click', () => {
+      warningModal.close();
+    });
+
+    warningModal.addEventListener('click', (e) => {
+      const rect = warningModal.getBoundingClientRect();
+      const isInDialog =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+
+      if (!isInDialog) {
+        warningModal.close();
+      }
+    });
+
+    function erf(x) {
+      const sign = x >= 0 ? 1 : -1;
+      x = Math.abs(x);
+
+      const a1 = 0.254829592;
+      const a2 = -0.284496736;
+      const a3 = 1.421413741;
+      const a4 = -1.453152027;
+      const a5 = 1.061405429;
+      const p = 0.3275911;
+
+      const t = 1 / (1 + p * x);
+      const y = 1 - (((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x));
+
+      return sign * y;
+    }
+
+    function normalCDF(x) {
+      return 0.5 * (1 + erf(x / Math.SQRT2));
+    }
+
+    function twoTailedPFromZ(z) {
+      const p = 2 * (1 - normalCDF(Math.abs(z)));
+      return Math.max(0, Math.min(1, p));
+    }
+
+    function parseNum(id) {
+      const value = document.getElementById(id).value.trim();
+      if (value === '') return null;
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function formatNumber(value, digits = 6) {
+      if (!Number.isFinite(value)) return '—';
+      return Number(value).toFixed(digits).replace(/\.?0+$/, '');
+    }
+
+    function formatPValue(p) {
+      if (!Number.isFinite(p)) return '—';
+      if (p < 0.0001) return '< 0.0001';
+      return p.toFixed(4);
+    }
+
+    function setMessage(el, text = '', type = 'error') {
+      el.textContent = text;
+      el.className = 'message';
+      if (text) {
+        el.classList.add('show', type);
+      }
+    }
+
+    function clearOneOutputs() {
+      document.getElementById('one-se').textContent = '—';
+      document.getElementById('one-z').textContent = '—';
+      document.getElementById('one-p').textContent = '—';
+      document.getElementById('one-decision-inline').textContent = '—';
+      document.getElementById('one-decision').textContent = 'Click Calculate to view the result.';
+    }
+
+    function clearTwoOutputs() {
+      document.getElementById('two-se').textContent = '—';
+      document.getElementById('two-z').textContent = '—';
+      document.getElementById('two-p').textContent = '—';
+      document.getElementById('two-decision-inline').textContent = '—';
+      document.getElementById('two-decision').textContent = 'Click Calculate to view the result.';
+    }
+
+    function updateOneSample() {
+      const sampleMean = parseNum('one-sample-mean');
+      const benchmarkMean = parseNum('one-benchmark-mean');
+      const sd = parseNum('one-sd');
+      const n = parseNum('one-n');
+      const alpha = parseNum('one-alpha');
+
+      const msg = document.getElementById('msg-one');
+      const seEl = document.getElementById('one-se');
+      const zEl = document.getElementById('one-z');
+      const pEl = document.getElementById('one-p');
+      const dInlineEl = document.getElementById('one-decision-inline');
+      const dEl = document.getElementById('one-decision');
+
+      setMessage(msg, '');
+
+      const values = [sampleMean, benchmarkMean, sd, n, alpha];
+      const allEntered = values.every(v => v !== null);
+
+      if (!allEntered) {
+        clearOneOutputs();
+        setMessage(msg, 'Please enter all required numeric values.');
+        return;
+      }
+
+      if (sd < 0) {
+        clearOneOutputs();
+        setMessage(msg, 'Sample SD must be 0 or greater.');
+        return;
+      }
+
+      if (!Number.isInteger(n) || n <= 0) {
+        clearOneOutputs();
+        setMessage(msg, 'Sample Size must be a positive integer.');
+        return;
+      }
+
+      if (n < 30) {
+        clearOneOutputs();
+        showModal('Sample Size must be at least 30 for this simplified Z test template. No calculation was performed.');
+        return;
+      }
+
+      if (!(alpha > 0 && alpha < 1)) {
+        clearOneOutputs();
+        setMessage(msg, 'Alpha must be between 0 and 1.');
+        return;
+      }
+
+      const se = sd / Math.sqrt(n);
+
+      if (!Number.isFinite(se) || se <= 0) {
+        clearOneOutputs();
+        setMessage(msg, 'Standard error is zero or invalid. Please check Sample SD and Sample Size.');
+        dEl.textContent = 'Unable to determine final decision.';
+        dInlineEl.textContent = 'Unable to determine';
+        return;
+      }
+
+      const z = (sampleMean - benchmarkMean) / se;
+      const p = twoTailedPFromZ(z);
+
+      let decision = 'No significant difference';
+      if (p < alpha) {
+        if (sampleMean > benchmarkMean) {
+          decision = 'Sample mean is significantly higher';
+        } else if (sampleMean < benchmarkMean) {
+          decision = 'Sample mean is significantly lower';
+        }
+      }
+
+      seEl.textContent = formatNumber(se);
+      zEl.textContent = formatNumber(z);
+      pEl.textContent = formatPValue(p);
+      dInlineEl.textContent = decision;
+      dEl.textContent = decision;
+    }
+
+    function updateTwoSample() {
+      const mean1 = parseNum('two-mean1');
+      const mean2 = parseNum('two-mean2');
+      const sd1 = parseNum('two-sd1');
+      const sd2 = parseNum('two-sd2');
+      const n1 = parseNum('two-n1');
+      const n2 = parseNum('two-n2');
+      const alpha = parseNum('two-alpha');
+
+      const msg = document.getElementById('msg-two');
+      const seEl = document.getElementById('two-se');
+      const zEl = document.getElementById('two-z');
+      const pEl = document.getElementById('two-p');
+      const dInlineEl = document.getElementById('two-decision-inline');
+      const dEl = document.getElementById('two-decision');
+
+      setMessage(msg, '');
+
+      const values = [mean1, mean2, sd1, sd2, n1, n2, alpha];
+      const allEntered = values.every(v => v !== null);
+
+      if (!allEntered) {
+        clearTwoOutputs();
+        setMessage(msg, 'Please enter all required numeric values.');
+        return;
+      }
+
+      if (sd1 < 0 || sd2 < 0) {
+        clearTwoOutputs();
+        setMessage(msg, 'SD 1 and SD 2 must be 0 or greater.');
+        return;
+      }
+
+      if (!Number.isInteger(n1) || n1 <= 0 || !Number.isInteger(n2) || n2 <= 0) {
+        clearTwoOutputs();
+        setMessage(msg, 'Sample Size 1 and Sample Size 2 must be positive integers.');
+        return;
+      }
+
+      if (n1 < 30 || n2 < 30) {
+        clearTwoOutputs();
+        showModal('Both Sample Size 1 and Sample Size 2 must be at least 30 for this simplified Z test template. No calculation was performed.');
+        return;
+      }
+
+      if (!(alpha > 0 && alpha < 1)) {
+        clearTwoOutputs();
+        setMessage(msg, 'Alpha must be between 0 and 1.');
+        return;
+      }
+
+      const se = Math.sqrt((sd1 * sd1 / n1) + (sd2 * sd2 / n2));
+
+      if (!Number.isFinite(se) || se <= 0) {
+        clearTwoOutputs();
+        setMessage(msg, 'Standard error is zero or invalid. Please check SDs and sample sizes.');
+        dEl.textContent = 'Unable to determine final decision.';
+        dInlineEl.textContent = 'Unable to determine';
+        return;
+      }
+
+      const z = (mean1 - mean2) / se;
+      const p = twoTailedPFromZ(z);
+
+      let decision = 'No significant difference';
+      if (p < alpha) {
+        if (mean1 > mean2) {
+          decision = 'Mean 1 significantly higher';
+        } else if (mean2 > mean1) {
+          decision = 'Mean 2 significantly higher';
+        }
+      }
+
+      seEl.textContent = formatNumber(se);
+      zEl.textContent = formatNumber(z);
+      pEl.textContent = formatPValue(p);
+      dInlineEl.textContent = decision;
+      dEl.textContent = decision;
+    }
+
+    function clearInputs(ids, resultIds, decisionId, inlineDecisionId, msgId) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (id.toLowerCase().includes('alpha')) {
+          el.value = '0.05';
+        } else {
+          el.value = '';
+        }
+      });
+
+      resultIds.forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+
+      document.getElementById(decisionId).textContent = 'Click Calculate to view the result.';
+      document.getElementById(inlineDecisionId).textContent = '—';
+      setMessage(document.getElementById(msgId), '');
+    }
+
+    document.getElementById('calc-one').addEventListener('click', updateOneSample);
+    document.getElementById('calc-two').addEventListener('click', updateTwoSample);
+
+    document.getElementById('clear-one').addEventListener('click', () => {
+      clearInputs(
+        ['one-sample-mean', 'one-benchmark-mean', 'one-sd', 'one-n', 'one-alpha'],
+        ['one-se', 'one-z', 'one-p'],
+        'one-decision',
+        'one-decision-inline',
+        'msg-one'
+      );
+    });
+
+    document.getElementById('clear-two').addEventListener('click', () => {
+      clearInputs(
+        ['two-mean1', 'two-mean2', 'two-sd1', 'two-sd2', 'two-n1', 'two-n2', 'two-alpha'],
+        ['two-se', 'two-z', 'two-p'],
+        'two-decision',
+        'two-decision-inline',
+        'msg-two'
+      );
+    });
+
+    togglePanels();
+  </script>
+</body>
+</html>
