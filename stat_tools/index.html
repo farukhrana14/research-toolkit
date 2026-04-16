@@ -102,12 +102,14 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      text-decoration: none;
-      color: inherit;
+    }
+
+    .card-link {
+      cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }
 
-    .card:hover {
+    .card-link:hover {
       transform: translateY(-2px);
       border-color: #bfd0e4;
       box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
@@ -152,6 +154,35 @@
       color: var(--coming-text);
     }
 
+    .card-tools {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .card-tools-label {
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .card-tools a {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .card-tools a:hover {
+      color: #163b5c;
+    }
+
+    .card-footer {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
     .page-note {
       margin-top: 28px;
       text-align: center;
@@ -186,6 +217,10 @@
       .hero p {
         font-size: 15px;
       }
+
+      .card-footer {
+        margin-top: 14px;
+      }
     }
   </style>
 </head>
@@ -199,21 +234,30 @@
       <h1>Statistical Analysis Tools</h1>
       <p>
         Simple academic tools for descriptive and inferential analysis in research.
-        Start with the Z Test Decision Tool; other tools will be activated later.
+        Start with the Z Test Decision Tool or use the Z-table for cumulative
+        probabilities and critical values.
       </p>
     </header>
 
     <main class="grid">
-      <a class="card" href="/stat_tools/z_test.html">
+      <div class="card card-link" onclick="window.location.href='/stat_tools/z_test.html'" role="link" tabindex="0" onkeydown="if(event.key==='Enter' || event.key===' '){ window.location.href='/stat_tools/z_test.html'; }">
         <div>
           <h2>Z Test Decision Tool</h2>
           <p>
             Perform one-sample and two-sample Z-based mean comparison with clear
             decision output for classroom and research training use.
           </p>
+
+          <div class="card-tools">
+            <span class="card-tools-label">Also available:</span>
+            <a href="/stat_tools/z_table.html" onclick="event.stopPropagation()">Z-table</a>
+          </div>
         </div>
-        <span class="status live">Live</span>
-      </a>
+
+        <div class="card-footer">
+          <span class="status live">Live</span>
+        </div>
+      </div>
 
       <div class="card-disabled" aria-disabled="true">
         <div>
@@ -223,7 +267,9 @@
             classroom applications.
           </p>
         </div>
-        <span class="status coming">Coming Soon</span>
+        <div class="card-footer">
+          <span class="status coming">Coming Soon</span>
+        </div>
       </div>
 
       <div class="card-disabled" aria-disabled="true">
@@ -234,7 +280,9 @@
             clean, student-friendly output.
           </p>
         </div>
-        <span class="status coming">Coming Soon</span>
+        <div class="card-footer">
+          <span class="status coming">Coming Soon</span>
+        </div>
       </div>
 
       <div class="card-disabled" aria-disabled="true">
@@ -245,7 +293,9 @@
             and frequency-oriented outputs.
           </p>
         </div>
-        <span class="status coming">Coming Soon</span>
+        <div class="card-footer">
+          <span class="status coming">Coming Soon</span>
+        </div>
       </div>
 
       <div class="card-disabled" aria-disabled="true">
@@ -256,7 +306,9 @@
             for research instruments.
           </p>
         </div>
-        <span class="status coming">Coming Soon</span>
+        <div class="card-footer">
+          <span class="status coming">Coming Soon</span>
+        </div>
       </div>
 
       <div class="card-disabled" aria-disabled="true">
@@ -267,7 +319,9 @@
             research analysis.
           </p>
         </div>
-        <span class="status coming">Coming Soon</span>
+        <div class="card-footer">
+          <span class="status coming">Coming Soon</span>
+        </div>
       </div>
     </main>
 

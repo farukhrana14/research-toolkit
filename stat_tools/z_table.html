@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Standard Normal Z-Table</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #dde3ec;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #102030;
+  }
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 28px 32px 32px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.16);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    border-bottom: 2px solid #13263d;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.15;
+    color: #13263d;
+  }
+  h1 span { color: #1b4f93; }
+  .subtitle {
+    margin-top: 8px;
+    color: #5a6b80;
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+  .legend {
+    background: #e6effb;
+    border: 1px solid #b3c7e6;
+    padding: 12px 14px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    display: grid;
+    gap: 8px;
+    font-size: 0.92rem;
+  }
+  .mono {
+    display: inline-block;
+    font-family: "Courier New", monospace;
+    background: #13263d;
+    color: #dbe9ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    background: #13263d;
+    color: #fff;
+    border: 1px solid #2d425d;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+  thead th:first-child {
+    background: #1b4f93;
+    min-width: 52px;
+  }
+  tbody td {
+    border: 1px solid #d1dae6;
+    padding: 5px 4px;
+    text-align: center;
+    font-family: "Courier New", monospace;
+    font-size: 0.80rem;
+  }
+  tbody tr.even td { background: #f7faff; }
+  .rowhead {
+    background: #e4eefb !important;
+    color: #1b4f93;
+    font-weight: 700;
+    font-family: Georgia, serif;
+  }
+  .zero-row td {
+    background: #eef8f0 !important;
+  }
+  .zero-row .rowhead {
+    background: #d9efde !important;
+    color: #1c6a3f;
+  }
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 20px;
+  }
+  .card {
+    border: 1px solid #c8d5e4;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .card h2 {
+    margin: 0;
+    padding: 10px 14px;
+    background: #13263d;
+    color: white;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+  .card table thead th {
+    background: #1b4f93;
+    font-size: 0.78rem;
+  }
+  .card table td {
+    font-size: 0.80rem;
+    font-family: Georgia, serif;
+    padding: 8px 8px;
+  }
+  .note {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: #5b6a7b;
+    font-style: italic;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #d5dde8;
+    padding-top: 10px;
+  }
+  .curve-wrap {
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .curve-wrap p {
+    margin: 8px 0 0;
+    font-size: 0.82rem;
+    color: #55657a;
+    font-style: italic;
+  }
+  @media (max-width: 860px) {
+    .top, .bottom-grid { grid-template-columns: 1fr; display: grid; }
+    .lookup-box { grid-template-columns: 1fr; }
+  }
+
+  .lookup-box {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 220px)) 1fr;
+    gap: 12px;
+    align-items: start;
+    background: #f6f9fe;
+    border: 1px solid #cad7e8;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 18px;
+  }
+  .field label {
+    display: block;
+    min-height: 24px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #23456f;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #aebfd5;
+    border-radius: 4px;
+    font-size: 0.98rem;
+    font-family: "Courier New", monospace;
+  }
+  .field small {
+    display: block;
+    margin-top: 6px;
+    color: #627287;
+    font-size: 0.76rem;
+  }
+  .lookup-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    align-self: start;
+    padding-top: 30px;
+  }
+  .btn {
+    border: none;
+    border-radius: 4px;
+    padding: 11px 18px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  .btn-find {
+    background: #1b4f93;
+    color: #fff;
+  }
+  .btn-clear {
+    background: #dbe6f5;
+    color: #173c6b;
+  }
+  .lookup-status {
+    grid-column: 1 / -1;
+    font-size: 0.84rem;
+    color: #57687d;
+  }
+  .highlight-cell {
+    background: #ffe598 !important;
+    color: #6d3b00;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 2px #f0b400;
+  }
+  .highlight-rowhead {
+    background: #ffd47b !important;
+    color: #6d3b00 !important;
+  }
+  .highlight-colhead {
+    background: #f0b400 !important;
+    color: #13263d !important;
+  }
+  .highlight-band {
+    background: #fff6d8 !important;
+  }
+
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>Standard Normal Distribution<br><span>Z-Table</span></h1>
+      <div class="subtitle">Cumulative probability from left to z &middot; <strong>P(Z &le; z)</strong></div>
+    </div>
+    <div class="curve-wrap">
+      <svg width="280" height="140" viewBox="0 0 280 140" aria-label="Normal distribution with shaded cumulative area">
+        <rect x="0" y="0" width="280" height="140" fill="#ffffff"/>
+        <line x1="20" y1="120" x2="260" y2="120" stroke="#c4cfdb" stroke-width="1"/>
+        <line x1="140" y1="18" x2="140" y2="120" stroke="#8d97a4" stroke-dasharray="4 3" />
+        <path d="M 28 119
+                 C 54 119, 72 112, 92 90
+                 C 112 68, 124 30, 140 20
+                 C 156 30, 168 68, 188 90
+                 C 208 112, 226 119, 252 119" 
+              fill="none" stroke="#1b4f93" stroke-width="3"/>
+        <path d="M 28 119
+                 C 54 119, 72 112, 92 90
+                 C 112 68, 124 30, 140 20
+                 C 156 30, 168 68, 188 90
+                 L 188 120
+                 L 28 120 Z"
+              fill="#1b4f93" opacity="0.18"/>
+        <line x1="188" y1="42" x2="188" y2="120" stroke="#b23b3b" stroke-width="2" stroke-dasharray="5 3"/>
+        <text x="78" y="78" font-size="14" fill="#1b4f93" font-style="italic">Covered area</text>
+        <text x="194" y="36" font-size="14" fill="#b23b3b" font-weight="bold">Measured z</text>
+        <text x="136" y="133" font-size="12" fill="#356a46">0</text>
+        <text x="184" y="133" font-size="12" fill="#b23b3b" font-weight="bold">z</text>
+      </svg>
+      <p>Reference: shaded region is the table value; red line marks the measured z-score.</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div><strong>How to read:</strong> Row = first two digits of z, column = hundredths digit.</div>
+    <div><strong>Example:</strong> z = 1.23 &rarr; row <strong>1.2</strong>, column <strong>.03</strong> &rarr; <strong>0.8907</strong>.</div>
+    <div><span class="mono">z = (x - &mu;) / &sigma;</span></div>
+  </div>
+
+
+  <div class="lookup-box">
+    <div class="field">
+      <label for="areaInput">Area value</label>
+      <input id="areaInput" type="number" min="0.0003" max="0.9998" step="0.0001" placeholder="e.g. 0.9750">
+      <small>Use left-tail cumulative area P(Z ≤ z).</small>
+    </div>
+    <div class="field">
+      <label for="zInput">Z value</label>
+      <input id="zInput" type="number" min="-3.49" max="3.49" step="0.01" placeholder="e.g. 1.96">
+      <small>Searches the nearest hundredth shown in the table.</small>
+    </div>
+    <div class="lookup-actions">
+      <button class="btn btn-find" id="findBtn" type="button">Find</button>
+      <button class="btn btn-clear" id="clearBtn" type="button">Clear</button>
+    </div>
+    <div class="lookup-status" id="lookupStatus">Enter an area or a z value, then click Find.</div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="zTable" aria-label="Standard normal cumulative distribution table">
+      <thead>
+        <tr>
+          <th>Z</th>
+          <th>.00</th><th>.01</th><th>.02</th><th>.03</th><th>.04</th>
+          <th>.05</th><th>.06</th><th>.07</th><th>.08</th><th>.09</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="even"><td class="rowhead">-3.4</td><td>0.0003</td><td>0.0003</td><td>0.0004</td><td>0.0004</td><td>0.0004</td><td>0.0004</td><td>0.0004</td><td>0.0004</td><td>0.0005</td><td>0.0005</td></tr>
+<tr class="odd"><td class="rowhead">-3.3</td><td>0.0005</td><td>0.0005</td><td>0.0005</td><td>0.0005</td><td>0.0006</td><td>0.0006</td><td>0.0006</td><td>0.0006</td><td>0.0006</td><td>0.0007</td></tr>
+<tr class="even"><td class="rowhead">-3.2</td><td>0.0007</td><td>0.0007</td><td>0.0007</td><td>0.0008</td><td>0.0008</td><td>0.0008</td><td>0.0008</td><td>0.0009</td><td>0.0009</td><td>0.0009</td></tr>
+<tr class="odd"><td class="rowhead">-3.1</td><td>0.0010</td><td>0.0010</td><td>0.0010</td><td>0.0011</td><td>0.0011</td><td>0.0011</td><td>0.0012</td><td>0.0012</td><td>0.0013</td><td>0.0013</td></tr>
+<tr class="even"><td class="rowhead">-3.0</td><td>0.0013</td><td>0.0014</td><td>0.0014</td><td>0.0015</td><td>0.0015</td><td>0.0016</td><td>0.0016</td><td>0.0017</td><td>0.0018</td><td>0.0018</td></tr>
+<tr class="odd"><td class="rowhead">-2.9</td><td>0.0019</td><td>0.0019</td><td>0.0020</td><td>0.0021</td><td>0.0021</td><td>0.0022</td><td>0.0023</td><td>0.0023</td><td>0.0024</td><td>0.0025</td></tr>
+<tr class="even"><td class="rowhead">-2.8</td><td>0.0026</td><td>0.0026</td><td>0.0027</td><td>0.0028</td><td>0.0029</td><td>0.0030</td><td>0.0031</td><td>0.0032</td><td>0.0033</td><td>0.0034</td></tr>
+<tr class="odd"><td class="rowhead">-2.7</td><td>0.0035</td><td>0.0036</td><td>0.0037</td><td>0.0038</td><td>0.0039</td><td>0.0040</td><td>0.0041</td><td>0.0043</td><td>0.0044</td><td>0.0045</td></tr>
+<tr class="even"><td class="rowhead">-2.6</td><td>0.0047</td><td>0.0048</td><td>0.0049</td><td>0.0051</td><td>0.0052</td><td>0.0054</td><td>0.0055</td><td>0.0057</td><td>0.0059</td><td>0.0060</td></tr>
+<tr class="odd"><td class="rowhead">-2.5</td><td>0.0062</td><td>0.0064</td><td>0.0066</td><td>0.0068</td><td>0.0069</td><td>0.0071</td><td>0.0073</td><td>0.0075</td><td>0.0078</td><td>0.0080</td></tr>
+<tr class="even"><td class="rowhead">-2.4</td><td>0.0082</td><td>0.0084</td><td>0.0087</td><td>0.0089</td><td>0.0091</td><td>0.0094</td><td>0.0096</td><td>0.0099</td><td>0.0102</td><td>0.0104</td></tr>
+<tr class="odd"><td class="rowhead">-2.3</td><td>0.0107</td><td>0.0110</td><td>0.0113</td><td>0.0116</td><td>0.0119</td><td>0.0122</td><td>0.0125</td><td>0.0129</td><td>0.0132</td><td>0.0136</td></tr>
+<tr class="even"><td class="rowhead">-2.2</td><td>0.0139</td><td>0.0143</td><td>0.0146</td><td>0.0150</td><td>0.0154</td><td>0.0158</td><td>0.0162</td><td>0.0166</td><td>0.0170</td><td>0.0174</td></tr>
+<tr class="odd"><td class="rowhead">-2.1</td><td>0.0179</td><td>0.0183</td><td>0.0188</td><td>0.0192</td><td>0.0197</td><td>0.0202</td><td>0.0207</td><td>0.0212</td><td>0.0217</td><td>0.0222</td></tr>
+<tr class="even"><td class="rowhead">-2.0</td><td>0.0228</td><td>0.0233</td><td>0.0239</td><td>0.0244</td><td>0.0250</td><td>0.0256</td><td>0.0262</td><td>0.0268</td><td>0.0274</td><td>0.0281</td></tr>
+<tr class="odd"><td class="rowhead">-1.9</td><td>0.0287</td><td>0.0294</td><td>0.0301</td><td>0.0307</td><td>0.0314</td><td>0.0322</td><td>0.0329</td><td>0.0336</td><td>0.0344</td><td>0.0351</td></tr>
+<tr class="even"><td class="rowhead">-1.8</td><td>0.0359</td><td>0.0367</td><td>0.0375</td><td>0.0384</td><td>0.0392</td><td>0.0401</td><td>0.0409</td><td>0.0418</td><td>0.0427</td><td>0.0436</td></tr>
+<tr class="odd"><td class="rowhead">-1.7</td><td>0.0446</td><td>0.0455</td><td>0.0465</td><td>0.0475</td><td>0.0485</td><td>0.0495</td><td>0.0505</td><td>0.0516</td><td>0.0526</td><td>0.0537</td></tr>
+<tr class="even"><td class="rowhead">-1.6</td><td>0.0548</td><td>0.0559</td><td>0.0571</td><td>0.0582</td><td>0.0594</td><td>0.0606</td><td>0.0618</td><td>0.0630</td><td>0.0643</td><td>0.0655</td></tr>
+<tr class="odd"><td class="rowhead">-1.5</td><td>0.0668</td><td>0.0681</td><td>0.0694</td><td>0.0708</td><td>0.0721</td><td>0.0735</td><td>0.0749</td><td>0.0764</td><td>0.0778</td><td>0.0793</td></tr>
+<tr class="even"><td class="rowhead">-1.4</td><td>0.0808</td><td>0.0823</td><td>0.0838</td><td>0.0853</td><td>0.0869</td><td>0.0885</td><td>0.0901</td><td>0.0918</td><td>0.0934</td><td>0.0951</td></tr>
+<tr class="odd"><td class="rowhead">-1.3</td><td>0.0968</td><td>0.0985</td><td>0.1003</td><td>0.1020</td><td>0.1038</td><td>0.1056</td><td>0.1075</td><td>0.1093</td><td>0.1112</td><td>0.1131</td></tr>
+<tr class="even"><td class="rowhead">-1.2</td><td>0.1151</td><td>0.1170</td><td>0.1190</td><td>0.1210</td><td>0.1230</td><td>0.1251</td><td>0.1271</td><td>0.1292</td><td>0.1314</td><td>0.1335</td></tr>
+<tr class="odd"><td class="rowhead">-1.1</td><td>0.1357</td><td>0.1379</td><td>0.1401</td><td>0.1423</td><td>0.1446</td><td>0.1469</td><td>0.1492</td><td>0.1515</td><td>0.1539</td><td>0.1562</td></tr>
+<tr class="even"><td class="rowhead">-1.0</td><td>0.1587</td><td>0.1611</td><td>0.1635</td><td>0.1660</td><td>0.1685</td><td>0.1711</td><td>0.1736</td><td>0.1762</td><td>0.1788</td><td>0.1814</td></tr>
+<tr class="odd"><td class="rowhead">-0.9</td><td>0.1841</td><td>0.1867</td><td>0.1894</td><td>0.1922</td><td>0.1949</td><td>0.1977</td><td>0.2005</td><td>0.2033</td><td>0.2061</td><td>0.2090</td></tr>
+<tr class="even"><td class="rowhead">-0.8</td><td>0.2119</td><td>0.2148</td><td>0.2177</td><td>0.2206</td><td>0.2236</td><td>0.2266</td><td>0.2296</td><td>0.2327</td><td>0.2358</td><td>0.2389</td></tr>
+<tr class="odd"><td class="rowhead">-0.7</td><td>0.2420</td><td>0.2451</td><td>0.2483</td><td>0.2514</td><td>0.2546</td><td>0.2578</td><td>0.2611</td><td>0.2643</td><td>0.2676</td><td>0.2709</td></tr>
+<tr class="even"><td class="rowhead">-0.6</td><td>0.2743</td><td>0.2776</td><td>0.2810</td><td>0.2843</td><td>0.2877</td><td>0.2912</td><td>0.2946</td><td>0.2981</td><td>0.3015</td><td>0.3050</td></tr>
+<tr class="odd"><td class="rowhead">-0.5</td><td>0.3085</td><td>0.3121</td><td>0.3156</td><td>0.3192</td><td>0.3228</td><td>0.3264</td><td>0.3300</td><td>0.3336</td><td>0.3372</td><td>0.3409</td></tr>
+<tr class="even"><td class="rowhead">-0.4</td><td>0.3446</td><td>0.3483</td><td>0.3520</td><td>0.3557</td><td>0.3594</td><td>0.3632</td><td>0.3669</td><td>0.3707</td><td>0.3745</td><td>0.3783</td></tr>
+<tr class="odd"><td class="rowhead">-0.3</td><td>0.3821</td><td>0.3859</td><td>0.3897</td><td>0.3936</td><td>0.3974</td><td>0.4013</td><td>0.4052</td><td>0.4090</td><td>0.4129</td><td>0.4168</td></tr>
+<tr class="even"><td class="rowhead">-0.2</td><td>0.4207</td><td>0.4247</td><td>0.4286</td><td>0.4325</td><td>0.4364</td><td>0.4404</td><td>0.4443</td><td>0.4483</td><td>0.4522</td><td>0.4562</td></tr>
+<tr class="odd"><td class="rowhead">-0.1</td><td>0.4602</td><td>0.4641</td><td>0.4681</td><td>0.4721</td><td>0.4761</td><td>0.4801</td><td>0.4840</td><td>0.4880</td><td>0.4920</td><td>0.4960</td></tr>
+<tr class="even"><td class="rowhead">0.0</td><td>0.5000</td><td>0.5040</td><td>0.5080</td><td>0.5120</td><td>0.5160</td><td>0.5199</td><td>0.5239</td><td>0.5279</td><td>0.5319</td><td>0.5359</td></tr>
+<tr class="odd"><td class="rowhead">0.1</td><td>0.5398</td><td>0.5438</td><td>0.5478</td><td>0.5517</td><td>0.5557</td><td>0.5596</td><td>0.5636</td><td>0.5675</td><td>0.5714</td><td>0.5753</td></tr>
+<tr class="even"><td class="rowhead">0.2</td><td>0.5793</td><td>0.5832</td><td>0.5871</td><td>0.5910</td><td>0.5948</td><td>0.5987</td><td>0.6026</td><td>0.6064</td><td>0.6103</td><td>0.6141</td></tr>
+<tr class="odd"><td class="rowhead">0.3</td><td>0.6179</td><td>0.6217</td><td>0.6255</td><td>0.6293</td><td>0.6331</td><td>0.6368</td><td>0.6406</td><td>0.6443</td><td>0.6480</td><td>0.6517</td></tr>
+<tr class="even"><td class="rowhead">0.4</td><td>0.6554</td><td>0.6591</td><td>0.6628</td><td>0.6664</td><td>0.6700</td><td>0.6736</td><td>0.6772</td><td>0.6808</td><td>0.6844</td><td>0.6879</td></tr>
+<tr class="odd"><td class="rowhead">0.5</td><td>0.6915</td><td>0.6950</td><td>0.6985</td><td>0.7019</td><td>0.7054</td><td>0.7088</td><td>0.7123</td><td>0.7157</td><td>0.7190</td><td>0.7224</td></tr>
+<tr class="even"><td class="rowhead">0.6</td><td>0.7257</td><td>0.7291</td><td>0.7324</td><td>0.7357</td><td>0.7389</td><td>0.7422</td><td>0.7454</td><td>0.7486</td><td>0.7517</td><td>0.7549</td></tr>
+<tr class="odd"><td class="rowhead">0.7</td><td>0.7580</td><td>0.7611</td><td>0.7642</td><td>0.7673</td><td>0.7704</td><td>0.7734</td><td>0.7764</td><td>0.7794</td><td>0.7823</td><td>0.7852</td></tr>
+<tr class="even"><td class="rowhead">0.8</td><td>0.7881</td><td>0.7910</td><td>0.7939</td><td>0.7967</td><td>0.7995</td><td>0.8023</td><td>0.8051</td><td>0.8078</td><td>0.8106</td><td>0.8133</td></tr>
+<tr class="odd"><td class="rowhead">0.9</td><td>0.8159</td><td>0.8186</td><td>0.8212</td><td>0.8238</td><td>0.8264</td><td>0.8289</td><td>0.8315</td><td>0.8340</td><td>0.8365</td><td>0.8389</td></tr>
+<tr class="even"><td class="rowhead">1.0</td><td>0.8413</td><td>0.8438</td><td>0.8461</td><td>0.8485</td><td>0.8508</td><td>0.8531</td><td>0.8554</td><td>0.8577</td><td>0.8599</td><td>0.8621</td></tr>
+<tr class="odd"><td class="rowhead">1.1</td><td>0.8643</td><td>0.8665</td><td>0.8686</td><td>0.8708</td><td>0.8729</td><td>0.8749</td><td>0.8770</td><td>0.8790</td><td>0.8810</td><td>0.8830</td></tr>
+<tr class="even"><td class="rowhead">1.2</td><td>0.8849</td><td>0.8869</td><td>0.8888</td><td>0.8907</td><td>0.8925</td><td>0.8944</td><td>0.8962</td><td>0.8980</td><td>0.8997</td><td>0.9015</td></tr>
+<tr class="odd"><td class="rowhead">1.3</td><td>0.9032</td><td>0.9049</td><td>0.9066</td><td>0.9082</td><td>0.9099</td><td>0.9115</td><td>0.9131</td><td>0.9147</td><td>0.9162</td><td>0.9177</td></tr>
+<tr class="even"><td class="rowhead">1.4</td><td>0.9192</td><td>0.9207</td><td>0.9222</td><td>0.9236</td><td>0.9251</td><td>0.9265</td><td>0.9279</td><td>0.9292</td><td>0.9306</td><td>0.9319</td></tr>
+<tr class="odd"><td class="rowhead">1.5</td><td>0.9332</td><td>0.9345</td><td>0.9357</td><td>0.9370</td><td>0.9382</td><td>0.9394</td><td>0.9406</td><td>0.9418</td><td>0.9429</td><td>0.9441</td></tr>
+<tr class="even"><td class="rowhead">1.6</td><td>0.9452</td><td>0.9463</td><td>0.9474</td><td>0.9484</td><td>0.9495</td><td>0.9505</td><td>0.9515</td><td>0.9525</td><td>0.9535</td><td>0.9545</td></tr>
+<tr class="odd"><td class="rowhead">1.7</td><td>0.9554</td><td>0.9564</td><td>0.9573</td><td>0.9582</td><td>0.9591</td><td>0.9599</td><td>0.9608</td><td>0.9616</td><td>0.9625</td><td>0.9633</td></tr>
+<tr class="even"><td class="rowhead">1.8</td><td>0.9641</td><td>0.9649</td><td>0.9656</td><td>0.9664</td><td>0.9671</td><td>0.9678</td><td>0.9686</td><td>0.9693</td><td>0.9699</td><td>0.9706</td></tr>
+<tr class="odd"><td class="rowhead">1.9</td><td>0.9713</td><td>0.9719</td><td>0.9726</td><td>0.9732</td><td>0.9738</td><td>0.9744</td><td>0.9750</td><td>0.9756</td><td>0.9761</td><td>0.9767</td></tr>
+<tr class="even"><td class="rowhead">2.0</td><td>0.9772</td><td>0.9778</td><td>0.9783</td><td>0.9788</td><td>0.9793</td><td>0.9798</td><td>0.9803</td><td>0.9808</td><td>0.9812</td><td>0.9817</td></tr>
+<tr class="odd"><td class="rowhead">2.1</td><td>0.9821</td><td>0.9826</td><td>0.9830</td><td>0.9834</td><td>0.9838</td><td>0.9842</td><td>0.9846</td><td>0.9850</td><td>0.9854</td><td>0.9857</td></tr>
+<tr class="even"><td class="rowhead">2.2</td><td>0.9861</td><td>0.9864</td><td>0.9868</td><td>0.9871</td><td>0.9875</td><td>0.9878</td><td>0.9881</td><td>0.9884</td><td>0.9887</td><td>0.9890</td></tr>
+<tr class="odd"><td class="rowhead">2.3</td><td>0.9893</td><td>0.9896</td><td>0.9898</td><td>0.9901</td><td>0.9904</td><td>0.9906</td><td>0.9909</td><td>0.9911</td><td>0.9913</td><td>0.9916</td></tr>
+<tr class="even"><td class="rowhead">2.4</td><td>0.9918</td><td>0.9920</td><td>0.9922</td><td>0.9925</td><td>0.9927</td><td>0.9929</td><td>0.9931</td><td>0.9932</td><td>0.9934</td><td>0.9936</td></tr>
+<tr class="odd"><td class="rowhead">2.5</td><td>0.9938</td><td>0.9940</td><td>0.9941</td><td>0.9943</td><td>0.9945</td><td>0.9946</td><td>0.9948</td><td>0.9949</td><td>0.9951</td><td>0.9952</td></tr>
+<tr class="even"><td class="rowhead">2.6</td><td>0.9953</td><td>0.9955</td><td>0.9956</td><td>0.9957</td><td>0.9959</td><td>0.9960</td><td>0.9961</td><td>0.9962</td><td>0.9963</td><td>0.9964</td></tr>
+<tr class="odd"><td class="rowhead">2.7</td><td>0.9965</td><td>0.9966</td><td>0.9967</td><td>0.9968</td><td>0.9969</td><td>0.9970</td><td>0.9971</td><td>0.9972</td><td>0.9973</td><td>0.9974</td></tr>
+<tr class="even"><td class="rowhead">2.8</td><td>0.9974</td><td>0.9975</td><td>0.9976</td><td>0.9977</td><td>0.9977</td><td>0.9978</td><td>0.9979</td><td>0.9979</td><td>0.9980</td><td>0.9981</td></tr>
+<tr class="odd"><td class="rowhead">2.9</td><td>0.9981</td><td>0.9982</td><td>0.9982</td><td>0.9983</td><td>0.9984</td><td>0.9984</td><td>0.9985</td><td>0.9985</td><td>0.9986</td><td>0.9986</td></tr>
+<tr class="even"><td class="rowhead">3.0</td><td>0.9987</td><td>0.9987</td><td>0.9987</td><td>0.9988</td><td>0.9988</td><td>0.9989</td><td>0.9989</td><td>0.9989</td><td>0.9990</td><td>0.9990</td></tr>
+<tr class="odd"><td class="rowhead">3.1</td><td>0.9990</td><td>0.9991</td><td>0.9991</td><td>0.9991</td><td>0.9992</td><td>0.9992</td><td>0.9992</td><td>0.9992</td><td>0.9993</td><td>0.9993</td></tr>
+<tr class="even"><td class="rowhead">3.2</td><td>0.9993</td><td>0.9993</td><td>0.9994</td><td>0.9994</td><td>0.9994</td><td>0.9994</td><td>0.9994</td><td>0.9995</td><td>0.9995</td><td>0.9995</td></tr>
+<tr class="odd"><td class="rowhead">3.3</td><td>0.9995</td><td>0.9995</td><td>0.9995</td><td>0.9996</td><td>0.9996</td><td>0.9996</td><td>0.9996</td><td>0.9996</td><td>0.9996</td><td>0.9997</td></tr>
+<tr class="even"><td class="rowhead">3.4</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9997</td><td>0.9998</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="card">
+      <h2>Frequently Used Z Values</h2>
+      <table>
+        <thead>
+          <tr><th>P(Z &le; z)</th><th>Z Value</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0.8000</td><td>0.842</td><td>80th percentile</td></tr>
+          <tr><td>0.8413</td><td>1.000</td><td>1&sigma; above mean</td></tr>
+          <tr><td>0.9000</td><td>1.282</td><td>90th percentile</td></tr>
+          <tr><td>0.9500</td><td>1.645</td><td>95th percentile</td></tr>
+          <tr><td>0.9750</td><td>1.960</td><td>97.5th percentile</td></tr>
+          <tr><td>0.9772</td><td>2.000</td><td>2&sigma; above mean</td></tr>
+          <tr><td>0.9900</td><td>2.326</td><td>99th percentile</td></tr>
+          <tr><td>0.9950</td><td>2.576</td><td>99.5th percentile</td></tr>
+          <tr><td>0.9987</td><td>3.000</td><td>3&sigma; above mean</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Confidence Interval Critical Values (Z*)</h2>
+      <table>
+        <thead>
+          <tr><th>Conf. Level</th><th>&alpha;</th><th>&alpha;/2</th><th>Critical z</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>80%</td><td>0.20</td><td>0.100</td><td><strong>&plusmn;1.282</strong></td></tr>
+<tr><td>85%</td><td>0.15</td><td>0.075</td><td><strong>&plusmn;1.440</strong></td></tr>
+<tr><td>90%</td><td>0.10</td><td>0.050</td><td><strong>&plusmn;1.645</strong></td></tr>
+<tr><td>95%</td><td>0.05</td><td>0.025</td><td><strong>&plusmn;1.960</strong></td></tr>
+<tr><td>98%</td><td>0.02</td><td>0.010</td><td><strong>&plusmn;2.326</strong></td></tr>
+<tr><td>99%</td><td>0.01</td><td>0.005</td><td><strong>&plusmn;2.576</strong></td></tr>
+<tr><td>99.9%</td><td>0.001</td><td>0.0005</td><td><strong>&plusmn;3.291</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="note">
+    <span>Standard normal cumulative table from left tail: <strong>P(Z &le; z)</strong>.</span>
+    <span>Generated mathematically from the normal CDF.</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  const table = document.getElementById('zTable');
+  const areaInput = document.getElementById('areaInput');
+  const zInput = document.getElementById('zInput');
+  const findBtn = document.getElementById('findBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const status = document.getElementById('lookupStatus');
+  const rows = Array.from(table.tBodies[0].rows);
+  const colHeads = Array.from(table.tHead.rows[0].cells);
+  const entries = [];
+
+  rows.forEach((row) => {
+    const rowBase = parseFloat(row.cells[0].textContent);
+    Array.from(row.cells).slice(1).forEach((cell, idx) => {
+      const colInc = idx / 100;
+      const z = Math.round((rowBase + colInc) * 100) / 100;
+      const area = parseFloat(cell.textContent);
+      cell.dataset.z = z.toFixed(2);
+      cell.dataset.area = area.toFixed(4);
+      cell.dataset.colIndex = String(idx + 1);
+      entries.push({ row, cell, colIndex: idx + 1, z, area });
+    });
+  });
+
+  function clearHighlights() {
+    table.querySelectorAll('.highlight-cell, .highlight-rowhead, .highlight-colhead, .highlight-band').forEach((el) => {
+      el.classList.remove('highlight-cell', 'highlight-rowhead', 'highlight-colhead', 'highlight-band');
+    });
+  }
+
+  function applyHighlight(match) {
+    clearHighlights();
+    match.cell.classList.add('highlight-cell');
+    match.row.cells[0].classList.add('highlight-rowhead');
+    colHeads[match.colIndex].classList.add('highlight-colhead');
+    Array.from(match.row.cells).slice(1).forEach((cell) => {
+      if (cell !== match.cell) cell.classList.add('highlight-band');
+    });
+    rows.forEach((row) => {
+      const cell = row.cells[match.colIndex];
+      if (cell && cell !== match.cell) cell.classList.add('highlight-band');
+    });
+    match.cell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+  }
+
+  function findByArea(area) {
+    let best = entries[0];
+    let bestDiff = Math.abs(entries[0].area - area);
+    entries.forEach((entry) => {
+      const diff = Math.abs(entry.area - area);
+      if (diff < bestDiff) {
+        best = entry;
+        bestDiff = diff;
+      }
+    });
+    return { match: best, diff: bestDiff };
+  }
+
+  function findByZ(z) {
+    const rounded = Math.round(z * 100) / 100;
+    const match = entries.find((entry) => entry.z === rounded);
+    if (!match) return null;
+    return { match, rounded };
+  }
+
+  function formatArea(value) {
+    return Number(value).toFixed(4);
+  }
+
+  function formatZ(value) {
+    return Number(value).toFixed(2);
+  }
+
+  function lookup() {
+    const areaRaw = areaInput.value.trim();
+    const zRaw = zInput.value.trim();
+
+    if (!areaRaw && !zRaw) {
+      status.textContent = 'Enter an area or a z value first.';
+      clearHighlights();
+      return;
+    }
+
+    if (zRaw) {
+      const z = parseFloat(zRaw);
+      if (Number.isNaN(z) || z < -3.49 || z > 3.49) {
+        status.textContent = 'Z must be between -3.49 and 3.49 for this table.';
+        clearHighlights();
+        return;
+      }
+      const result = findByZ(z);
+      if (!result) {
+        status.textContent = 'That z value is outside the displayed hundredths in this table.';
+        clearHighlights();
+        return;
+      }
+      applyHighlight(result.match);
+      zInput.value = formatZ(result.match.z);
+      areaInput.value = formatArea(result.match.area);
+      status.textContent = `Highlighted row ${result.match.row.cells[0].textContent} and column ${colHeads[result.match.colIndex].textContent} for z = ${formatZ(result.match.z)}; area = ${formatArea(result.match.area)}.`;
+      return;
+    }
+
+    const area = parseFloat(areaRaw);
+    if (Number.isNaN(area) || area < 0.0003 || area > 0.9998) {
+      status.textContent = 'Area must be between 0.0003 and 0.9998 for this table.';
+      clearHighlights();
+      return;
+    }
+    const result = findByArea(area);
+    applyHighlight(result.match);
+    areaInput.value = formatArea(result.match.area);
+    zInput.value = formatZ(result.match.z);
+    const exact = result.diff < 0.00005;
+    status.textContent = exact
+      ? `Exact table match found for area = ${formatArea(result.match.area)} at z = ${formatZ(result.match.z)}.`
+      : `Nearest table match found for area ${formatArea(area)}: z = ${formatZ(result.match.z)}, area = ${formatArea(result.match.area)}.`;
+  }
+
+  function clearAll() {
+    areaInput.value = '';
+    zInput.value = '';
+    status.textContent = 'Enter an area or a z value, then click Find.';
+    clearHighlights();
+  }
+
+  findBtn.addEventListener('click', lookup);
+  clearBtn.addEventListener('click', clearAll);
+  [areaInput, zInput].forEach((input) => {
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') lookup();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
