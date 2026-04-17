@@ -15,6 +15,10 @@
       --accent-soft: #eaf2fb;
       --danger: #b42318;
       --danger-soft: #fff3f2;
+      --info: #0f4c81;
+      --info-soft: #eef6ff;
+      --success: #0f766e;
+      --success-soft: #ecfdf5;
       --shadow: 0 8px 24px rgba(31, 42, 55, 0.08);
       --radius: 14px;
     }
@@ -33,7 +37,7 @@
       background: var(--bg);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .container {
@@ -149,6 +153,11 @@
       font-size: 15px;
     }
 
+    .field small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .actions {
       margin-top: 18px;
       display: flex;
@@ -213,16 +222,38 @@
       word-break: break-word;
     }
 
-    .decision {
-      margin-top: 14px;
+    .decision-stack {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .decision-card {
+      border: 1px solid #dbe5f0;
+      border-radius: 12px;
       padding: 14px 16px;
-      border-radius: 10px;
+      background: #fff;
+    }
+
+    .decision-heading {
+      font-size: 14px;
       font-weight: 700;
-      font-size: 18px;
-      background: #eef6ff;
-      border: 1px solid #cfe0f5;
       color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .decision-text {
+      font-size: 16px;
+      font-weight: 700;
       word-break: break-word;
+    }
+
+    .decision-text.reject {
+      color: var(--danger);
+    }
+
+    .decision-text.fail {
+      color: var(--info);
     }
 
     .message {
@@ -241,6 +272,38 @@
       background: #fff3f2;
       border: 1px solid #f3c7c2;
       color: var(--danger);
+    }
+
+    .notes-card {
+      margin: 22px 20px 20px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: var(--info-soft);
+      padding: 16px;
+    }
+
+    .notes-title {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: var(--accent);
+    }
+
+    .notes-card p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .notes-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: #fbfdff;
+      color: var(--muted);
+      font-size: 13px;
     }
 
     dialog.modal {
@@ -305,7 +368,9 @@
 
       .header,
       .topbar,
-      .panel {
+      .panel,
+      .notes-card,
+      .footer {
         padding-left: 14px;
         padding-right: 14px;
       }
@@ -322,8 +387,8 @@
         font-size: 16px;
       }
 
-      .decision {
-        font-size: 17px;
+      .decision-text {
+        font-size: 15px;
       }
 
       .actions {
@@ -397,6 +462,7 @@
             <div class="field">
               <label for="one-benchmark-mean">Benchmark Mean</label>
               <input type="number" id="one-benchmark-mean" step="any" inputmode="decimal" />
+              <small>This is the null-hypothesized benchmark value (μ₀).</small>
             </div>
           </div>
         </div>
@@ -415,20 +481,43 @@
               <div class="result-value" id="one-se">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Z statistic</span>
+              <span class="result-label">Z Statistic</span>
               <div class="result-value" id="one-z">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Two-tailed p-value</span>
-              <div class="result-value" id="one-p">—</div>
+              <span class="result-label">Right-tail p-value (H₁: μ &gt; μ₀)</span>
+              <div class="result-value" id="one-p-right">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Final decision</span>
-              <div class="result-value" id="one-decision-inline">—</div>
+              <span class="result-label">Left-tail p-value (H₁: μ &lt; μ₀)</span>
+              <div class="result-value" id="one-p-left">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Two-tail p-value (H₁: μ ≠ μ₀)</span>
+              <div class="result-value" id="one-p-two">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Observed Difference</span>
+              <div class="result-value" id="one-diff">—</div>
             </div>
           </div>
 
-          <div class="decision" id="one-decision">Click Calculate to view the result.</div>
+          <div class="decision-stack">
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ &gt; μ₀</div>
+              <div class="decision-text" id="one-decision-gt">—</div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ &lt; μ₀</div>
+              <div class="decision-text" id="one-decision-lt">—</div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ ≠ μ₀</div>
+              <div class="decision-text" id="one-decision-neq">—</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -486,21 +575,55 @@
               <div class="result-value" id="two-se">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Z statistic</span>
+              <span class="result-label">Z Statistic</span>
               <div class="result-value" id="two-z">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Two-tailed p-value</span>
-              <div class="result-value" id="two-p">—</div>
+              <span class="result-label">Right-tail p-value (H₁: μ₁ &gt; μ₂)</span>
+              <div class="result-value" id="two-p-right">—</div>
             </div>
             <div class="result-item">
-              <span class="result-label">Final decision</span>
-              <div class="result-value" id="two-decision-inline">—</div>
+              <span class="result-label">Left-tail p-value (H₁: μ₁ &lt; μ₂)</span>
+              <div class="result-value" id="two-p-left">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Two-tail p-value (H₁: μ₁ ≠ μ₂)</span>
+              <div class="result-value" id="two-p-two">—</div>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Observed Difference (Mean 1 - Mean 2)</span>
+              <div class="result-value" id="two-diff">—</div>
             </div>
           </div>
 
-          <div class="decision" id="two-decision">Click Calculate to view the result.</div>
+          <div class="decision-stack">
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ₁ &gt; μ₂</div>
+              <div class="decision-text" id="two-decision-gt">—</div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ₁ &lt; μ₂</div>
+              <div class="decision-text" id="two-decision-lt">—</div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: μ₁ ≠ μ₂</div>
+              <div class="decision-text" id="two-decision-neq">—</div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="notes-card">
+        <h3 class="notes-title">Important classroom notes</h3>
+        <p><strong>Caution:</strong> the three decision lines shown above are three different hypothesis decisions, not three simultaneous truths. Use the line that matches the alternative hypothesis chosen in your class or research design.</p>
+        <p>This simplified classroom template uses <strong>sample variance as an approximation to population variance</strong>.</p>
+        <p>The calculation also assumes that the underlying data distribution is <strong>normal</strong>, or that the sample setting is suitable for normal approximation.</p>
+      </div>
+
+      <div class="footer">
+        Simplified classroom calculator for one-sample and two-sample Z tests.
       </div>
     </div>
   </div>
@@ -582,9 +705,16 @@
       return 0.5 * (1 + erf(x / Math.SQRT2));
     }
 
-    function twoTailedPFromZ(z) {
-      const p = 2 * (1 - normalCDF(Math.abs(z)));
-      return Math.max(0, Math.min(1, p));
+    function rightTailP(z) {
+      return Math.max(0, Math.min(1, 1 - normalCDF(z)));
+    }
+
+    function leftTailP(z) {
+      return Math.max(0, Math.min(1, normalCDF(z)));
+    }
+
+    function twoTailP(z) {
+      return Math.max(0, Math.min(1, 2 * (1 - normalCDF(Math.abs(z)))));
     }
 
     function parseNum(id) {
@@ -613,20 +743,90 @@
       }
     }
 
+    function setDecision(id, text, isReject) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'decision-text ' + (isReject ? 'reject' : 'fail');
+    }
+
+    function oneSampleDecisionText(type, sampleMean, benchmarkMean, p, alpha) {
+      if (type === 'gt') {
+        if (p < alpha) {
+          return 'Reject H₀: there is sufficient evidence that μ is greater than μ₀.';
+        }
+        return 'Fail to reject H₀: there is insufficient evidence that μ is greater than μ₀.';
+      }
+
+      if (type === 'lt') {
+        if (p < alpha) {
+          return 'Reject H₀: there is sufficient evidence that μ is less than μ₀.';
+        }
+        return 'Fail to reject H₀: there is insufficient evidence that μ is less than μ₀.';
+      }
+
+      if (p < alpha) {
+        if (sampleMean > benchmarkMean) {
+          return 'Reject H₀: there is sufficient evidence that μ differs from μ₀; the observed mean is higher than μ₀.';
+        }
+        if (sampleMean < benchmarkMean) {
+          return 'Reject H₀: there is sufficient evidence that μ differs from μ₀; the observed mean is lower than μ₀.';
+        }
+        return 'Reject H₀: there is sufficient evidence that μ differs from μ₀.';
+      }
+
+      return 'Fail to reject H₀: there is insufficient evidence that μ differs from μ₀.';
+    }
+
+    function twoSampleDecisionText(type, mean1, mean2, p, alpha) {
+      if (type === 'gt') {
+        if (p < alpha) {
+          return 'Reject H₀: there is sufficient evidence that μ₁ is greater than μ₂.';
+        }
+        return 'Fail to reject H₀: there is insufficient evidence that μ₁ is greater than μ₂.';
+      }
+
+      if (type === 'lt') {
+        if (p < alpha) {
+          return 'Reject H₀: there is sufficient evidence that μ₁ is less than μ₂.';
+        }
+        return 'Fail to reject H₀: there is insufficient evidence that μ₁ is less than μ₂.';
+      }
+
+      if (p < alpha) {
+        if (mean1 > mean2) {
+          return 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂; the observed mean of Sample 1 is higher.';
+        }
+        if (mean1 < mean2) {
+          return 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂; the observed mean of Sample 2 is higher.';
+        }
+        return 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂.';
+      }
+
+      return 'Fail to reject H₀: there is insufficient evidence that μ₁ differs from μ₂.';
+    }
+
     function clearOneOutputs() {
       document.getElementById('one-se').textContent = '—';
       document.getElementById('one-z').textContent = '—';
-      document.getElementById('one-p').textContent = '—';
-      document.getElementById('one-decision-inline').textContent = '—';
-      document.getElementById('one-decision').textContent = 'Click Calculate to view the result.';
+      document.getElementById('one-p-right').textContent = '—';
+      document.getElementById('one-p-left').textContent = '—';
+      document.getElementById('one-p-two').textContent = '—';
+      document.getElementById('one-diff').textContent = '—';
+      setDecision('one-decision-gt', '—', false);
+      setDecision('one-decision-lt', '—', false);
+      setDecision('one-decision-neq', '—', false);
     }
 
     function clearTwoOutputs() {
       document.getElementById('two-se').textContent = '—';
       document.getElementById('two-z').textContent = '—';
-      document.getElementById('two-p').textContent = '—';
-      document.getElementById('two-decision-inline').textContent = '—';
-      document.getElementById('two-decision').textContent = 'Click Calculate to view the result.';
+      document.getElementById('two-p-right').textContent = '—';
+      document.getElementById('two-p-left').textContent = '—';
+      document.getElementById('two-p-two').textContent = '—';
+      document.getElementById('two-diff').textContent = '—';
+      setDecision('two-decision-gt', '—', false);
+      setDecision('two-decision-lt', '—', false);
+      setDecision('two-decision-neq', '—', false);
     }
 
     function updateOneSample() {
@@ -637,12 +837,6 @@
       const alpha = parseNum('one-alpha');
 
       const msg = document.getElementById('msg-one');
-      const seEl = document.getElementById('one-se');
-      const zEl = document.getElementById('one-z');
-      const pEl = document.getElementById('one-p');
-      const dInlineEl = document.getElementById('one-decision-inline');
-      const dEl = document.getElementById('one-decision');
-
       setMessage(msg, '');
 
       const values = [sampleMean, benchmarkMean, sd, n, alpha];
@@ -668,7 +862,7 @@
 
       if (n < 30) {
         clearOneOutputs();
-        showModal('Sample Size must be at least 30 for this simplified Z test template. No calculation was performed.');
+        showModal('Sample size must be at least 30 for this simplified Z test template. No calculation was performed.');
         return;
       }
 
@@ -683,28 +877,25 @@
       if (!Number.isFinite(se) || se <= 0) {
         clearOneOutputs();
         setMessage(msg, 'Standard error is zero or invalid. Please check Sample SD and Sample Size.');
-        dEl.textContent = 'Unable to determine final decision.';
-        dInlineEl.textContent = 'Unable to determine';
         return;
       }
 
       const z = (sampleMean - benchmarkMean) / se;
-      const p = twoTailedPFromZ(z);
+      const pRight = rightTailP(z);
+      const pLeft = leftTailP(z);
+      const pTwo = twoTailP(z);
+      const diff = sampleMean - benchmarkMean;
 
-      let decision = 'No significant difference';
-      if (p < alpha) {
-        if (sampleMean > benchmarkMean) {
-          decision = 'Sample mean is significantly higher';
-        } else if (sampleMean < benchmarkMean) {
-          decision = 'Sample mean is significantly lower';
-        }
-      }
+      document.getElementById('one-se').textContent = formatNumber(se);
+      document.getElementById('one-z').textContent = formatNumber(z);
+      document.getElementById('one-p-right').textContent = formatPValue(pRight);
+      document.getElementById('one-p-left').textContent = formatPValue(pLeft);
+      document.getElementById('one-p-two').textContent = formatPValue(pTwo);
+      document.getElementById('one-diff').textContent = formatNumber(diff);
 
-      seEl.textContent = formatNumber(se);
-      zEl.textContent = formatNumber(z);
-      pEl.textContent = formatPValue(p);
-      dInlineEl.textContent = decision;
-      dEl.textContent = decision;
+      setDecision('one-decision-gt', oneSampleDecisionText('gt', sampleMean, benchmarkMean, pRight, alpha), pRight < alpha);
+      setDecision('one-decision-lt', oneSampleDecisionText('lt', sampleMean, benchmarkMean, pLeft, alpha), pLeft < alpha);
+      setDecision('one-decision-neq', oneSampleDecisionText('neq', sampleMean, benchmarkMean, pTwo, alpha), pTwo < alpha);
     }
 
     function updateTwoSample() {
@@ -717,12 +908,6 @@
       const alpha = parseNum('two-alpha');
 
       const msg = document.getElementById('msg-two');
-      const seEl = document.getElementById('two-se');
-      const zEl = document.getElementById('two-z');
-      const pEl = document.getElementById('two-p');
-      const dInlineEl = document.getElementById('two-decision-inline');
-      const dEl = document.getElementById('two-decision');
-
       setMessage(msg, '');
 
       const values = [mean1, mean2, sd1, sd2, n1, n2, alpha];
@@ -748,7 +933,7 @@
 
       if (n1 < 30 || n2 < 30) {
         clearTwoOutputs();
-        showModal('Both Sample Size 1 and Sample Size 2 must be at least 30 for this simplified Z test template. No calculation was performed.');
+        showModal('Both sample sizes must be at least 30 for this simplified Z test template. No calculation was performed.');
         return;
       }
 
@@ -763,31 +948,28 @@
       if (!Number.isFinite(se) || se <= 0) {
         clearTwoOutputs();
         setMessage(msg, 'Standard error is zero or invalid. Please check SDs and sample sizes.');
-        dEl.textContent = 'Unable to determine final decision.';
-        dInlineEl.textContent = 'Unable to determine';
         return;
       }
 
       const z = (mean1 - mean2) / se;
-      const p = twoTailedPFromZ(z);
+      const pRight = rightTailP(z);
+      const pLeft = leftTailP(z);
+      const pTwo = twoTailP(z);
+      const diff = mean1 - mean2;
 
-      let decision = 'No significant difference';
-      if (p < alpha) {
-        if (mean1 > mean2) {
-          decision = 'Mean 1 significantly higher';
-        } else if (mean2 > mean1) {
-          decision = 'Mean 2 significantly higher';
-        }
-      }
+      document.getElementById('two-se').textContent = formatNumber(se);
+      document.getElementById('two-z').textContent = formatNumber(z);
+      document.getElementById('two-p-right').textContent = formatPValue(pRight);
+      document.getElementById('two-p-left').textContent = formatPValue(pLeft);
+      document.getElementById('two-p-two').textContent = formatPValue(pTwo);
+      document.getElementById('two-diff').textContent = formatNumber(diff);
 
-      seEl.textContent = formatNumber(se);
-      zEl.textContent = formatNumber(z);
-      pEl.textContent = formatPValue(p);
-      dInlineEl.textContent = decision;
-      dEl.textContent = decision;
+      setDecision('two-decision-gt', twoSampleDecisionText('gt', mean1, mean2, pRight, alpha), pRight < alpha);
+      setDecision('two-decision-lt', twoSampleDecisionText('lt', mean1, mean2, pLeft, alpha), pLeft < alpha);
+      setDecision('two-decision-neq', twoSampleDecisionText('neq', mean1, mean2, pTwo, alpha), pTwo < alpha);
     }
 
-    function clearInputs(ids, resultIds, decisionId, inlineDecisionId, msgId) {
+    function clearInputs(ids, resultType, msgId) {
       ids.forEach(id => {
         const el = document.getElementById(id);
         if (id.toLowerCase().includes('alpha')) {
@@ -797,12 +979,12 @@
         }
       });
 
-      resultIds.forEach(id => {
-        document.getElementById(id).textContent = '—';
-      });
+      if (resultType === 'one') {
+        clearOneOutputs();
+      } else {
+        clearTwoOutputs();
+      }
 
-      document.getElementById(decisionId).textContent = 'Click Calculate to view the result.';
-      document.getElementById(inlineDecisionId).textContent = '—';
       setMessage(document.getElementById(msgId), '');
     }
 
@@ -812,9 +994,7 @@
     document.getElementById('clear-one').addEventListener('click', () => {
       clearInputs(
         ['one-sample-mean', 'one-benchmark-mean', 'one-sd', 'one-n', 'one-alpha'],
-        ['one-se', 'one-z', 'one-p'],
-        'one-decision',
-        'one-decision-inline',
+        'one',
         'msg-one'
       );
     });
@@ -822,9 +1002,7 @@
     document.getElementById('clear-two').addEventListener('click', () => {
       clearInputs(
         ['two-mean1', 'two-mean2', 'two-sd1', 'two-sd2', 'two-n1', 'two-n2', 'two-alpha'],
-        ['two-se', 'two-z', 'two-p'],
-        'two-decision',
-        'two-decision-inline',
+        'two',
         'msg-two'
       );
     });
