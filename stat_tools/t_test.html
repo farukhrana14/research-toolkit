@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>T-Test Decision Tool</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --border: #d7deea;
+      --text: #1f2a37;
+      --muted: #5b6777;
+      --accent: #1f4e79;
+      --accent-soft: #eaf2fb;
+      --danger: #b42318;
+      --danger-soft: #fff3f2;
+      --success: #18794e;
+      --success-soft: #edf9f3;
+      --info-soft: #eef6ff;
+      --warning: #8a5a00;
+      --warning-soft: #fff8e6;
+      --shadow: 0 8px 24px rgba(31, 42, 55, 0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .app-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #ffffff, #fbfdff);
+    }
+
+    .title {
+      margin: 0 0 6px;
+      font-size: clamp(22px, 4vw, 28px);
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .topbar {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--accent-soft);
+      display: grid;
+      grid-template-columns: minmax(180px, 270px) 1fr;
+      gap: 12px 14px;
+      align-items: center;
+    }
+
+    .topbar label { font-weight: 700; font-size: 15px; }
+
+    select, input[type="number"] {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid #b9c6d8;
+      border-radius: 10px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    select:focus, input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.12);
+    }
+
+    .panel {
+      display: none;
+      padding: 20px;
+    }
+
+    .panel.active { display: block; }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label { font-weight: 700; font-size: 15px; }
+
+    .field small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 11px 18px;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    button.success {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    button:hover { opacity: 0.95; }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.show { display: block; }
+
+    .message.error {
+      background: var(--danger-soft);
+      border: 1px solid #f3c7c2;
+      color: var(--danger);
+    }
+
+    .message.info {
+      background: var(--info-soft);
+      border: 1px solid #cfe0f5;
+      color: var(--accent);
+    }
+
+    .check-card {
+      margin-bottom: 20px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: var(--info-soft);
+      padding: 16px;
+    }
+
+    .check-title {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 17px;
+    }
+
+    .check-card p { margin: 0 0 9px; font-size: 14px; }
+
+    .check-example {
+      margin: 10px 0;
+      padding: 10px 12px;
+      border-left: 4px solid var(--accent);
+      background: #fff;
+      border-radius: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .check-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .help-card {
+      margin-top: 14px;
+      border: 1px solid #dbe5f0;
+      border-radius: 12px;
+      padding: 15px;
+      background: #fcfdff;
+      display: none;
+    }
+
+    .help-card.show { display: block; }
+
+    .help-question {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .choice-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      text-align: left;
+      background: #fff;
+      color: var(--text);
+      border-color: #c9d5e4;
+      font-weight: 600;
+    }
+
+    .choice-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    .result-box {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fcfdff;
+    }
+
+    .result-title {
+      margin: 0 0 4px;
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .result-subtitle {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin-top: 10px;
+    }
+
+    .result-item {
+      padding: 12px;
+      border: 1px solid #e4eaf2;
+      border-radius: 10px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .result-label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 17px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .decision-stack {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .decision-card {
+      border: 1px solid #dbe5f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    .decision-heading {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .decision-text {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .decision-text.reject { color: var(--danger); }
+    .decision-text.fail { color: var(--accent); }
+
+    details {
+      margin-top: 14px;
+      border: 1px solid #dbe5f0;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .details-body {
+      padding: 0 14px 14px;
+      font-size: 14px;
+    }
+
+    .formula {
+      padding: 10px 12px;
+      margin: 8px 0;
+      background: #f7f9fc;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .notes-card {
+      margin: 0 20px 20px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: var(--info-soft);
+      padding: 16px;
+    }
+
+    .notes-title {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: var(--accent);
+    }
+
+    .notes-card p {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .notes-card p:last-child { margin-bottom: 0; }
+
+    .footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: #fbfdff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-card {
+      width: min(92vw, 520px);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 18px 20px 12px;
+      background: var(--warning-soft);
+      border-bottom: 1px solid #ecdba8;
+    }
+
+    .modal-title {
+      margin: 0;
+      color: var(--warning);
+      font-size: 20px;
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .modal-actions {
+      padding: 0 20px 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .muted { color: var(--muted); }
+
+    @media (max-width: 820px) {
+      .grid-two, .result-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 10px; }
+
+      .header, .topbar, .panel, .notes-card, .footer {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .topbar { grid-template-columns: 1fr; }
+
+      .section-title { font-size: 18px; }
+
+      .result-value { font-size: 16px; }
+
+      .decision-text { font-size: 15px; }
+
+      .actions { flex-direction: column; }
+
+      .actions button, .check-actions button { width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      select, input[type="number"] {
+        font-size: 16px;
+        padding: 11px 12px;
+      }
+
+      .title { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app-card">
+      <div class="header">
+        <h1 class="title">T-Test Decision Tool</h1>
+        <p class="subtitle">One-Sample, Independent Two-Sample, and Paired-Sample t-Tests</p>
+      </div>
+
+      <div class="topbar">
+        <label for="testType">Select T-Test Type</label>
+        <select id="testType">
+          <option value="one">One-Sample t-test</option>
+          <option value="welch">Independent Two-Sample t-test (Welch)</option>
+          <option value="pooled">Independent Two-Sample t-test (Pooled Variance)</option>
+          <option value="paired">Paired-Sample t-test</option>
+        </select>
+      </div>
+
+      <div id="panel-one" class="panel active"></div>
+      <div id="panel-welch" class="panel"></div>
+      <div id="panel-pooled" class="panel"></div>
+      <div id="panel-paired" class="panel"></div>
+
+      <div class="notes-card">
+        <h3 class="notes-title">Important classroom notes</h3>
+        <p><strong>Choose the test based on what your data represents, not simply on sample size.</strong></p>
+        <p><strong>Welch:</strong> use for two independent groups when equal population variances are not assumed.</p>
+        <p><strong>Pooled:</strong> use for two independent groups when equal population variances are reasonably assumed.</p>
+        <p><strong>Paired:</strong> use when observations are naturally matched, such as before-and-after measurements on the same subjects.</p>
+        <p><strong>Interpretation:</strong> a small p-value provides evidence against H₀; it does not by itself establish practical or causal significance.</p>
+      </div>
+
+      <div class="footer">
+        Classroom statistical tool. Calculations are performed entirely in the browser using the Student's t-distribution.
+      </div>
+    </div>
+  </div>
+
+  <div id="messageModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Check your test selection</h3>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-actions">
+        <button type="button" id="closeModal">OK</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  const testType = document.getElementById('testType');
+  const panels = {
+    one: document.getElementById('panel-one'),
+    welch: document.getElementById('panel-welch'),
+    pooled: document.getElementById('panel-pooled'),
+    paired: document.getElementById('panel-paired')
+  };
+
+  const modal = document.getElementById('messageModal');
+  const modalBody = document.getElementById('modalBody');
+  const closeModal = document.getElementById('closeModal');
+
+  const TEST_INFO = {
+    one: {
+      title: 'One-Sample t-test',
+      question: 'Is your data about one sample being compared with a known or hypothesized population mean?',
+      example: 'Example: You collected study-time data from students and want to test whether their average study time differs from 3 hours per day.',
+      fit: 'Use the One-Sample t-test when you have one sample and a benchmark mean.',
+      alternative: 'If you are comparing two groups or two conditions, consider one of the two-sample tests instead.'
+    },
+    welch: {
+      title: 'Independent Two-Sample t-test (Welch)',
+      question: 'Are you comparing the means of two separate, unrelated groups?',
+      example: 'Example: Compare the average GPA of students from two different, unrelated groups.',
+      fit: 'Welch is appropriate when the two population variances are not assumed to be equal, or when you are not confident that they are equal.',
+      alternative: 'If the observations are paired or matched, use the Paired-Sample t-test instead. If equal variances are explicitly justified, the pooled test is another option.'
+    },
+    pooled: {
+      title: 'Independent Two-Sample t-test (Pooled Variance)',
+      question: 'Are you comparing two separate, unrelated groups and assuming their population variances are equal?',
+      example: 'Example: Compare average production output of two independent groups when equal population variances are reasonably justified.',
+      fit: 'Use the pooled-variance t-test only when the equal-population-variance assumption is appropriate.',
+      alternative: 'If equal variances cannot reasonably be assumed, Welch is generally the safer choice. If observations are paired, use the Paired-Sample t-test.'
+    },
+    paired: {
+      title: 'Paired-Sample t-test',
+      question: 'Does each observation in one condition have a natural match with an observation in the other condition?',
+      example: 'Examples: the same students before and after training, or matched subjects measured under two conditions.',
+      fit: 'Use the Paired-Sample t-test when the analysis is based on meaningful within-pair differences.',
+      alternative: 'If the two groups are separate and unrelated, use an independent two-sample t-test instead.'
+    }
+  };
+
+  function panelTemplate(type) {
+    const commonAlpha = `
+      <div class="field">
+        <label for="${type}-alpha">Significance Level (α)</label>
+        <input type="number" id="${type}-alpha" step="any" min="0" max="1" value="0.05" inputmode="decimal" />
+        <small>Common values: 0.10, 0.05, or 0.01.</small>
+      </div>`;
+
+    const hypothesis = (prefix, labels) => `
+      <div class="field">
+        <label for="${prefix}-tail">Alternative Hypothesis</label>
+        <select id="${prefix}-tail">
+          ${labels.map(x => `<option value="${x.value}">${x.label}</option>`).join('')}
+        </select>
+        <small>The selected alternative determines the p-value and decision.</small>
+      </div>`;
+
+    if (type === 'one') {
+      return `
+        <div class="check-card">
+          <h3 class="check-title">Check your choice</h3>
+          <p>${TEST_INFO.one.question}</p>
+          <div class="check-example">${TEST_INFO.one.example}</div>
+          <p><strong>✓ ${TEST_INFO.one.fit}</strong></p>
+          <p class="muted">${TEST_INFO.one.alternative}</p>
+          <div class="check-actions">
+            <button type="button" class="secondary" data-help="one">Not sure — help me choose</button>
+          </div>
+          <div id="help-one" class="help-card"></div>
+        </div>
+
+        <h2 class="section-title">One-Sample t-test</h2>
+        <div class="grid-two">
+          <div class="field">
+            <label for="one-mean">Sample Mean (x̄)</label>
+            <input type="number" id="one-mean" step="any" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="one-benchmark">Hypothesized Mean (μ₀)</label>
+            <input type="number" id="one-benchmark" step="any" inputmode="decimal" />
+            <small>The population mean specified by H₀.</small>
+          </div>
+          <div class="field">
+            <label for="one-sd">Sample Standard Deviation (s)</label>
+            <input type="number" id="one-sd" step="any" min="0" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="one-n">Sample Size (n)</label>
+            <input type="number" id="one-n" step="1" min="2" inputmode="numeric" />
+          </div>
+          ${commonAlpha}
+          ${hypothesis('one', [
+            {value:'gt', label:'H₁: μ > μ₀'},
+            {value:'lt', label:'H₁: μ < μ₀'},
+            {value:'neq', label:'H₁: μ ≠ μ₀'}
+          ])}
+        </div>
+        <div class="actions">
+          <button type="button" id="calc-one">Calculate</button>
+          <button type="button" class="secondary" id="clear-one">Clear</button>
+        </div>
+        <div id="msg-one" class="message error"></div>
+        ${resultTemplate('one')}
+      `;
+    }
+
+    const groupFields = `
+      <div class="field">
+        <label for="${type}-mean1">Sample 1 Mean (x̄₁)</label>
+        <input type="number" id="${type}-mean1" step="any" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label for="${type}-mean2">Sample 2 Mean (x̄₂)</label>
+        <input type="number" id="${type}-mean2" step="any" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label for="${type}-sd1">Sample 1 Standard Deviation (s₁)</label>
+        <input type="number" id="${type}-sd1" step="any" min="0" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label for="${type}-sd2">Sample 2 Standard Deviation (s₂)</label>
+        <input type="number" id="${type}-sd2" step="any" min="0" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label for="${type}-n1">Sample 1 Size (n₁)</label>
+        <input type="number" id="${type}-n1" step="1" min="2" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label for="${type}-n2">Sample 2 Size (n₂)</label>
+        <input type="number" id="${type}-n2" step="1" min="2" inputmode="numeric" />
+      </div>`;
+
+    if (type === 'welch' || type === 'pooled') {
+      const info = TEST_INFO[type];
+      const varianceNote = type === 'pooled'
+        ? `<div class="message show info"><strong>Equal-variance assumption:</strong> The pooled test assumes the two population variances are equal. If that assumption is not justified, consider Welch's test.</div>`
+        : `<div class="message show info"><strong>Welch's method:</strong> Equal population variances are not required.</div>`;
+
+      return `
+        <div class="check-card">
+          <h3 class="check-title">Check your choice</h3>
+          <p>${info.question}</p>
+          <div class="check-example">${info.example}</div>
+          <p><strong>✓ ${info.fit}</strong></p>
+          <p class="muted">${info.alternative}</p>
+          <div class="check-actions">
+            <button type="button" class="secondary" data-help="${type}">Not sure — help me choose</button>
+          </div>
+          <div id="help-${type}" class="help-card"></div>
+        </div>
+
+        <h2 class="section-title">${info.title}</h2>
+        ${varianceNote}
+        <div class="grid-two" style="margin-top:14px;">
+          ${groupFields}
+          ${commonAlpha}
+          ${hypothesis(type, [
+            {value:'gt', label:'H₁: μ₁ > μ₂'},
+            {value:'lt', label:'H₁: μ₁ < μ₂'},
+            {value:'neq', label:'H₁: μ₁ ≠ μ₂'}
+          ])}
+        </div>
+        <div class="actions">
+          <button type="button" id="calc-${type}">Calculate</button>
+          <button type="button" class="secondary" id="clear-${type}">Clear</button>
+        </div>
+        <div id="msg-${type}" class="message error"></div>
+        ${resultTemplate(type)}
+      `;
+    }
+
+    return `
+      <div class="check-card">
+        <h3 class="check-title">Check your choice</h3>
+        <p>${TEST_INFO.paired.question}</p>
+        <div class="check-example">${TEST_INFO.paired.example}</div>
+        <p><strong>✓ ${TEST_INFO.paired.fit}</strong></p>
+        <p class="muted">${TEST_INFO.paired.alternative}</p>
+        <div class="check-actions">
+          <button type="button" class="secondary" data-help="paired">Not sure — help me choose</button>
+        </div>
+        <div id="help-paired" class="help-card"></div>
+      </div>
+
+      <h2 class="section-title">Paired-Sample t-test</h2>
+      <p class="muted">Enter summary statistics for the within-pair differences. For a paired test, the analysis is performed on the differences.</p>
+      <div class="grid-two">
+        <div class="field">
+          <label for="paired-dmean">Mean Difference (d̄)</label>
+          <input type="number" id="paired-dmean" step="any" inputmode="decimal" />
+          <small>Typically calculated as Condition 1 − Condition 2.</small>
+        </div>
+        <div class="field">
+          <label for="paired-dsd">SD of Differences (s<sub>d</sub>)</label>
+          <input type="number" id="paired-dsd" step="any" min="0" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="paired-n">Number of Pairs (n)</label>
+          <input type="number" id="paired-n" step="1" min="2" inputmode="numeric" />
+        </div>
+        ${commonAlpha}
+        ${hypothesis('paired', [
+          {value:'gt', label:'H₁: μd > 0'},
+          {value:'lt', label:'H₁: μd < 0'},
+          {value:'neq', label:'H₁: μd ≠ 0'}
+        ])}
+      </div>
+      <div class="actions">
+        <button type="button" id="calc-paired">Calculate</button>
+        <button type="button" class="secondary" id="clear-paired">Clear</button>
+      </div>
+      <div id="msg-paired" class="message error"></div>
+      ${resultTemplate('paired')}
+    `;
+  }
+
+  function resultTemplate(type) {
+    const isOne = type === 'one';
+    const isPaired = type === 'paired';
+    const title = type === 'one' ? 'One-Sample t-Test Result'
+      : type === 'paired' ? 'Paired-Sample t-Test Result'
+      : type === 'welch' ? 'Independent Two-Sample t-Test (Welch) Result'
+      : 'Independent Two-Sample t-Test (Pooled Variance) Result';
+
+    return `
+      <div class="result-box">
+        <h3 class="result-title">${title}</h3>
+        <p class="result-subtitle" id="${type}-result-subtitle">Enter values and calculate.</p>
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-label">Standard Error</span>
+            <div class="result-value" id="${type}-se">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">t Statistic</span>
+            <div class="result-value" id="${type}-t">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Degrees of Freedom</span>
+            <div class="result-value" id="${type}-df">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Selected p-value</span>
+            <div class="result-value" id="${type}-p-selected">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Critical t Value</span>
+            <div class="result-value" id="${type}-critical">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">${isOne ? 'Observed Difference (x̄ − μ₀)' : isPaired ? 'Mean Difference (d̄)' : 'Observed Difference (x̄₁ − x̄₂)'}</span>
+            <div class="result-value" id="${type}-diff">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Right-tailed p-value</span>
+            <div class="result-value" id="${type}-p-right">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Left-tailed p-value</span>
+            <div class="result-value" id="${type}-p-left">—</div>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Two-tailed p-value</span>
+            <div class="result-value" id="${type}-p-two">—</div>
+          </div>
+        </div>
+
+        <div class="decision-stack">
+          <div class="decision-card">
+            <div class="decision-heading">${isOne ? 'If H₁: μ > μ₀' : isPaired ? 'If H₁: μd > 0' : 'If H₁: μ₁ > μ₂'}</div>
+            <div class="decision-text fail" id="${type}-decision-gt">—</div>
+          </div>
+          <div class="decision-card">
+            <div class="decision-heading">${isOne ? 'If H₁: μ < μ₀' : isPaired ? 'If H₁: μd < 0' : 'If H₁: μ₁ < μ₂'}</div>
+            <div class="decision-text fail" id="${type}-decision-lt">—</div>
+          </div>
+          <div class="decision-card">
+            <div class="decision-heading">${isOne ? 'If H₁: μ ≠ μ₀' : isPaired ? 'If H₁: μd ≠ 0' : 'If H₁: μ₁ ≠ μ₂'}</div>
+            <div class="decision-text fail" id="${type}-decision-neq">—</div>
+          </div>
+        </div>
+
+        <details>
+          <summary>Show calculation details</summary>
+          <div class="details-body" id="${type}-details">
+            Calculation details will appear after a valid calculation.
+          </div>
+        </details>
+
+        <details>
+          <summary>Test assumptions</summary>
+          <div class="details-body">${assumptionText(type)}</div>
+        </details>
+      </div>
+    `;
+  }
+
+  function assumptionText(type) {
+    if (type === 'one') {
+      return `<ul>
+        <li>The outcome variable is quantitative.</li>
+        <li>Observations are independent.</li>
+        <li>The population standard deviation is unknown and is estimated using the sample SD.</li>
+        <li>For small samples, the population distribution should be reasonably close to normal and should not contain severe outliers.</li>
+      </ul>`;
+    }
+    if (type === 'paired') {
+      return `<ul>
+        <li>The outcome variable is quantitative.</li>
+        <li>Observations form meaningful pairs or repeated measurements.</li>
+        <li>The paired differences are independent across pairs.</li>
+        <li>The distribution of the differences should be reasonably close to normal for small samples and should not contain severe outliers.</li>
+      </ul>`;
+    }
+    if (type === 'pooled') {
+      return `<ul>
+        <li>The outcome variable is quantitative.</li>
+        <li>The two samples are independent.</li>
+        <li>The two population variances are assumed equal.</li>
+        <li>For small samples, each population should be reasonably close to normal and should not contain severe outliers.</li>
+      </ul>`;
+    }
+    return `<ul>
+      <li>The outcome variable is quantitative.</li>
+      <li>The two samples are independent.</li>
+      <li>Equal population variances are not required.</li>
+      <li>For small samples, each population should be reasonably close to normal and should not contain severe outliers.</li>
+    </ul>`;
+  }
+
+  function renderPanels() {
+    Object.keys(panels).forEach(type => {
+      panels[type].innerHTML = panelTemplate(type);
+    });
+    bindPanelEvents();
+  }
+
+  function togglePanels() {
+    const selected = testType.value;
+    Object.keys(panels).forEach(type => {
+      panels[type].classList.toggle('active', type === selected);
+    });
+  }
+
+  testType.addEventListener('change', () => {
+    togglePanels();
+    closeHelpCards();
+  });
+
+  function closeHelpCards() {
+    document.querySelectorAll('.help-card').forEach(el => {
+      el.classList.remove('show');
+      el.innerHTML = '';
+    });
+  }
+
+  function showModal(message, title = 'Check your test selection') {
+    document.getElementById('modalTitle').textContent = title;
+    modalBody.innerHTML = message;
+    modal.classList.add('show');
+  }
+
+  closeModal.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
+
+  function parseNum(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const value = el.value.trim();
+    if (value === '') return null;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  }
+
+  function formatNumber(value, digits = 6) {
+    if (!Number.isFinite(value)) return '—';
+    return Number(value).toFixed(digits).replace(/\.?0+$/, '');
+  }
+
+  function formatPValue(p) {
+    if (!Number.isFinite(p)) return '—';
+    if (p < 0.0001) return '< 0.0001';
+    return p.toFixed(4);
+  }
+
+  function setMessage(el, text = '', type = 'error') {
+    el.textContent = text;
+    el.className = 'message';
+    if (text) el.classList.add('show', type);
+  }
+
+  function setDecision(id, text, isReject) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'decision-text ' + (isReject ? 'reject' : 'fail');
+  }
+
+  function clearResult(type) {
+    ['se','t','df','p-selected','critical','diff','p-right','p-left','p-two'].forEach(suffix => {
+      const el = document.getElementById(`${type}-${suffix}`);
+      if (el) el.textContent = '—';
+    });
+    ['gt','lt','neq'].forEach(suffix => setDecision(`${type}-decision-${suffix}`, '—', false));
+    const sub = document.getElementById(`${type}-result-subtitle`);
+    if (sub) sub.textContent = 'Enter values and calculate.';
+    const details = document.getElementById(`${type}-details`);
+    if (details) details.innerHTML = 'Calculation details will appear after a valid calculation.';
+  }
+
+  function validateCommon(alpha, nValues) {
+    if (nValues.some(n => n === null)) return 'Please enter all required numeric values.';
+    if (!(alpha > 0 && alpha < 1)) return 'Significance level α must be between 0 and 1.';
+    for (const n of nValues) {
+      if (!Number.isInteger(n) || n < 2) return 'Each sample size must be a whole number of at least 2.';
+    }
+    return '';
+  }
+
+  /* ---------------- Student's t distribution ----------------
+     The functions below use the regularized incomplete beta function.
+     This keeps the tool fully client-side and avoids any external library.
+  */
+
+  function logGamma(z) {
+    const coefficients = [
+      676.5203681218851,
+      -1259.1392167224028,
+      771.32342877765313,
+      -176.61502916214059,
+      12.507343278686905,
+      -0.13857109526572012,
+      9.9843695780195716e-6,
+      1.5056327351493116e-7
+    ];
+
+    if (z < 0.5) {
+      return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+    }
+
+    z -= 1;
+    let x = 0.99999999999980993;
+    for (let i = 0; i < coefficients.length; i++) {
+      x += coefficients[i] / (z + i + 1);
+    }
+
+    const t = z + coefficients.length - 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  function betacf(a, b, x) {
+    const MAX_ITER = 200;
+    const EPS = 3e-14;
+    const FPMIN = 1e-300;
+
+    let qab = a + b;
+    let qap = a + 1;
+    let qam = a - 1;
+
+    let c = 1;
+    let d = 1 - qab * x / qap;
+    if (Math.abs(d) < FPMIN) d = FPMIN;
+    d = 1 / d;
+    let h = d;
+
+    for (let m = 1; m <= MAX_ITER; m++) {
+      const m2 = 2 * m;
+
+      let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+      d = 1 + aa * d;
+      if (Math.abs(d) < FPMIN) d = FPMIN;
+      c = 1 + aa / c;
+      if (Math.abs(c) < FPMIN) c = FPMIN;
+      d = 1 / d;
+      h *= d * c;
+
+      aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+      d = 1 + aa * d;
+      if (Math.abs(d) < FPMIN) d = FPMIN;
+      c = 1 + aa / c;
+      if (Math.abs(c) < FPMIN) c = FPMIN;
+      d = 1 / d;
+
+      const del = d * c;
+      h *= del;
+
+      if (Math.abs(del - 1) < EPS) break;
+    }
+
+    return h;
+  }
+
+  function regularizedBeta(x, a, b) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+
+    const logBt =
+      logGamma(a + b) -
+      logGamma(a) -
+      logGamma(b) +
+      a * Math.log(x) +
+      b * Math.log(1 - x);
+
+    const bt = Math.exp(logBt);
+
+    if (x < (a + 1) / (a + b + 2)) {
+      return bt * betacf(a, b, x) / a;
+    }
+    return 1 - bt * betacf(b, a, 1 - x) / b;
+  }
+
+  function tCDF(t, df) {
+    if (!Number.isFinite(t) || !Number.isFinite(df) || df <= 0) return NaN;
+    if (t === 0) return 0.5;
+
+    const x = df / (df + t * t);
+    const ib = regularizedBeta(x, df / 2, 0.5);
+
+    if (t > 0) return 1 - 0.5 * ib;
+    return 0.5 * ib;
+  }
+
+  function tRightTail(t, df) {
+    return clamp01(1 - tCDF(t, df));
+  }
+
+  function tLeftTail(t, df) {
+    return clamp01(tCDF(t, df));
+  }
+
+  function tTwoTail(t, df) {
+    return clamp01(2 * tRightTail(Math.abs(t), df));
+  }
+
+  function tCritical(alpha, df, twoTailed) {
+    const target = twoTailed ? 1 - alpha / 2 : 1 - alpha;
+    let lo = 0;
+    let hi = 1;
+
+    while (tCDF(hi, df) < target && hi < 1e8) hi *= 2;
+
+    for (let i = 0; i < 100; i++) {
+      const mid = (lo + hi) / 2;
+      if (tCDF(mid, df) < target) lo = mid;
+      else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+
+  function selectedP(t, df, tail) {
+    if (tail === 'gt') return tRightTail(t, df);
+    if (tail === 'lt') return tLeftTail(t, df);
+    return tTwoTail(t, df);
+  }
+
+  function selectedCritical(alpha, df, tail) {
+    return tCritical(alpha, df, tail === 'neq');
+  }
+
+  function decisionText(type, direction, p, alpha, diff) {
+    const reject = p < alpha;
+    const isOne = type === 'one';
+    const isPaired = type === 'paired';
+
+    if (direction === 'gt') {
+      const lhs = isOne ? 'μ' : isPaired ? 'μd' : 'μ₁';
+      const rhs = isOne ? 'μ₀' : isPaired ? '0' : 'μ₂';
+      return reject
+        ? `Reject H₀: there is sufficient evidence that ${lhs} is greater than ${rhs}.`
+        : `Fail to reject H₀: there is insufficient evidence that ${lhs} is greater than ${rhs}.`;
+    }
+
+    if (direction === 'lt') {
+      const lhs = isOne ? 'μ' : isPaired ? 'μd' : 'μ₁';
+      const rhs = isOne ? 'μ₀' : isPaired ? '0' : 'μ₂';
+      return reject
+        ? `Reject H₀: there is sufficient evidence that ${lhs} is less than ${rhs}.`
+        : `Fail to reject H₀: there is insufficient evidence that ${lhs} is less than ${rhs}.`;
+    }
+
+    if (reject) {
+      if (isOne) {
+        return diff > 0
+          ? 'Reject H₀: there is sufficient evidence that μ differs from μ₀; the observed sample mean is higher.'
+          : diff < 0
+            ? 'Reject H₀: there is sufficient evidence that μ differs from μ₀; the observed sample mean is lower.'
+            : 'Reject H₀: there is sufficient evidence that μ differs from μ₀.';
+      }
+      if (isPaired) {
+        return diff > 0
+          ? 'Reject H₀: there is sufficient evidence that the mean paired difference differs from 0; the observed difference is positive.'
+          : diff < 0
+            ? 'Reject H₀: there is sufficient evidence that the mean paired difference differs from 0; the observed difference is negative.'
+            : 'Reject H₀: there is sufficient evidence that the mean paired difference differs from 0.';
+      }
+      return diff > 0
+        ? 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂; the observed mean of Sample 1 is higher.'
+        : diff < 0
+          ? 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂; the observed mean of Sample 2 is higher.'
+          : 'Reject H₀: there is sufficient evidence that μ₁ differs from μ₂.';
+    }
+
+    if (isOne) return 'Fail to reject H₀: there is insufficient evidence that μ differs from μ₀.';
+    if (isPaired) return 'Fail to reject H₀: there is insufficient evidence that the mean paired difference differs from 0.';
+    return 'Fail to reject H₀: there is insufficient evidence that μ₁ differs from μ₂.';
+  }
+
+  function writeResult(type, data) {
+    document.getElementById(`${type}-se`).textContent = formatNumber(data.se);
+    document.getElementById(`${type}-t`).textContent = formatNumber(data.t);
+    document.getElementById(`${type}-df`).textContent = formatNumber(data.df);
+    document.getElementById(`${type}-p-selected`).textContent = formatPValue(data.pSelected);
+    document.getElementById(`${type}-critical`).textContent = formatNumber(data.critical);
+    document.getElementById(`${type}-diff`).textContent = formatNumber(data.diff);
+    document.getElementById(`${type}-p-right`).textContent = formatPValue(data.pRight);
+    document.getElementById(`${type}-p-left`).textContent = formatPValue(data.pLeft);
+    document.getElementById(`${type}-p-two`).textContent = formatPValue(data.pTwo);
+
+    setDecision(`${type}-decision-gt`, decisionText(type, 'gt', data.pRight, data.alpha, data.diff), data.pRight < data.alpha);
+    setDecision(`${type}-decision-lt`, decisionText(type, 'lt', data.pLeft, data.alpha, data.diff), data.pLeft < data.alpha);
+    setDecision(`${type}-decision-neq`, decisionText(type, 'neq', data.pTwo, data.alpha, data.diff), data.pTwo < data.alpha);
+
+    document.getElementById(`${type}-result-subtitle`).textContent =
+      `Selected alternative: ${data.hypothesis} | α = ${formatNumber(data.alpha)}`;
+
+    document.getElementById(`${type}-details`).innerHTML = data.details;
+  }
+
+  function calculateOne() {
+    const mean = parseNum('one-mean');
+    const benchmark = parseNum('one-benchmark');
+    const sd = parseNum('one-sd');
+    const n = parseNum('one-n');
+    const alpha = parseNum('one-alpha');
+    const tail = document.getElementById('one-tail').value;
+    const msg = document.getElementById('msg-one');
+
+    setMessage(msg, '');
+
+    if ([mean, benchmark, sd, n, alpha].some(v => v === null)) {
+      clearResult('one');
+      setMessage(msg, 'Please enter all required numeric values.');
+      return;
+    }
+    if (sd <= 0) {
+      clearResult('one');
+      setMessage(msg, 'Sample standard deviation must be greater than 0.');
+      return;
+    }
+
+    const commonError = validateCommon(alpha, [n]);
+    if (commonError) {
+      clearResult('one');
+      setMessage(msg, commonError);
+      return;
+    }
+
+    const df = n - 1;
+    const se = sd / Math.sqrt(n);
+    const diff = mean - benchmark;
+    const t = diff / se;
+    const pRight = tRightTail(t, df);
+    const pLeft = tLeftTail(t, df);
+    const pTwo = tTwoTail(t, df);
+    const pSelected = selectedP(t, df, tail);
+    const critical = selectedCritical(alpha, df, tail);
+
+    const hypothesis = tail === 'gt' ? 'H₁: μ > μ₀' : tail === 'lt' ? 'H₁: μ < μ₀' : 'H₁: μ ≠ μ₀';
+
+    writeResult('one', {
+      se, t, df, pRight, pLeft, pTwo, pSelected, critical, diff, alpha, hypothesis,
+      details: `
+        <p><strong>Difference:</strong> x̄ − μ₀ = ${formatNumber(mean)} − ${formatNumber(benchmark)} = ${formatNumber(diff)}</p>
+        <p><strong>Standard Error:</strong> s / √n = ${formatNumber(sd)} / √${formatNumber(n)} = ${formatNumber(se)}</p>
+        <p><strong>t statistic:</strong> (x̄ − μ₀) / (s / √n) = ${formatNumber(t)}</p>
+        <p><strong>Degrees of freedom:</strong> n − 1 = ${formatNumber(df)}</p>
+        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
+      `
+    });
+  }
+
+  function calculateIndependent(type) {
+    const mean1 = parseNum(`${type}-mean1`);
+    const mean2 = parseNum(`${type}-mean2`);
+    const sd1 = parseNum(`${type}-sd1`);
+    const sd2 = parseNum(`${type}-sd2`);
+    const n1 = parseNum(`${type}-n1`);
+    const n2 = parseNum(`${type}-n2`);
+    const alpha = parseNum(`${type}-alpha`);
+    const tail = document.getElementById(`${type}-tail`).value;
+    const msg = document.getElementById(`msg-${type}`);
+
+    setMessage(msg, '');
+
+    if ([mean1, mean2, sd1, sd2, n1, n2, alpha].some(v => v === null)) {
+      clearResult(type);
+      setMessage(msg, 'Please enter all required numeric values.');
+      return;
+    }
+    if (sd1 <= 0 || sd2 <= 0) {
+      clearResult(type);
+      setMessage(msg, 'Both sample standard deviations must be greater than 0.');
+      return;
+    }
+
+    const commonError = validateCommon(alpha, [n1, n2]);
+    if (commonError) {
+      clearResult(type);
+      setMessage(msg, commonError);
+      return;
+    }
+
+    let se, df, extra = '';
+
+    if (type === 'welch') {
+      const v1 = (sd1 * sd1) / n1;
+      const v2 = (sd2 * sd2) / n2;
+      se = Math.sqrt(v1 + v2);
+      const numerator = Math.pow(v1 + v2, 2);
+      const denominator = (Math.pow(v1, 2) / (n1 - 1)) + (Math.pow(v2, 2) / (n2 - 1));
+      df = numerator / denominator;
+      extra = `
+        <p><strong>Welch degrees of freedom:</strong> calculated using the Welch–Satterthwaite approximation = ${formatNumber(df)}</p>
+        <p><strong>Variance assumption:</strong> equal population variances are not required.</p>
+      `;
+    } else {
+      const sp2 = (((n1 - 1) * sd1 * sd1) + ((n2 - 1) * sd2 * sd2)) / (n1 + n2 - 2);
+      const sp = Math.sqrt(sp2);
+      se = sp * Math.sqrt((1 / n1) + (1 / n2));
+      df = n1 + n2 - 2;
+      extra = `
+        <p><strong>Pooled variance:</strong> s<sub>p</sub>² = ${formatNumber(sp2)}</p>
+        <p><strong>Pooled SD:</strong> s<sub>p</sub> = ${formatNumber(sp)}</p>
+        <p><strong>Variance assumption:</strong> the two population variances are assumed equal.</p>
+      `;
+    }
+
+    if (!Number.isFinite(se) || se <= 0 || !Number.isFinite(df) || df <= 0) {
+      clearResult(type);
+      setMessage(msg, 'The standard error or degrees of freedom could not be calculated. Please check the inputs.');
+      return;
+    }
+
+    const diff = mean1 - mean2;
+    const t = diff / se;
+    const pRight = tRightTail(t, df);
+    const pLeft = tLeftTail(t, df);
+    const pTwo = tTwoTail(t, df);
+    const pSelected = selectedP(t, df, tail);
+    const critical = selectedCritical(alpha, df, tail);
+
+    const hypothesis = tail === 'gt' ? 'H₁: μ₁ > μ₂' : tail === 'lt' ? 'H₁: μ₁ < μ₂' : 'H₁: μ₁ ≠ μ₂';
+
+    writeResult(type, {
+      se, t, df, pRight, pLeft, pTwo, pSelected, critical, diff, alpha, hypothesis,
+      details: `
+        <p><strong>Observed difference:</strong> x̄₁ − x̄₂ = ${formatNumber(mean1)} − ${formatNumber(mean2)} = ${formatNumber(diff)}</p>
+        <p><strong>Standard Error:</strong> ${formatNumber(se)}</p>
+        <p><strong>t statistic:</strong> (x̄₁ − x̄₂) / SE = ${formatNumber(t)}</p>
+        ${extra}
+        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
+      `
+    });
+  }
+
+  function calculatePaired() {
+    const dmean = parseNum('paired-dmean');
+    const dsd = parseNum('paired-dsd');
+    const n = parseNum('paired-n');
+    const alpha = parseNum('paired-alpha');
+    const tail = document.getElementById('paired-tail').value;
+    const msg = document.getElementById('msg-paired');
+
+    setMessage(msg, '');
+
+    if ([dmean, dsd, n, alpha].some(v => v === null)) {
+      clearResult('paired');
+      setMessage(msg, 'Please enter all required numeric values.');
+      return;
+    }
+    if (dsd <= 0) {
+      clearResult('paired');
+      setMessage(msg, 'The standard deviation of differences must be greater than 0.');
+      return;
+    }
+
+    const commonError = validateCommon(alpha, [n]);
+    if (commonError) {
+      clearResult('paired');
+      setMessage(msg, commonError);
+      return;
+    }
+
+    const df = n - 1;
+    const se = dsd / Math.sqrt(n);
+    const t = dmean / se;
+    const pRight = tRightTail(t, df);
+    const pLeft = tLeftTail(t, df);
+    const pTwo = tTwoTail(t, df);
+    const pSelected = selectedP(t, df, tail);
+    const critical = selectedCritical(alpha, df, tail);
+
+    const hypothesis = tail === 'gt' ? 'H₁: μd > 0' : tail === 'lt' ? 'H₁: μd < 0' : 'H₁: μd ≠ 0';
+
+    writeResult('paired', {
+      se, t, df, pRight, pLeft, pTwo, pSelected, critical, diff: dmean, alpha, hypothesis,
+      details: `
+        <p><strong>Mean paired difference:</strong> d̄ = ${formatNumber(dmean)}</p>
+        <p><strong>Standard Error:</strong> s<sub>d</sub> / √n = ${formatNumber(dsd)} / √${formatNumber(n)} = ${formatNumber(se)}</p>
+        <p><strong>t statistic:</strong> d̄ / (s<sub>d</sub> / √n) = ${formatNumber(t)}</p>
+        <p><strong>Degrees of freedom:</strong> n − 1 = ${formatNumber(df)}</p>
+        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
+      `
+    });
+  }
+
+  function clearInputs(type) {
+    const panel = panels[type];
+    panel.querySelectorAll('input[type="number"]').forEach(input => {
+      if (input.id.endsWith('-alpha')) input.value = '0.05';
+      else input.value = '';
+    });
+    panel.querySelectorAll('select[id$="-tail"]').forEach(select => select.selectedIndex = 2);
+    const msg = document.getElementById(`msg-${type}`);
+    if (msg) setMessage(msg, '');
+    clearResult(type);
+  }
+
+  function bindHelp(type) {
+    const btn = panels[type].querySelector(`[data-help="${type}"]`);
+    const help = document.getElementById(`help-${type}`);
+    if (!btn || !help) return;
+
+    btn.addEventListener('click', () => {
+      const current = help.classList.contains('show');
+      closeHelpCards();
+      if (current) return;
+
+      help.classList.add('show');
+      renderHelpFlow(type, help);
+    });
+  }
+
+  function renderHelpFlow(type, container) {
+    container.innerHTML = `
+      <p class="help-question">Step 1: How many groups or conditions are you comparing?</p>
+      <div class="choice-list">
+        <button type="button" class="choice-btn" data-choice="one">One group compared with a known or hypothesized value</button>
+        <button type="button" class="choice-btn" data-choice="two">Two groups or conditions</button>
+      </div>
+    `;
+
+    container.querySelectorAll('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const choice = btn.dataset.choice;
+        if (choice === 'one') {
+          showRecommendation('one', container);
+        } else {
+          showPairingQuestion(container);
+        }
+      });
+    });
+  }
+
+  function showPairingQuestion(container) {
+    container.innerHTML = `
+      <p class="help-question">Step 2: Are the two groups or measurements naturally paired?</p>
+      <div class="choice-list">
+        <button type="button" class="choice-btn" data-choice="paired">Yes — same subjects, before/after, or matched pairs</button>
+        <button type="button" class="choice-btn" data-choice="independent">No — the two groups are separate and unrelated</button>
+      </div>
+    `;
+
+    container.querySelectorAll('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.choice === 'paired') {
+          showRecommendation('paired', container);
+        } else {
+          showVarianceQuestion(container);
+        }
+      });
+    });
+  }
+
+  function showVarianceQuestion(container) {
+    container.innerHTML = `
+      <p class="help-question">Step 3: Can equal population variances reasonably be assumed?</p>
+      <div class="choice-list">
+        <button type="button" class="choice-btn" data-choice="pooled">Yes — equal variances are reasonably justified</button>
+        <button type="button" class="choice-btn" data-choice="welch">No / Not sure — equal variances are not assumed</button>
+      </div>
+      <p class="muted" style="margin-top:10px;font-size:13px;">When you are not confident that the population variances are equal, Welch's test is generally the safer independent-samples choice.</p>
+    `;
+
+    container.querySelectorAll('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', () => showRecommendation(btn.dataset.choice, container));
+    });
+  }
+
+  function showRecommendation(type, container) {
+    const info = TEST_INFO[type];
+    container.innerHTML = `
+      <p class="help-question">Recommended: ${info.title}</p>
+      <p>${info.fit}</p>
+      <div class="check-example">${info.example}</div>
+      <div class="check-actions">
+        <button type="button" class="success" data-use="${type}">Use this test</button>
+        <button type="button" class="secondary" data-restart>Start over</button>
+      </div>
+    `;
+
+    container.querySelector('[data-use]').addEventListener('click', () => {
+      testType.value = type;
+      togglePanels();
+      closeHelpCards();
+      panels[type].scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    container.querySelector('[data-restart]').addEventListener('click', () => {
+      renderHelpFlow(type, container);
+    });
+  }
+
+  function bindPanelEvents() {
+    bindHelp('one');
+    bindHelp('welch');
+    bindHelp('pooled');
+    bindHelp('paired');
+
+    document.getElementById('calc-one').addEventListener('click', calculateOne);
+    document.getElementById('calc-welch').addEventListener('click', () => calculateIndependent('welch'));
+    document.getElementById('calc-pooled').addEventListener('click', () => calculateIndependent('pooled'));
+    document.getElementById('calc-paired').addEventListener('click', calculatePaired);
+
+    document.getElementById('clear-one').addEventListener('click', () => clearInputs('one'));
+    document.getElementById('clear-welch').addEventListener('click', () => clearInputs('welch'));
+    document.getElementById('clear-pooled').addEventListener('click', () => clearInputs('pooled'));
+    document.getElementById('clear-paired').addEventListener('click', () => clearInputs('paired'));
+  }
+
+  renderPanels();
+  togglePanels();
+})();
+</script>
+</body>
+</html>
