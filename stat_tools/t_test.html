@@ -1093,7 +1093,13 @@
   }
 
   function decisionText(type, direction, p, alpha, diff) {
-    const reject = p < alpha;
+    // Treat numerically indistinguishable p-values at alpha as exactly alpha.
+    // This prevents floating-point rounding from changing the decision at the
+    // theoretical boundary p = alpha. Values farther than the tolerance retain
+    // their normal p < alpha / p > alpha behavior.
+    const boundaryTolerance = 1e-12;
+    const decisionP = Math.abs(p - alpha) <= boundaryTolerance ? alpha : p;
+    const reject = decisionP < alpha;
     const isOne = type === 'one';
     const isPaired = type === 'paired';
 
