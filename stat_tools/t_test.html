@@ -1087,7 +1087,9 @@
   }
 
   function selectedCritical(alpha, df, tail) {
-    return tCritical(alpha, df, tail === 'neq');
+    const critical = tCritical(alpha, df, tail === 'neq');
+    if (tail === 'lt') return -critical;
+    return critical;
   }
 
   function decisionText(type, direction, p, alpha, diff) {
