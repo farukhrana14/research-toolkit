@@ -1215,7 +1215,7 @@
         <p><strong>Standard Error:</strong> s / √n = ${formatNumber(sd)} / √${formatNumber(n)} = ${formatNumber(se)}</p>
         <p><strong>t statistic:</strong> (x̄ − μ₀) / (s / √n) = ${formatNumber(t)}</p>
         <p><strong>Degrees of freedom:</strong> n − 1 = ${formatNumber(df)}</p>
-        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Calculated p-value:</strong> ${formatPValue(pSelected)}</p>
         <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
       `
     });
@@ -1300,7 +1300,7 @@
         <p><strong>Standard Error:</strong> ${formatNumber(se)}</p>
         <p><strong>t statistic:</strong> (x̄₁ − x̄₂) / SE = ${formatNumber(t)}</p>
         ${extra}
-        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Calculated p-value:</strong> ${formatPValue(pSelected)}</p>
         <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
       `
     });
@@ -1352,7 +1352,7 @@
         <p><strong>Standard Error:</strong> s<sub>d</sub> / √n = ${formatNumber(dsd)} / √${formatNumber(n)} = ${formatNumber(se)}</p>
         <p><strong>t statistic:</strong> d̄ / (s<sub>d</sub> / √n) = ${formatNumber(t)}</p>
         <p><strong>Degrees of freedom:</strong> n − 1 = ${formatNumber(df)}</p>
-        <p><strong>Selected p-value:</strong> ${formatPValue(pSelected)}</p>
+        <p><strong>Calculated p-value:</strong> ${formatPValue(pSelected)}</p>
         <p><strong>Critical t:</strong> ${formatNumber(critical)}</p>
       `
     });
