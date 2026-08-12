@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Statistics Learning Lab</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6fb;
+      color: #222;
+      min-height: 100vh;
+      padding: 48px 20px 60px;
+    }
+    .header {
+      max-width: 860px;
+      margin: 0 auto 48px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      color: #1A365D;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #666;
+      font-style: italic;
+      font-size: 1rem;
+    }
+    .toolkit {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .cluster {
+      margin-bottom: 48px;
+    }
+    .cluster + .cluster {
+      padding-top: 36px;
+      border-top: 1.5px solid #e0e6f7;
+    }
+    .cluster-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1A365D;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 4px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 22px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow 0.2s, transform 0.15s;
+      text-decoration: none;
+      color: inherit;
+      border: 1.5px solid transparent;
+    }
+    .card.live:hover {
+      box-shadow: 0 6px 24px rgba(67,97,238,0.13);
+      transform: translateY(-2px);
+      border-color: #c3cdf7;
+    }
+    .card.soon {
+      opacity: 0.6;
+      cursor: default;
+      pointer-events: none;
+    }
+    .card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .card-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge-live {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 20px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-soon {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #f0f0f0;
+      color: #888;
+      border-radius: 20px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.55;
+    }
+    .card-action-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .card-action-links a {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1F497D;
+      text-decoration: none;
+      background: #f0f4f9;
+      padding: 4px 10px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .card-action-links a:hover {
+      background: #dbeafe;
+      color: #1E3A8A;
+    }
+    @media (max-width: 540px) {
+      .header h1 { font-size: 1.5rem; }
+      .card { padding: 18px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Business Statistics Learning Lab</h1>
+  <p>Practical datasets, mini cases, and analytical toolkits for 1st-year students</p>
+</div>
+
+<div class="toolkit">
+
+  <!-- Cluster 1: Applied Mini Cases & Datasets -->
+  <div class="cluster">
+    <div class="cluster-title">📁 Active Mini Case Studies</div>
+    <div class="card-grid">
+
+      <!-- LIVE CARD: Mini Case & Dataset -->
+      <div class="card live">
+        <div class="card-icon">💼</div>
+        <div class="card-title">
+          <span>Mini Case (Stat)</span>
+          <span class="badge-live">Live</span>
+        </div>
+        <div class="card-desc">
+          Evaluating Consumer Behavior in Bangladesh's Digital Payment Ecosystem (N=60 primary dataset).
+        </div>
+        <div class="card-action-links">
+          <a href="mini_case.html">Mini Case</a>
+          <a href="data_table.html">Data here</a>
+        </div>
+      </div>
+
+      <!-- COMING SOON: Lab 2 -->
+      <div class="card soon">
+        <div class="card-icon">🎲</div>
+        <div class="card-title">
+          <span>Probability & Normal Curve Lab</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Interactive visualizer for empirical rule, z-scores, and probability density functions.</div>
+      </div>
+
+      <!-- COMING SOON: Lab 3 -->
+      <div class="card soon">
+        <div class="card-icon">📊</div>
+        <div class="card-title">
+          <span>Descriptive Stats & Pivot Master</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Guided workflow for calculating measures of central tendency and frequency distributions.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Cluster 2: Inferential Tools & Reference Guides -->
+  <div class="cluster">
+    <div class="cluster-title">🧪 Analytics & Formula Toolkits</div>
+    <div class="card-grid">
+
+      <!-- COMING SOON: Lab 4 -->
+      <div class="card soon">
+        <div class="card-icon">🔬</div>
+        <div class="card-title">
+          <span>Hypothesis Testing Decision Tree</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Interactive guide to select between 1-sample t-tests, independent t-tests, and ANOVA.</div>
+      </div>
+
+      <!-- COMING SOON: Lab 5 -->
+      <div class="card soon">
+        <div class="card-icon">📈</div>
+        <div class="card-title">
+          <span>Correlation & Regression Simulator</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Scatterplot builder to analyze bivariate relationships, $R^2$, and regression trends.</div>
+      </div>
+
+      <!-- COMING SOON: Lab 6 -->
+      <div class="card soon">
+        <div class="card-icon">💡</div>
+        <div class="card-title">
+          <span>Excel Stat Formulas Cheat Sheet</span>
+          <span class="badge-soon">Coming Soon</span>
+        </div>
+        <div class="card-desc">Quick reference guide and practice worksheets for standard Excel statistical functions.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
