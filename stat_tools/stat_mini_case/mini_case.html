@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Case Study: Consumer Behavior in Bangladesh's Digital Payment Ecosystem</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 25px;
+            background-color: #f4f6f9;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #1F497D;
+            border-bottom: 3px solid #1F497D;
+            padding-bottom: 10px;
+            font-size: 26px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-top: 30px;
+            border-left: 4px solid #1F497D;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #1F497D;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+        p, li {
+            font-size: 14.5px;
+            color: #4a5568;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 13.5px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #e2e8f0;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13.5px;
+        }
+        th {
+            background-color: #1F497D;
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .code-block {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .badge {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .note-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .obj-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Mini Case Study: Evaluating Consumer Behavior in Bangladesh's Digital Payment Ecosystem</h1>
+
+    <h2>1. Background of the Study</h2>
+    <p>
+        Digital payments are an important part of Bangladesh’s evolving financial system. Bangladesh Bank monitors a broad ecosystem of payment channels and publishes data on payment-system activity, cards, Internet banking, mobile financial services (MFS), QR-code transactions and related systems. In this mini case, you will collect primary data from people accessible to you, analyse the data in Excel, and compare selected patterns with official Bangladesh Bank information.
+    </p>
+
+    <hr class="section-divider">
+
+    <h2>2. Analytical Objectives</h2>
+    <p>To evaluate adoption dynamics and inform decision-making, the study addresses the following six key statistical objectives:</p>
+    <ul>
+        <li><strong>Objective 1 (Demographic Profiling):</strong> Examine the demographic composition (Age Group and Occupation) of digital payment users and evaluate market share across primary payment platforms.</li>
+        <li><strong>Objective 2 (Transaction Frequency Benchmarking):</strong> Benchmark the monthly transaction frequency of active users against the industry standard of 20 transactions per month.</li>
+        <li><strong>Objective 3 (Spending Disparities):</strong> Assess whether average monthly digital spending differs significantly between students and employed individuals.</li>
+        <li><strong>Objective 4 (Perceptual Comparison):</strong> Compare consumer perceptions of transaction convenience against their evaluation of platform security.</li>
+        <li><strong>Objective 5 (Age-Based Spending Variation):</strong> Evaluate whether average monthly digital expenditures vary significantly across different age brackets.</li>
+        <li><strong>Objective 6 (Drivers of Digital Spending):</strong> Model the extent to which monthly digital transaction spending can be predicted by transaction volume, convenience ratings, and security perceptions.</li>
+    </ul>
+
+    <hr class="section-divider">
+
+    <h2>3. Alignment Matrix: Objectives, Survey Questions & Statistical Analysis</h2>
+    <p>The table below establishes the direct mapping between each analytical objective, the corresponding survey questions, and the statistical techniques required in Microsoft Excel:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">Objective</th>
+                <th style="width: 25%;">Survey Question(s) Included</th>
+                <th style="width: 20%;">Variable Type</th>
+                <th style="width: 40%;">Suggested Statistical Analysis</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Objective 1</strong></td>
+                <td>Q1 (Age Group), Q2 (Occupation), Q3 (Primary Service)</td>
+                <td>Categorical / Nominal</td>
+                <td>Frequency Distributions, Percentages, and Categorical Pivot Tables</td>
+            </tr>
+            <tr>
+                <td><strong>Objective 2</strong></td>
+                <td>Q5 (Monthly Transactions Count)</td>
+                <td>Continuous Ratio</td>
+                <td>Descriptive Statistics (Mean, Std Dev) & <strong>One-Sample t-Test</strong> (H<sub>0</sub>: &mu; = 20)</td>
+            </tr>
+            <tr>
+                <td><strong>Objective 3</strong></td>
+                <td>Q2 (Occupation) vs. Q6 (Monthly Spend in Tk)</td>
+                <td>Binary Categorical vs. Continuous Ratio</td>
+                <td>Group Summary Statistics & <strong>Two-Sample Independent t-Test</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Objective 4</strong></td>
+                <td>Q7 (Convenience Rating) vs. Q8 (Security Rating)</td>
+                <td>Paired Ordinal / Metric Likert Scales (1–5)</td>
+                <td>Mean Difference & <strong>Paired-Samples t-Test</strong> (or Wilcoxon Signed-Rank)</td>
+            </tr>
+            <tr>
+                <td><strong>Objective 5</strong></td>
+                <td>Q1 (Age Group) vs. Q6 (Monthly Spend in Tk)</td>
+                <td>Multi-category Ordinal vs. Continuous Ratio</td>
+                <td>Group Means & <strong>One-Way Analysis of Variance (ANOVA)</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Objective 6</strong></td>
+                <td>Q6 (Spend) vs. Q5 (Tx Count), Q7 (Convenience), Q8 (Security)</td>
+                <td>Continuous Dependent vs. Multiple Predictors</td>
+                <td>Correlation Matrix & <strong>Multiple Linear Regression Analysis</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr class="section-divider">
+
+    <h2>4. Student Instructions & Data Preparation Guide</h2>
+
+    <div class="note-box">
+        <strong>Step 0: Convert Dataset to an Official Excel Table</strong><br>
+        Before performing any analysis or creating helper columns, convert your raw dataset into an Excel Table.
+        <ol style="margin-bottom:0; padding-left:20px;">
+            <li>Open `Digital_Payment_Student_Dataset_N60.xlsx` in Excel.</li>
+            <li>Click any single cell inside the data range (e.g., cell `A1`).</li>
+            <li>Press <span class="badge">Ctrl + T</span> (or go to <strong>Insert &rarr; Table</strong>).</li>
+            <li>Ensure the box <em>"My table has headers"</em> is checked and click <strong>OK</strong>.</li>
+        </ol>
+        <em>Benefit: Converting to an Excel Table automatically expands helper column formulas across all 60 rows instantly!</em>
+    </div>
+
+    <h3>Instruction 1: Building Pivot Tables for Frequency & Summary Distributions</h3>
+    <p>To analyze the distribution of each variable, construct Pivot Tables from your Excel Table:</p>
+    <ul>
+        <li>Select any cell in your Excel Table &rarr; Go to <strong>Insert &rarr; PivotTable</strong> &rarr; Select <strong>New Worksheet</strong> &rarr; Click <strong>OK</strong>.</li>
+        <li><strong>For Categorical Variables (Q1, Q2, Q3, Q4, Q10):</strong>
+            <ul>
+                <li>Drag the variable (e.g., `Q1_Age_Group`) into the <strong>Rows</strong> area.</li>
+                <li>Drag `Resp_ID` into the <strong>Values</strong> area and set it to <strong>Count</strong>.</li>
+                <li>Right-click any value in the Pivot Table &rarr; <strong>Show Values As &rarr; % of Grand Total</strong> to display frequency percentages.</li>
+            </ul>
+        </li>
+        <li><strong>For Continuous Variables (Q5, Q6):</strong>
+            <ul>
+                <li>Drag the variable (e.g., `Q6_Monthly_Spend_Tk`) to the <strong>Values</strong> area.</li>
+                <li>Click the drop-down on the value field &rarr; <strong>Value Field Settings</strong> &rarr; Summarize by <strong>Average</strong>, <strong>StdDev</strong>, <strong>Min</strong>, or <strong>Max</strong>.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>Instruction 2: Helper Column for Q1 Age Group Midpoints</h3>
+    <p>To perform quantitative calculations (such as mean age estimation) on ordinal age brackets, convert age categories into continuous midpoints:</p>
+    <ul>
+        <li><strong>Midpoint Mapping:</strong> `Under 20` &rarr; <strong>18</strong> | `20–25` &rarr; <strong>22.5</strong> | `26–30` &rarr; <strong>28</strong> | `Above 30` &rarr; <strong>33</strong></li>
+        <li>Add a new column named <strong>`Q1_Helper`</strong> directly to the right of `Q1_Age_Group` (Column D).</li>
+        <li>Enter the following nested `IF` formula in cell `D2`:</li>
+    </ul>
+    <div class="code-block">=IF(C2="Under 20", 18, IF(C2="20–25", 22.5, IF(C2="26–30", 28, IF(C2="Above 30", 33, ""))))</div>
+
+    <h3>Instruction 3: Helper Column for Q4 Usage Frequency Conversion</h3>
+    <p>Convert text-based ordinal responses into numerical scale values for quantitative scoring:</p>
+    <ul>
+        <li><strong>Numeric Mapping:</strong> `Rarely` &rarr; <strong>1</strong> | `Occasionally` &rarr; <strong>2</strong> | `Frequently` &rarr; <strong>3</strong> | `Very frequently` &rarr; <strong>4</strong></li>
+        <li>Add a new column named <strong>`Q4_Helper`</strong> directly to the right of `Q4_Usage_Frequency` (Column H).</li>
+        <li>Enter the following nested `IF` formula in cell `H2` (Column H):</li>
+    </ul>
+    <div class="code-block">=IF(G2="Rarely", 1, IF(G2="Occasionally", 2, IF(G2="Frequently", 3, IF(G2="Very frequently", 4, ""))))</div>
+
+    <h3>Instruction 4: Helper Column for Q5 Monthly Transactions Class Bins</h3>
+    <p>Convert continuous transaction counts into discrete frequency classes to construct grouped frequency tables:</p>
+    <ul>
+        <li><strong>Bin Thresholds:</strong> &le; 10 (`10 or Less`) | 11 - 20 (`11 - 20`) | 21 - 30 (`21 - 30`) | &gt; 30 (`Above 30`)</li>
+        <li>Add a new column named <strong>`Q5_Helper`</strong> directly to the right of `Q5_Monthly_Transactions` (Column J).</li>
+        <li>Enter the following nested `IF` formula in cell `J2` (Column J):</li>
+    </ul>
+    <div class="code-block">=IF(I2<=10, "10 or Less", IF(I2<=20, "11 - 20", IF(I2<=30, "21 - 30", "Above 30")))</div>
+
+    <h3>Instruction 5: Helper Column for Q6 Monthly Spend Class Bins</h3>
+    <p>Segment continuous digital spending into monetary brackets for categorical breakdown:</p>
+    <ul>
+        <li><strong>Bin Thresholds:</strong> &le; 8,000 (`Tk 8,000 or Less`) | 8,001 - 14,000 (`Tk 8,001 - 14,000`) | 14,001 - 20,000 (`Tk 14,001 - 20,000`) | &gt; 20,000 (`Above Tk 20,000`)</li>
+        <li>Add a new column named <strong>`Q6_Helper`</strong> directly to the right of `Q6_Monthly_Spend_Tk` (Column L).</li>
+        <li>Enter the following nested `IF` formula in cell `L2` (Column L):</li>
+    </ul>
+    <div class="code-block">=IF(K2<=8000, "Tk 8,000 or Less", IF(K2<=14000, "Tk 8,001 - 14,000", IF(K2<=20000, "Tk 14,001 - 20,000", "Above Tk 20,000")))</div>
+
+    <h3>Instruction 6: Helper Columns for Likert Scales (Q7, Q8, Q9)</h3>
+    <p>Map numeric Likert ratings (1 to 5) back to descriptive agreement text labels:</p>
+    <ul>
+        <li><strong>Text Mapping:</strong> `1` &rarr; <strong>Strongly Disagree</strong> | `2` &rarr; <strong>Disagree</strong> | `3` &rarr; <strong>Neutral</strong> | `4` &rarr; <strong>Agree</strong> | `5` &rarr; <strong>Strongly Agree</strong></li>
+        <li>Add helper columns named <strong>`Q7_Helper`</strong> (Column N), <strong>`Q8_Helper`</strong> (Column P), and <strong>`Q9_Helper`</strong> (Column R).</li>
+        <li>Enter the following nested `IF` formula for Q7 in cell `N2` (Column N):</li>
+    </ul>
+    <div class="code-block">=IF(M2=1, "Strongly Disagree", IF(M2=2, "Disagree", IF(M2=3, "Neutral", IF(M2=4, "Agree", IF(M2=5, "Strongly Agree", "")))))</div>
+    <p><em>Note: Apply identical logic for Q8 (`Q8_Security_Rating` in cell `O2`) and Q9 (`Q9_Cash_Preference` in cell `Q2`).</em></p>
+
+    <hr class="section-divider">
+
+    <h2>5. Objectives Explained</h2>
+
+    <div class="obj-card">
+        <h3>Objective 1 — Demographic Profiling</h3>
+        <p class="subtitle">Describing</p>
+        <p>This objective is about describing who the digital payment users are. The study will look at their age groups and occupations to understand the types of people who use digital payment services. It will also examine how users are distributed among the major payment platforms. In simple terms, the objective answers: Who are the users, and which payment platforms are most commonly used?</p>
+    </div>
+
+    <div class="obj-card">
+        <h3>Objective 2 — Transaction Frequency Benchmarking</h3>
+        <p class="subtitle">Testing one group</p>
+        <p>This objective examines whether the average number of digital payment transactions made by active users each month is different from the industry standard of 20 transactions per month. In other words, the study will determine whether users are making transactions at a level that is significantly different from the established benchmark.</p>
+    </div>
+
+    <div class="obj-card">
+        <h3>Objective 3 — Spending Disparities</h3>
+        <p class="subtitle">Comparing two groups</p>
+        <p>This objective compares the average monthly digital spending of students and employed individuals. The purpose is to determine whether the two groups have different average spending levels, and whether any observed difference is statistically significant.</p>
+    </div>
+
+    <div class="obj-card">
+        <h3>Objective 4 — Perceptual Comparison</h3>
+        <p class="subtitle">Comparing paired measurements</p>
+        <p>This objective compares two different perceptions given by the same consumers: their perception of transaction convenience and their evaluation of platform security. The purpose is to determine whether consumers rate convenience and security differently.</p>
+    </div>
+
+    <div class="obj-card">
+        <h3>Objective 5 — Age-Based Spending Variation</h3>
+        <p class="subtitle">Comparing multiple groups</p>
+        <p>This objective examines whether average monthly digital spending differs among different age groups. Rather than comparing only two groups, the study considers several age brackets together to determine whether age groups have significantly different average spending levels.</p>
+    </div>
+
+    <div class="obj-card">
+        <h3>Objective 6 — Drivers of Digital Spending</h3>
+        <p class="subtitle">Predicting outcomes</p>
+        <p>This objective goes beyond simply comparing groups. It examines whether monthly digital spending can be predicted using transaction volume, convenience ratings, and security perceptions. It also helps determine how strongly these factors are associated with spending and how much they collectively help explain differences in monthly digital spending.</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 35px; margin-bottom: 10px;" class="no-print">
+        <button onclick="window.print()" style="
+            background-color: #1F497D;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download / Print as PDF
+        </button>
+    </div>
+
+</div>
+
+</body>
+</html>

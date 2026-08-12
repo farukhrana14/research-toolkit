@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Payment Survey Dataset Generator (N=60)</title>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; background: #f4f6f9; color: #333; }
+        .container { max-width: 1250px; margin: auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eef2f5; }
+        .btn { border: none; padding: 12px 20px; font-size: 14px; font-weight: bold; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn-download { background-color: #1F497D; color: white; }
+        .btn-download:hover { background-color: #153256; }
+        .table-container { max-height: 550px; overflow-y: auto; overflow-x: auto; border: 1px solid #e0e0e0; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th { background-color: #1F497D; color: white; padding: 12px 10px; position: sticky; top: 0; z-index: 10; font-weight: 600; white-space: nowrap; }
+        td { padding: 10px; border-bottom: 1px solid #eeeeee; white-space: nowrap; }
+        tr:nth-child(even) { background-color: #f9fbfd; }
+        tr:hover { background-color: #f1f5f9; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .badge { background-color: #e8f4fd; color: #1F497D; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-actions">
+        <div>
+            <h1 style="color:#1F497D; margin:0 0 5px 0; font-size:24px;">Digital Payment Survey Dataset</h1>
+            <p style="margin:0; color:#555; font-size:14px;">
+                Course: <strong>Introduction to Business Statistics</strong> | Sample Size: <span class="badge">N = 60 responses</span>
+            </p>
+        </div>
+        <div>
+            <!-- Single direct download button -->
+            <button class="btn btn-download" onclick="downloadExcel()">
+                📥 Download Excel File (.xlsx)
+            </button>
+        </div>
+    </div>
+
+    <!-- Table preview visible to students -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Resp_ID</th>
+                    <th>Timestamp</th>
+                    <th>Q1 Age Group</th>
+                    <th>Q2 Occupation</th>
+                    <th>Q3 Primary Service</th>
+                    <th>Q4 Usage Frequency</th>
+                    <th>Q5 Monthly Tx</th>
+                    <th>Q6 Spend (Tk)</th>
+                    <th>Q7 Convenience</th>
+                    <th>Q8 Security</th>
+                    <th>Q9 Cash Pref</th>
+                    <th>Q10 Main Reason</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- Box-Muller Transformation for Normal Distribution ---
+    function randNormal(mean, std) {
+        let u1 = 0, u2 = 0;
+        while (u1 === 0) u1 = Math.random(); 
+        while (u2 === 0) u2 = Math.random();
+        let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        return mean + z0 * std;
+    }
+
+    function randNormalBounded(mean, std, minVal, maxVal, isInt = true) {
+        let val = randNormal(mean, std);
+        val = Math.max(minVal, Math.min(maxVal, val));
+        return isInt ? Math.round(val) : val;
+    }
+
+    function randChoice(options, probabilities) {
+        let rand = Math.random();
+        let sum = 0;
+        for (let i = 0; i < options.length; i++) {
+            sum += probabilities[i];
+            if (rand <= sum) return options[i];
+        }
+        return options[options.length - 1];
+    }
+
+    let currentDataset = [];
+
+    // Runs automatically when the page loads
+    function generateNewDataset() {
+        currentDataset = [];
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+
+        const ageOptions = ['Under 20', '20–25', '26–30', 'Above 30'];
+        const serviceOptions = ['bKash', 'Nagad', 'Rocket', 'Card', 'Internet Banking'];
+        const freqOptions = ['Rarely', 'Occasionally', 'Frequently', 'Very frequently'];
+        const reasonOptions = ['Convenience', 'Speed', 'Discounts/cashback', 'Security', 'Availability'];
+
+        for (let i = 1; i <= 60; i++) {
+            let ageIdx = randNormalBounded(1.1, 0.75, 0, 3, true);
+            let ageGroup = ageOptions[ageIdx];
+            let occ = Math.random() < 0.65 ? 'Student' : 'Employed';
+            let primaryService = randChoice(serviceOptions, [0.48, 0.27, 0.08, 0.10, 0.07]);
+
+            // Q5: Monthly Transactions ~ Normal(22, 6)
+            let txCount = randNormalBounded(22, 6, 3, 45, true);
+
+            // Q4: Usage Frequency mapped from transactions
+            let freqIdx = (txCount <= 8) ? 0 : (txCount <= 16) ? 1 : (txCount <= 26) ? 2 : 3;
+            let usageFreq = freqOptions[freqIdx];
+
+            // Likert ratings ~ Normal
+            let convRating = randNormalBounded(4.1, 0.85, 1, 5, true);
+            let secRating = randNormalBounded(3.8, 0.90, 1, 5, true);
+            let cashPref = randNormalBounded(3.9, 0.88, 1, 5, true);
+
+            // Q6: Monthly Spend ~ Normal (adjusted by occupation)
+            let meanSpend = (occ === 'Employed') ? 16500 : 9800;
+            let rawSpend = randNormal(meanSpend, 2800);
+            let spendTk = Math.round(Math.max(1200, rawSpend) / 100) * 100;
+
+            let mainReason = randChoice(reasonOptions, [0.40, 0.25, 0.15, 0.12, 0.08]);
+            let respID = `R-${String(i).padStart(3, '0')}`;
+            let timestamp = `2026-08-01 10:${String(i).padStart(2, '0')}:00`;
+
+            let rowData = {
+                Resp_ID: respID,
+                Timestamp: timestamp,
+                Q1_Age_Group: ageGroup,
+                Q2_Occupation: occ,
+                Q3_Primary_Service: primaryService,
+                Q4_Usage_Frequency: usageFreq,
+                Q5_Monthly_Transactions: txCount,
+                Q6_Monthly_Spend_Tk: spendTk,
+                Q7_Convenience_Rating: convRating,
+                Q8_Security_Rating: secRating,
+                Q9_Cash_Preference: cashPref,
+                Q10_Main_Reason: mainReason
+            };
+
+            currentDataset.push(rowData);
+
+            // Render row into HTML table
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center"><strong>${respID}</strong></td>
+                <td class="text-center">${timestamp}</td>
+                <td class="text-center">${ageGroup}</td>
+                <td>${occ}</td>
+                <td>${primaryService}</td>
+                <td>${usageFreq}</td>
+                <td class="text-right">${txCount}</td>
+                <td class="text-right"><strong>${spendTk.toLocaleString()}</strong></td>
+                <td class="text-center">${convRating}</td>
+                <td class="text-center">${secRating}</td>
+                <td class="text-center">${cashPref}</td>
+                <td>${mainReason}</td>
+            `;
+            tableBody.appendChild(tr);
+        }
+    }
+
+    function downloadExcel() {
+        if (currentDataset.length === 0) return;
+        const ws = XLSX.utils.json_to_sheet(currentDataset);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dataset (N=60)");
+        XLSX.writeFile(wb, "Digital_Payment_Student_Dataset_N60.xlsx");
+    }
+
+    // Auto-generate as soon as page is loaded
+    window.onload = generateNewDataset;
+</script>
+
+</body>
+</html>
