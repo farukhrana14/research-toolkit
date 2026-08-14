@@ -250,7 +250,7 @@
 
           <div class="card-tools">
             <span class="card-tools-label">Also available:</span>
-            <a href="/stat_tools/z_table.html" onclick="event.stopPropagation()">Z-table</a>
+            <a href="/stat_tools/z_table.html" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">Z-table</a>
           </div>
         </div>
 
@@ -266,6 +266,19 @@
             Perform one-sample, independent two-sample, Welch, pooled-variance,
             and paired-sample t-tests with clear decision output for classroom
             and research training use.
+          </p>
+        </div>
+        <div class="card-footer">
+          <span class="status live">Live</span>
+        </div>
+      </div>
+
+      <div class="card card-link" onclick="window.location.href='/stat_tools/proportion_test.html'" role="link" tabindex="0" onkeydown="if(event.key==='Enter' || event.key===' '){ window.location.href='/stat_tools/proportion_test.html'; }">
+        <div>
+          <h2>Proportion Test</h2>
+          <p>
+            Perform one-proportion and two-proportion tests, including exact
+            binomial testing for small samples.
           </p>
         </div>
         <div class="card-footer">
