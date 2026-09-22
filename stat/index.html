@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https\://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=81cdf3cb-4f83-4c50-9a70-63664992240f
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="hosting-provider" content="Netlify">
+<meta name="netlify-deploy" content="https\://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=81cdf3cb-4f83-4c50-9a70-63664992240f">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business Statistics Learning Lab</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    \* { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background: #f4f6fb;
@@ -48,7 +53,7 @@
     }
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
       margin-top: 4px;
     }
@@ -65,7 +70,7 @@
       color: inherit;
       border: 1.5px solid transparent;
     }
-    .card.live:hover {
+    .card.live\:hover {
       box-shadow: 0 6px 24px rgba(67,97,238,0.13);
       transform: translateY(-2px);
       border-color: #c3cdf7;
@@ -130,29 +135,45 @@
       border-radius: 4px;
       transition: background 0.2s;
     }
-    .card-action-links a:hover {
+    .card-action-links a\:hover {
       background: #dbeafe;
       color: #1E3A8A;
     }
-    @media (max-width: 540px) {
+    @media (max-width: 700px) {
+      body { padding: 32px 16px 44px; }
+      .header { margin-bottom: 36px; }
       .header h1 { font-size: 1.5rem; }
+      .card-grid { grid-template-columns: 1fr; }
       .card { padding: 18px 16px; }
+      .cluster { margin-bottom: 36px; }
+      .cluster + .cluster { padding-top: 28px; }
     }
   </style>
 </head>
 <body>
-
 <div class="header">
   <h1>Business Statistics Learning Lab</h1>
   <p>Practical datasets, mini cases, and analytical toolkits for 1st-year students</p>
 </div>
-
 <div class="toolkit">
-
   <!-- Cluster 1: Applied Mini Cases & Datasets -->
   <div class="cluster">
-    <div class="cluster-title">📁 Active Mini Case Studies</div>
+    <div class="cluster-title">📁 Course Activities</div>
     <div class="card-grid">
+      <!-- LIVE CARD: Homework 01 -->
+      <div class="card live">
+        <div class="card-icon">📝</div>
+        <div class="card-title">
+          <span>Homework 01: Frequency Distribution</span>
+          <span class="badge-live">Homework</span>
+        </div>
+        <div class="card-desc">
+          Construct a grouped frequency distribution from raw business data using Excel/Google Sheets.
+        </div>
+        <div class="card-action-links">
+          <a href="https://research-toolkit.netlify.app/stat/hw_01_frequency_distribution.html">Open Homework 01</a>
+        </div>
+      </div>
 
       <!-- LIVE CARD: Mini Case & Dataset -->
       <div class="card live">
@@ -165,11 +186,10 @@
           Evaluating Consumer Behavior in Bangladesh's Digital Payment Ecosystem (N=60 primary dataset).
         </div>
         <div class="card-action-links">
-          <a href="mini_case.html">Mini Case</a>
-          <a href="data_table.html">Data here</a>
+          <a href="https://research-toolkit.netlify.app/stat/mini_case">Mini Case</a>
+          <a href="https://research-toolkit.netlify.app/stat/data_table">Data here</a>
         </div>
       </div>
-
       <!-- COMING SOON: Lab 2 -->
       <div class="card soon">
         <div class="card-icon">🎲</div>
@@ -179,7 +199,6 @@
         </div>
         <div class="card-desc">Interactive visualizer for empirical rule, z-scores, and probability density functions.</div>
       </div>
-
       <!-- COMING SOON: Lab 3 -->
       <div class="card soon">
         <div class="card-icon">📊</div>
@@ -189,15 +208,12 @@
         </div>
         <div class="card-desc">Guided workflow for calculating measures of central tendency and frequency distributions.</div>
       </div>
-
     </div>
   </div>
-
   <!-- Cluster 2: Inferential Tools & Reference Guides -->
   <div class="cluster">
     <div class="cluster-title">🧪 Analytics & Formula Toolkits</div>
     <div class="card-grid">
-
       <!-- COMING SOON: Lab 4 -->
       <div class="card soon">
         <div class="card-icon">🔬</div>
@@ -207,7 +223,6 @@
         </div>
         <div class="card-desc">Interactive guide to select between 1-sample t-tests, independent t-tests, and ANOVA.</div>
       </div>
-
       <!-- COMING SOON: Lab 5 -->
       <div class="card soon">
         <div class="card-icon">📈</div>
@@ -217,7 +232,6 @@
         </div>
         <div class="card-desc">Scatterplot builder to analyze bivariate relationships, $R^2$, and regression trends.</div>
       </div>
-
       <!-- COMING SOON: Lab 6 -->
       <div class="card soon">
         <div class="card-icon">💡</div>
@@ -227,11 +241,8 @@
         </div>
         <div class="card-desc">Quick reference guide and practice worksheets for standard Excel statistical functions.</div>
       </div>
-
     </div>
   </div>
-
 </div>
-
 </body>
 </html>
