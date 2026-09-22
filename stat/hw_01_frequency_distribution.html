@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="BUS2102 Homework 01: From Raw Business Data to Frequency Distribution">
+  <title>Homework 01 | Frequency Distribution</title>
+  <style>
+    :root {
+      --navy: #17324d;
+      --blue: #1f6f8b;
+      --blue-soft: #eaf4f7;
+      --gold: #d99b2b;
+      --ink: #202a34;
+      --muted: #607080;
+      --line: #d8e0e7;
+      --paper: #ffffff;
+      --canvas: #f3f6f8;
+      --success: #18794e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    .page {
+      width: min(980px, calc(100% - 32px));
+      margin: 34px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 45px rgba(23, 50, 77, .10);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 38px 44px 30px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      border-bottom: 5px solid var(--gold);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      opacity: .82;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.75rem, 4vw, 2.65rem);
+      line-height: 1.15;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      margin-top: 18px;
+      font-size: .95rem;
+    }
+
+    .content { padding: 36px 44px 44px; }
+
+    .intro { margin: 0 0 18px; font-size: 1.06rem; }
+
+    .data-card {
+      margin: 22px 0 28px;
+      border: 1px solid #bcd2dc;
+      border-radius: 13px;
+      overflow: hidden;
+      background: #fbfdfe;
+    }
+
+    .data-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 16px;
+      background: var(--blue-soft);
+      border-bottom: 1px solid #c8dce4;
+    }
+
+    .data-card-head strong { color: var(--navy); }
+
+    .dataset-id {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    button {
+      border: 1px solid var(--blue);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--blue);
+      background: #fff;
+      font: inherit;
+      font-size: .86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { color: #fff; background: var(--blue); }
+    button:focus-visible { outline: 3px solid rgba(217, 155, 43, .45); outline-offset: 2px; }
+
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(52px, 1fr));
+      margin: 0;
+      padding: 18px;
+      list-style: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .numbers li {
+      padding: 9px 5px;
+      text-align: center;
+      border-right: 1px solid #e8edf1;
+      border-bottom: 1px solid #e8edf1;
+    }
+
+    .numbers li:nth-child(10n) { border-right: 0; }
+    .numbers li:nth-last-child(-n + 10) { border-bottom: 0; }
+
+    h2 {
+      margin: 30px 0 12px;
+      color: var(--navy);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.42rem;
+    }
+
+    ol { margin: 0; padding-left: 1.5rem; }
+    li { padding-left: .25rem; }
+    ol > li + li { margin-top: 9px; }
+
+    .callout {
+      margin-top: 28px;
+      padding: 17px 19px;
+      border-left: 5px solid var(--gold);
+      border-radius: 0 9px 9px 0;
+      background: #fff8e8;
+    }
+
+    .callout strong { color: #704c0b; }
+
+    .note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .toast {
+      color: var(--success);
+      font-size: .82rem;
+      font-weight: 700;
+      min-height: 1.25em;
+      text-align: right;
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 18px, 980px); margin: 9px auto; border-radius: 12px; }
+      header, .content { padding-left: 22px; padding-right: 22px; }
+      .numbers { grid-template-columns: repeat(5, 1fr); padding: 12px; }
+      .numbers li:nth-child(10n) { border-right: 1px solid #e8edf1; }
+      .numbers li:nth-child(5n) { border-right: 0; }
+      .numbers li:nth-last-child(-n + 10) { border-bottom: 1px solid #e8edf1; }
+      .numbers li:nth-last-child(-n + 5) { border-bottom: 0; }
+      .data-card-head { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+      header { padding: 24px 28px 20px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .content { padding: 24px 28px; }
+      .data-card { break-inside: avoid; }
+      button, .toast, .note { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Business Statistics · Homework 01</p>
+      <h1>From Raw Business Data to Frequency Distribution</h1>
+      <div class="meta">
+        <span><strong>Marks:</strong> 10</span>
+        <span><strong>Submission:</strong> One Excel/Google Sheets file</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <p class="intro">A retail business recorded the purchase amounts (Tk.) of <strong>50 customers</strong>:</p>
+
+      <div class="data-card" aria-labelledby="data-heading">
+        <div class="data-card-head">
+          <div>
+            <strong id="data-heading">Customer purchase amounts (Tk.)</strong>
+            <span class="dataset-id" id="datasetId"></span>
+          </div>
+          <div>
+            <button id="copyButton" type="button">Copy data</button>
+            <div class="toast" id="copyStatus" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+        <ol class="numbers" id="numberList" aria-label="50 customer purchase amounts"></ol>
+      </div>
+
+      <h2>Your spreadsheet must contain</h2>
+      <ol>
+        <li>The raw data in a clearly labelled column.</li>
+        <li>Minimum, maximum and range.</li>
+        <li>A grouped frequency distribution using <strong>class interval Tk. 100</strong>.</li>
+        <li>Frequency and percentage for each class.</li>
+        <li>A check showing <strong>Total Frequency = 50</strong> and <strong>Total Percentage = 100%</strong>.</li>
+        <li>One PivotTable or equivalent spreadsheet summary.</li>
+        <li><strong>Three short observations</strong> explaining what the frequency distribution tells a manager about customer purchase amounts.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Submission requirement:</strong> The spreadsheet must contain the formulas/calculations, not only the final answers.
+      </div>
+      <p class="note">Your dataset is generated for this page load. Copy it before leaving or refreshing this page.</p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const BASE_DATA = [
+        450, 620, 780, 530, 910, 680, 740, 560, 820, 650,
+        490, 870, 720, 590, 960, 610, 760, 540, 840, 700,
+        510, 930, 670, 800, 580, 750, 630, 890, 550, 710,
+        980, 660, 770, 520, 850, 690, 730, 600, 920, 640,
+        810, 570, 880, 700, 940, 620, 790, 680, 860, 740
+      ];
+
+      // A common shift keeps the distribution compact. Small local changes
+      // ensure that students receive slightly different individual values.
+      const commonShift = randomBetween(-0.02, 0.02);
+      const data = BASE_DATA.map((value, index) => {
+        const localShift = randomBetween(-0.0075, 0.0075);
+        let changed = Math.round((value * (1 + commonShift + localShift)) / 10) * 10;
+
+        // Make sure each position changes even when rounding returns its base value.
+        if (changed === value) {
+          changed += (index + Math.random() * 2 < BASE_DATA.length / 2) ? -10 : 10;
+        }
+        return changed;
+      });
+
+      const list = document.getElementById('numberList');
+      data.forEach(value => {
+        const item = document.createElement('li');
+        item.textContent = value.toLocaleString('en-US');
+        list.appendChild(item);
+      });
+
+      document.getElementById('datasetId').textContent = `Dataset ID: ${makeDatasetId(data)}`;
+
+      document.getElementById('copyButton').addEventListener('click', async () => {
+        const status = document.getElementById('copyStatus');
+        const columnText = ['Purchase Amount (Tk.)', ...data].join('\n');
+        try {
+          await navigator.clipboard.writeText(columnText);
+          status.textContent = 'Copied as one spreadsheet column.';
+        } catch (error) {
+          status.textContent = 'Copy unavailable—select the values manually.';
+        }
+        window.setTimeout(() => { status.textContent = ''; }, 3500);
+      });
+
+      function randomBetween(min, max) {
+        return min + Math.random() * (max - min);
+      }
+
+      function makeDatasetId(values) {
+        let hash = 2166136261;
+        values.forEach(value => {
+          hash ^= value;
+          hash = Math.imul(hash, 16777619);
+        });
+        return `HW01-${(hash >>> 0).toString(36).toUpperCase().padStart(7, '0')}`;
+      }
+    })();
+  </script>
+</body>
+</html>
