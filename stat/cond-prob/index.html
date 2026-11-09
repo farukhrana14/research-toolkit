@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditional Probability II</title>
+<script>document.documentElement.className = "js"; try { var t = localStorage.getItem("cp-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<style>
+  /* ---------- colours: black on white, white on dark; purple only for notes ---------- */
+  :root {
+    --bg: #ffffff;
+    --fg: #000000;
+    --line: #9a9a9a;
+    --note: #7030A0;
+    --note-bg: #F4ECF9;
+    --fs-body: clamp(20px, min(1.9vw, 3.4vh), 30px);
+    --fs-big: clamp(22px, min(2.3vw, 4vh), 36px);
+    --fs-title: clamp(30px, min(3.6vw, 6.2vh), 56px);
+    --fs-sm: 20px;
+  }
+  :root { color-scheme: light; }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --note: #D2A8EE; --note-bg: #2A1936;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --note: #D2A8EE; --note-bg: #2A1936;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: var(--fs-body);
+    line-height: 1.45;
+  }
+  button { font: inherit; font-size: var(--fs-sm); color: var(--fg); background: transparent; cursor: pointer; }
+  button:focus-visible, a:focus-visible { outline: 3px solid var(--note); outline-offset: 3px; }
+
+  /* ---------- frame ---------- */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(16px, 3vw, 40px);
+    font-size: var(--fs-sm);
+    z-index: 5;
+  }
+  .topbar .topic { letter-spacing: .02em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
+  .pdf-btn { border: 1px solid var(--line); border-radius: 6px; padding: 3px 14px; }
+  .tools { display: flex; align-items: center; gap: 10px; }
+  .icon-btn { border: 1px solid var(--line); border-radius: 6px; width: 40px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+  .icon-btn:hover { border-color: var(--fg); }
+  .icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-btn .i-moon, .icon-btn .i-exit { display: none; }
+  :root[data-theme="light"] .i-sun { display: none; } :root[data-theme="light"] .i-moon { display: block; }
+  html.is-dark .i-sun { display: block; } html.is-dark .i-moon { display: none; }
+  html.is-light .i-sun { display: none; } html.is-light .i-moon { display: block; }
+  html.is-fs .i-enter { display: none; } html.is-fs .i-exit { display: block; }
+  html:not(.can-fs) #fs { display: none; }
+  .pdf-btn:hover { border-color: var(--fg); }
+  .progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; background: var(--fg); z-index: 6; transition: width .25s; }
+
+  .deck { position: fixed; inset: 52px 0 56px 0; }
+  .slide { display: none; height: 100%; overflow-y: auto; padding: 4px clamp(16px, 6vw, 110px) 12px; }
+  .js .slide.active { display: flex; flex-direction: column; justify-content: center; }
+  .js .slide.quiz.active { justify-content: flex-start; padding-top: clamp(6px, 3vh, 48px); }
+  html:not(.js) .slide { display: block; margin-bottom: 40px; }
+  .content { width: min(100%, max(56vw, 620px)); }
+  .content.wide { width: min(100%, max(78vw, 700px)); }
+
+  .navbar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(16px, 3vw, 40px);
+    font-size: var(--fs-sm);
+  }
+  .navbar button { border: 1px solid var(--line); border-radius: 6px; padding: 4px 20px; min-width: 120px; }
+  .navbar button:hover:not(:disabled) { border-color: var(--fg); }
+  .navbar button:disabled { opacity: .35; cursor: default; }
+  .counter { text-align: center; }
+
+  /* ---------- text ---------- */
+  h1 { font-size: var(--fs-title); line-height: 1.12; font-weight: 700; margin-bottom: .4em; }
+  p, li, td, th { font-size: var(--fs-body); }
+  p { margin-bottom: .5em; }
+  ul { margin: 0 0 .7em 1.2em; }
+  li { margin-bottom: .25em; }
+  .big { font-size: var(--fs-big); }
+  .tag { font-size: var(--fs-sm); margin-bottom: .5em; letter-spacing: .02em; opacity: .75; }
+  .note { color: var(--note); background: var(--note-bg); padding: .35em .7em; border-radius: 6px; display: inline-block; }
+  .formula { font-size: var(--fs-big); font-weight: 600; white-space: nowrap; }
+  a.go { color: inherit; text-decoration: none; }
+  a.go:hover .t { text-decoration: underline; }
+
+  /* outline on slide 1 */
+  .outline { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 3vw; margin-top: .6em; }
+  .outline h2 { font-size: var(--fs-body); font-weight: 700; margin: .2em 0; }
+  .outline ol { list-style: none; margin: 0; }
+  .outline li { display: flex; gap: .7em; margin: 0; line-height: 1.4; font-size: var(--fs-sm); }
+  .outline .n { min-width: 3.3em; font-weight: 700; color: var(--note); }
+  .subtitle { font-size: var(--fs-big); margin-bottom: .6em; }
+
+  /* tables */
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: .35em .8em .35em 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 700; }
+  td.c, th.c { text-align: center; }
+
+  /* venn */
+  .pair { display: flex; flex-wrap: wrap; gap: 2vw 4vw; align-items: flex-start; }
+  figure { margin: 0 0 .6em; }
+  figcaption { font-size: var(--fs-body); margin-top: .2em; }
+  svg.venn { display: block; width: min(100%, 460px, 64vh); min-width: 330px; height: auto; }
+  svg.venn circle { fill: none; stroke: var(--fg); stroke-width: 2.5; }
+  svg.venn .shade { fill: var(--note); fill-opacity: .24; stroke: none; }
+  svg.venn text { fill: var(--fg); font-family: inherit; font-size: 24px; }
+  svg.venn text.num { font-size: 30px; font-weight: 700; }
+  .split { display: flex; flex-wrap: wrap; gap: 2vw 4vw; align-items: center; }
+  .split > div { flex: 1 1 320px; }
+  .split > div.wider { flex: 1 1 520px; }
+
+  /* flow-chart */
+  .flow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 16px; text-align: center; align-items: stretch; }
+  .flow .decision, .flow .end { padding: .5em .7em; border-radius: 8px; font-size: var(--fs-body); }
+  .flow .decision { border: 2px solid var(--fg); }
+  .flow .end { color: var(--note); background: var(--note-bg); border: 2px solid var(--note); font-weight: 700; }
+  .flow .end small { display: block; font-weight: 400; font-size: var(--fs-sm); }
+  .flow .arrow { font-size: var(--fs-body); font-weight: 700; }
+  .flow .c1 { grid-column: 1; } .flow .c2 { grid-column: 2; } .flow .c3 { grid-column: 3; }
+  .flow .c13 { grid-column: 1 / 4; justify-self: center; width: 62%; }
+  .flow .c23 { grid-column: 2 / 4; }
+  @media (max-width: 760px) {
+    .flow { grid-template-columns: 1fr; }
+    .flow .c1, .flow .c2, .flow .c3, .flow .c13, .flow .c23 { grid-column: 1; width: auto; }
+    .flow .order-a { order: 1; } .flow .order-b { order: 2; } .flow .order-c { order: 3; }
+  }
+
+  /* venn trio, steps, highlighted rows, try-it problems */
+  svg.venn.v2 text { font-size: 16px; }
+  .trio { display: flex; flex-wrap: wrap; gap: 8px 2vw; align-items: flex-start; }
+  .trio figure { flex: 1 1 330px; margin: 0; }
+  .trio figcaption { font-size: var(--fs-body); line-height: 1.3; }
+  .trio svg.venn { margin: 0 auto 4px; }
+  ol.steps { margin: 0 0 .6em 1.4em; }
+  ol.steps li { margin-bottom: .15em; }
+  tr.hl td { background: var(--note-bg); }
+  .tryq { margin-bottom: .2em; }
+  .tryq .reveal { margin-bottom: .3em; }
+
+  /* quiz */
+  .scenario { font-size: var(--fs-big); margin-bottom: .6em; }
+  .options { margin-bottom: .6em; }
+  .hint { color: var(--note); background: var(--note-bg); padding: .3em .7em; border-radius: 6px; display: block; width: fit-content; margin-bottom: .6em; }
+  .reveal { border: 1px solid var(--fg); border-radius: 6px; padding: 4px 20px; margin-bottom: .5em; }
+  .reveal:hover { background: var(--note-bg); }
+  .answer { margin-top: .3em; }
+  .answer .label { font-size: var(--fs-big); font-weight: 700; margin-bottom: .2em; }
+  .answer[hidden] { display: none; }
+  .restart { border: 1px solid var(--fg); border-radius: 6px; padding: 8px 26px; }
+
+  @media (prefers-reduced-motion: reduce) { .progress { transition: none; } }
+
+  /* ---------- PDF: A4 portrait, H1 14pt, body 11pt, no theme ---------- */
+  @page { size: A4 portrait; margin: 15mm; }
+  @media print {
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+      --bg: #ffffff; --fg: #000000; --line: #999999; --note: #7030A0; --note-bg: #F4ECF9;
+      --fs-body: 11pt; --fs-big: 11pt; --fs-title: 14pt; --fs-sm: 10pt;
+    }
+    html, body { height: auto; background: #fff; color: #000; font-size: 11pt; line-height: 1.4; }
+    .topbar, .navbar, .progress, .reveal, .restart, .tools { display: none !important; }
+    .deck { position: static; inset: auto; }
+    .slide, .js .slide.active { display: block !important; height: auto; overflow: visible; padding: 0 0 5mm; margin: 0 0 5mm; border-bottom: 1px solid #cfcfcf; break-inside: avoid; page-break-inside: avoid; }
+    .slide::before { content: "Slide " attr(data-num); display: block; font-size: 10pt; color: #555; margin-bottom: 1mm; }
+    .content, .content.wide { width: auto; }
+    h1 { margin-bottom: 2mm; }
+    p, li { margin-bottom: 1.6mm; }
+    .tag { opacity: 1; margin-bottom: 1mm; }
+    .answer[hidden] { display: block !important; }
+    .tablewrap { overflow: visible; }
+    svg.venn { width: 62mm; min-width: 0; }
+    svg.venn text { font-size: 21px; }
+    svg.venn text.num { font-size: 22px; }
+    .pair, .split { gap: 6mm; }
+    .split > div { flex: 1 1 60mm; }
+    .outline { grid-template-columns: 1fr 1fr; }
+    .flow { gap: 3mm; }
+    .flow .arrow { margin: 0; }
+    .flow .c13 { width: 70%; }
+    .hint, .note { border-radius: 2mm; }
+    .slide.long, .js .slide.long.active { break-inside: auto; page-break-inside: auto; }
+    svg.venn.v2 { width: 50mm; }
+    svg.venn.v2 text { font-size: 14px; }
+    .trio figure { flex: 1 1 50mm; }
+    .formula { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="topic">Conditional Probability</span>
+  <div class="tools">
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch theme" title="Switch theme"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+    <button class="icon-btn" id="fs" type="button" aria-label="Full screen" title="Full screen"><svg class="i-enter" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="i-exit" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
+    <button class="pdf-btn" id="pdf" type="button" title="Opens the print window. Choose Save as PDF." onclick="window.print()">Save PDF</button>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+<section class="slide" aria-label="Title and outline">
+  <div class="content wide">
+    <h1>Conditional Probability II (How events relate)</h1>
+    <p class="subtitle">Mutually exclusive, independent, dependent</p>
+    <div class="outline">
+      <div>
+        <h2>Start</h2>
+        <ol><li><span class="n">2–3</span><a class="go" href="#2"><span class="t">Same chances, different stories</span></a></li><li><span class="n">4</span><a class="go" href="#4"><span class="t">Overlap not given</span></a></li><li><span class="n">5</span><a class="go" href="#5"><span class="t">Sorting the stories</span></a></li></ol>
+      </div>
+      <div>
+        <h2>Mutually exclusive</h2>
+        <ol><li><span class="n">6</span><a class="go" href="#6"><span class="t">Theory</span></a></li><li><span class="n">7</span><a class="go" href="#7"><span class="t">Examples</span></a></li><li><span class="n">8–12</span><a class="go" href="#8"><span class="t">Quiz</span></a></li></ol>
+      </div>
+      <div>
+        <h2>Independent</h2>
+        <ol><li><span class="n">13–14</span><a class="go" href="#13"><span class="t">Theory</span></a></li><li><span class="n">15–22</span><a class="go" href="#15"><span class="t">Methods to find AND</span></a></li><li><span class="n">23</span><a class="go" href="#23"><span class="t">Examples</span></a></li><li><span class="n">24–28</span><a class="go" href="#24"><span class="t">Quiz</span></a></li></ol>
+      </div>
+      <div>
+        <h2>Dependent</h2>
+        <ol><li><span class="n">29</span><a class="go" href="#29"><span class="t">Theory</span></a></li><li><span class="n">30</span><a class="go" href="#30"><span class="t">Examples</span></a></li><li><span class="n">31–35</span><a class="go" href="#31"><span class="t">Quiz</span></a></li></ol>
+      </div>
+      <div>
+        <h2>Putting it together</h2>
+        <ol><li><span class="n">36</span><a class="go" href="#36"><span class="t">ME is not independent</span></a></li><li><span class="n">37–39</span><a class="go" href="#37"><span class="t">Combinations, clue words, flow-chart</span></a></li><li><span class="n">40–41</span><a class="go" href="#40"><span class="t">Rules and misconceptions</span></a></li><li><span class="n">42</span><a class="go" href="#42"><span class="t">Wrap-up</span></a></li></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Same chances different stories">
+  <div class="content wide">
+    <h1>Same chances, different stories</h1>
+    <p>P(A) = 0.50 and P(B) = 0.30 in every story. Without calculating, which story has the biggest P(A ∪ B), and which the smallest?</p>
+    <div class="trio">
+      <figure><svg class="venn v2" viewBox="0 0 240 150" role="img" aria-label="Venn diagram for story 1: circles A and B apart, no overlap"><circle cx="69.6" cy="88" r="56.0"/><circle cx="183.0" cy="88" r="43.4"/><text x="29.3" y="30" text-anchor="middle">A</text><text x="214.2" y="34" text-anchor="middle">B</text></svg>
+        <figcaption><b>Story 1</b><br>A: pays cash. B: pays by card.<br>Overlap 0</figcaption></figure>
+      <figure><svg class="venn v2" viewBox="0 0 240 150" role="img" aria-label="Venn diagram for story 2: circles A and B partly overlap, overlap shaded"><defs><clipPath id="c2"><circle cx="101.3" cy="88" r="56.0"/></clipPath></defs><circle class="shade" cx="151.3" cy="88" r="43.4" clip-path="url(#c2)"/><circle cx="101.3" cy="88" r="56.0"/><circle cx="151.3" cy="88" r="43.4"/><text x="61.0" y="30" text-anchor="middle">A</text><text x="182.5" y="34" text-anchor="middle">B</text></svg>
+        <figcaption><b>Story 2</b><br>A: wears glasses. B: orders iced coffee.<br>Overlap 0.15</figcaption></figure>
+      <figure><svg class="venn v2" viewBox="0 0 240 150" role="img" aria-label="Venn diagram for story 3: circles A and B overlap more, overlap shaded"><defs><clipPath id="c3"><circle cx="112.8" cy="88" r="56.0"/></clipPath></defs><circle class="shade" cx="139.8" cy="88" r="43.4" clip-path="url(#c3)"/><circle cx="112.8" cy="88" r="56.0"/><circle cx="139.8" cy="88" r="43.4"/><text x="72.5" y="30" text-anchor="middle">A</text><text x="171.0" y="34" text-anchor="middle">B</text></svg>
+        <figcaption><b>Story 3</b><br>A: buys a phone. B: buys a phone cover.<br>Overlap 0.25</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Same chances table">
+  <div class="content wide">
+    <h1>Same chances, different OR</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Story</th><th>A, B</th><th>P(A)</th><th>P(B)</th><th>Overlap</th><th>P(A ∪ B) = P(A) + P(B) − Overlap</th></tr></thead>
+        <tbody>
+          <tr><td><b>1</b></td><td>cash, card</td><td>0.50</td><td>0.30</td><td>0</td><td>0.50 + 0.30 − 0 = <b>0.80</b></td></tr>
+          <tr><td><b>2</b></td><td>glasses, iced coffee</td><td>0.50</td><td>0.30</td><td>0.15</td><td>0.50 + 0.30 − 0.15 = <b>0.65</b></td></tr>
+          <tr><td><b>3</b></td><td>phone, phone cover</td><td>0.50</td><td>0.30</td><td>0.25</td><td>0.50 + 0.30 − 0.25 = <b>0.55</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:.8em">Same P(A), same P(B), three different ORs. Why are the answers different? The overlap decides. So we must know how the two events relate.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="No overlap given">
+  <div class="content">
+    <h1>What if the overlap is not given?</h1>
+    <ul>
+      <li><b>AND:</b> toss a coin twice. Find P(Heads first ∩ Tails second). There is no table and no “both” count.</li>
+      <li><b>OR:</b> P(A) = 0.50 and P(B) = 0.30. Find P(A ∪ B). The overlap is not given.</li>
+    </ul>
+    <p>The Venn diagram and counting cannot answer these yet. We need to know how the events relate.</p>
+    <p class="note">Next: sort the stories into types, and learn a way to know the overlap for each.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Sorting the stories">
+  <div class="content wide">
+    <h1>Sorting the stories</h1>
+    <p>Ask two questions about each story.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Story</th><th>Can both happen?</th><th>Does one change the chance of the other?</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td><b>1</b></td><td>No</td><td>not needed</td><td><b>Mutually exclusive</b></td></tr>
+          <tr><td><b>2</b></td><td>Yes</td><td>No</td><td><b>Independent</b></td></tr>
+          <tr><td><b>3</b></td><td>Yes</td><td>Yes</td><td><b>Dependent</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:.8em">Check: independent means overlap = P(A) × P(B) = 0.15. Story 2 matches. Story 3 has 0.25, so it does not.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Mutually exclusive theory">
+  <div class="content wide">
+    <h1>Mutually exclusive</h1>
+    <div class="split">
+      <div>
+        <p>Two events that <b>cannot</b> happen at the same time. The circles do not overlap.</p>
+        <p class="note">AND is impossible: P(A ∩ B) = 0</p>
+        <p style="margin-top:.7em">So OR is just adding. There is no overlap to subtract.</p>
+        <p class="note">P(A ∪ B) = P(A) + P(B)</p>
+      </div>
+      <div><svg class="venn" viewBox="0 0 360 200" role="img" aria-label="Venn diagram: Heads and Tails do not overlap"><circle cx="100" cy="115" r="70"/><circle cx="260" cy="115" r="70"/><text x="100" y="28" text-anchor="middle">Heads</text><text x="260" y="28" text-anchor="middle">Tails</text></svg></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Mutually exclusive examples">
+  <div class="content wide">
+    <h1>Mutually exclusive: examples</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:56%">Events</th><th>AND: P(A ∩ B)</th><th>OR: P(A ∪ B)</th></tr></thead>
+        <tbody>
+          <tr><td><b>One coin toss</b><br>Event A: Heads. Event B: Tails.</td><td><b>0</b></td><td>0.5 + 0.5 = <b>1</b></td></tr>
+          <tr><td><b>One exam result</b><br>Event A: Pass (0.70). Event B: Fail (0.30).</td><td><b>0</b></td><td>0.70 + 0.30 = <b>1</b></td></tr>
+          <tr><td><b>One roll of a die</b><br>Event A: a 1. Event B: a 2.</td><td><b>0</b></td><td>1/6 + 1/6 = <b>2/6</b></td></tr>
+          <tr><td><b>One parcel today</b><br>Event A: Delivered (0.80). Event B: Cancelled (0.10).</td><td><b>0</b></td><td>0.80 + 0.10 = <b>0.90</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 1">
+  <div class="content">
+    <p class="tag">Practice: Mutually exclusive · question 1 of 5</p>
+    <h1>Question 1 of 15</h1>
+    <p class="scenario">Roll a die once. A = an even number. B = an odd number.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can one roll be both even and odd?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Mutually exclusive</p><p>No. One roll cannot be both. The overlap is empty.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 2">
+  <div class="content">
+    <p class="tag">Practice: Mutually exclusive · question 2 of 5</p>
+    <h1>Question 2 of 15</h1>
+    <p class="scenario">Weather in one place at one moment. A = freezing snow. B = scorching hot sunshine.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can both be true at the same time in the same place?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Mutually exclusive</p><p>No. They cannot happen together.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 3">
+  <div class="content">
+    <p class="tag">Practice: Mutually exclusive · question 3 of 5</p>
+    <h1>Question 3 of 15</h1>
+    <p class="scenario">Draw one card from a deck. A = a Heart. B = a Spade.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can one card be both a Heart and a Spade?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Mutually exclusive</p><p>No. One card has one suit.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 4">
+  <div class="content">
+    <p class="tag">Practice: Mutually exclusive · question 4 of 5</p>
+    <h1>Question 4 of 15</h1>
+    <p class="scenario">A student has exactly one major. A = Finance. B = Marketing.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can the same student have both majors?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Mutually exclusive</p><p>No. With one major, Finance rules out Marketing.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 5">
+  <div class="content">
+    <p class="tag">Practice: Mutually exclusive · question 5 of 5</p>
+    <h1>Question 5 of 15</h1>
+    <p class="scenario">A parcel’s current status. A = Delivered. B = Cancelled.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can a parcel have both statuses right now?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Mutually exclusive</p><p>No. A parcel has one current status. If one is true, the other cannot be.</p></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Independent theory">
+  <div class="content">
+    <h1>Independent</h1>
+    <p>They <b>can</b> happen together. Knowing one happened tells you nothing about the other.</p>
+    <p class="note">The test: does one change the chance of the other? No.</p>
+    <p style="margin-top:.7em">Independent events <b>do</b> overlap. The circles must cross.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Independent AND means multiply">
+  <div class="content">
+    <h1>Independent: AND means multiply</h1>
+    <p>Two coin tosses: Heads first AND Tails second.</p>
+    <p class="note formula">P(A ∩ B) = P(A) × P(B)</p>
+    <p style="margin-top:.7em">0.5 × 0.5 = 0.25</p>
+    <p>OR still works the same way: add, then subtract the overlap.</p>
+    <p class="note">Do not learn “AND = multiply”. Learn “AND + independent = multiply”.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Methods to find AND">
+  <div class="content wide">
+    <h1>Methods to find AND</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Method</th><th>You have</th><th>Rule for P(A ∩ B)</th><th>Valid for</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td><b>Count</b></td><td>the overlap count, a Venn, or a table</td><td>overlap count ÷ total</td><td>any events</td></tr>
+          <tr class="hl"><td><b>Multiply</b></td><td>only P(A) and P(B)</td><td>P(A) × P(B)</td><td>independent events only</td></tr>
+          <tr><td><b>Use the OR</b></td><td>P(A), P(B) and P(A ∪ B)</td><td>P(A) + P(B) − P(A ∪ B)</td><td>any events</td></tr>
+          <tr><td><b>Zero</b></td><td>the events are mutually exclusive</td><td>0</td><td>mutually exclusive only</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:.8em">Counts given? Use the counts. Only the single chances? Multiply, but only for independent events.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="What changes when independent">
+  <div class="content wide">
+    <h1>What changes when events are independent?</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Any events</th><th>If the events are independent</th></tr></thead>
+        <tbody>
+          <tr><td><b>AND</b></td><td>count, or P(A) + P(B) − P(A ∪ B)</td><td><b>also</b> P(A) × P(B)</td></tr>
+          <tr><td><b>OR</b></td><td>P(A) + P(B) − P(A ∩ B)</td><td><b>same rule.</b> Find AND first (multiply), then use it</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:.8em">Independent changes AND only. OR stays the same.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Both methods agree example 1">
+  <div class="content wide">
+    <h1>Independent: both methods agree</h1>
+    <p><b>Example 1.</b> A shop has 500 customers. 200 buy online, 150 use a coupon, and 60 do <b>both</b>. Find P(online ∩ coupon) two ways, then P(online ∪ coupon).</p>
+    <ol class="steps">
+      <li><b>Events.</b> Event A: buys online. Event B: uses a coupon.</li>
+      <li><b>Count.</b> P(A ∩ B) = 60 ÷ 500 = <b>0.12</b></li>
+      <li><b>Multiply.</b> P(A) = 200 ÷ 500 = 0.40 and P(B) = 150 ÷ 500 = 0.30. So 0.40 × 0.30 = <b>0.12</b></li>
+      <li><b>Compare.</b> Both give 0.12, so the events are independent.</li>
+      <li><b>OR.</b> P(A ∪ B) = 0.40 + 0.30 − 0.12 = <b>0.58</b></li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide" aria-label="Both methods agree example 2">
+  <div class="content wide">
+    <h1>Independent: both methods agree</h1>
+    <p><b>Example 2.</b> A coin and a die are thrown together 600 times. Heads came up 300 times, a 5 or 6 came up 200 times, and both happened 100 times. Find P(Heads ∩ 5 or 6) two ways.</p>
+    <ol class="steps">
+      <li><b>Events.</b> Event A: Heads. Event B: the die shows 5 or 6.</li>
+      <li><b>Count.</b> P(A ∩ B) = 100 ÷ 600 = <b>0.1667</b></li>
+      <li><b>Multiply.</b> P(A) = 300 ÷ 600 = 0.50 and P(B) = 200 ÷ 600 = 0.3333. So 0.50 × 0.3333 = <b>0.1667</b></li>
+      <li><b>Compare.</b> Same answer, so the events are independent.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide" aria-label="AND from the OR">
+  <div class="content wide">
+    <h1>Another method: AND from the OR</h1>
+    <p><b>Example 3.</b> In the same shop, P(online) = 0.40 and P(coupon) = 0.30. You are told that 0.58 of customers buy online <b>OR</b> use a coupon. Find P(online ∩ coupon).</p>
+    <ol class="steps">
+      <li><b>Events.</b> Event A: buys online. Event B: uses a coupon.</li>
+      <li><b>Rearrange the OR rule.</b> P(A ∩ B) = P(A) + P(B) − P(A ∪ B)</li>
+      <li><b>Substitute.</b> 0.40 + 0.30 − 0.58 = <b>0.12</b></li>
+      <li><b>Check.</b> Same 0.12 as counting and multiplying. This method works for any events, independent or not.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide" aria-label="Methods do not agree">
+  <div class="content wide">
+    <h1>Sometimes the methods do not agree</h1>
+    <p><b>Example 4.</b> 400 students: 200 attend, 160 pass, 140 do <b>both</b>. Find P(attend ∩ pass) by counting and by multiplying.</p>
+    <ol class="steps">
+      <li><b>Count.</b> 140 ÷ 400 = <b>0.35</b></li>
+      <li><b>Multiply.</b> 0.50 × 0.40 = 0.20</li>
+      <li><b>Compare.</b> 0.20 is not 0.35, so the events are <b>dependent</b>. Trust the count.</li>
+    </ol>
+    <p><b>Example 5.</b> 250 orders: 100 have a burger, 50 have fries, 40 have <b>both</b>. Find P(burger ∩ fries) by counting and by multiplying.</p>
+    <ol class="steps">
+      <li><b>Count.</b> 40 ÷ 250 = <b>0.16</b></li>
+      <li><b>Multiply.</b> 0.40 × 0.20 = 0.08</li>
+      <li><b>Compare.</b> 0.08 is not 0.16, so the events are <b>dependent</b>. Trust the count.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide quiz long" aria-label="Your turn">
+  <div class="content wide">
+    <h1>Your turn</h1>
+    <p>For each problem: find P(A ∩ B) by counting, find it by multiplying, and compare. What does it tell you about the two events?</p>
+    <div class="tryq"><p><b>Problem 1.</b> 300 customers: 150 buy tea, 90 buy biscuits, 45 buy <b>both</b>.</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p>Count: 45 ÷ 300 = 0.15. Multiply: 0.50 × 0.30 = 0.15. They agree, so the events are <b>independent</b>.</p></div></div>
+    <div class="tryq"><p><b>Problem 2.</b> 200 employees: 80 work the night shift, 60 get a transport allowance, 50 get <b>both</b>.</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p>Count: 50 ÷ 200 = 0.25. Multiply: 0.40 × 0.30 = 0.12. They disagree, so the events are <b>dependent</b>. Trust the count: 0.25.</p></div></div>
+    <div class="tryq"><p><b>Problem 3.</b> 400 students: 200 play sports, 160 have a part-time job, 40 do <b>both</b>.</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p>Count: 40 ÷ 400 = 0.10. Multiply: 0.50 × 0.40 = 0.20. They disagree, so the events are <b>dependent</b>. Trust the count: 0.10.</p></div></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Only multiply">
+  <div class="content wide">
+    <h1>No counts given: multiply</h1>
+    <p><b>Example 6.</b> A die is rolled twice. The rolls are independent. Find P(6 on roll 1 ∩ 6 on roll 2).</p>
+    <ol class="steps">
+      <li><b>Events.</b> Event A: a 6 on roll 1. Event B: a 6 on roll 2.</li>
+      <li><b>Method.</b> No counts are given and the events are independent, so multiply.</li>
+      <li><b>Compute.</b> 1/6 × 1/6 = <b>1/36 ≈ 0.0278</b></li>
+    </ol>
+    <p><b>Example 7.</b> Two separate parcels arrive on time with chances 0.90 and 0.85. The parcels are independent. Find the chance that both arrive on time.</p>
+    <ol class="steps">
+      <li><b>Events.</b> Event A: parcel 1 on time. Event B: parcel 2 on time.</li>
+      <li><b>Method.</b> No counts are given and the events are independent, so multiply.</li>
+      <li><b>Compute.</b> 0.90 × 0.85 = <b>0.765</b></li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide" aria-label="Independent examples">
+  <div class="content wide">
+    <h1>Independent: examples</h1>
+    <ul>
+      <li>You visit Bangkok this year. The PM visits Bangkok this year. Separate trips, separate dates.</li>
+      <li>A customer wears glasses. The customer orders iced coffee.</li>
+      <li>Two coin tosses: Heads first, Tails second.<br>P(A ∩ B) = 0.5 × 0.5 = <b>0.25</b></li>
+      <li>Two separate prize draws. You win the first with 0.30, the second with 0.20.<br>
+          AND: 0.30 × 0.20 = <b>0.06</b>. OR: 0.30 + 0.20 − 0.06 = <b>0.44</b></li>
+      <li>Two independent checkpoints, passed with 0.95 and 0.90.<br>Pass both: 0.95 × 0.90 = <b>0.855</b></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 6">
+  <div class="content">
+    <p class="tag">Practice: Independent · question 1 of 5</p>
+    <h1>Question 6 of 15</h1>
+    <p class="scenario">You visit Bangkok this year. The PM visits Bangkok this year.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can both happen? Does your trip change the PM’s chance of going?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Independent</p><p>Both can happen. Your trip does not change the PM’s chance. No effect.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 7">
+  <div class="content">
+    <p class="tag">Practice: Independent · question 2 of 5</p>
+    <h1>Question 7 of 15</h1>
+    <p class="scenario">Flip a coin twice. A = Heads on flip 1. B = Tails on flip 2.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Does flip 1 tell you anything about flip 2?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Independent</p><p>No. A coin has no memory.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 8">
+  <div class="content">
+    <p class="tag">Practice: Independent · question 3 of 5</p>
+    <h1>Question 8 of 15</h1>
+    <p class="scenario">Flip a coin and roll a die. A = the coin shows Heads. B = the die shows 6.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Does the coin change what the die shows?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Independent</p><p>No. The chance of a 6 is 1 in 6 either way.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 9">
+  <div class="content">
+    <p class="tag">Practice: Independent · question 4 of 5</p>
+    <h1>Question 9 of 15</h1>
+    <p class="scenario">In a cafe. A = a customer wears glasses. B = the customer orders iced coffee.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Does wearing glasses change what someone orders?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Independent</p><p>No. Both can happen, and neither affects the other.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 10">
+  <div class="content">
+    <p class="tag">Practice: Independent · question 5 of 5</p>
+    <h1>Question 10 of 15</h1>
+    <p class="scenario">A bag has 5 red and 5 blue marbles. Draw one, <b>put it back</b>, shake, draw again. A = first is red. B = second is red.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Is the bag the same for the second draw?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Independent</p><p>Yes. Putting it back restores the bag, so the first draw cannot change the second.</p></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Dependent theory">
+  <div class="content">
+    <h1>Dependent</h1>
+    <p>They <b>can</b> happen together, but one <b>changes the chance</b> of the other. Like a domino.</p>
+    <p class="note">For AND, do not just multiply the two single chances. Use the overlap count in the data.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Dependent examples">
+  <div class="content wide">
+    <h1>Dependent: examples</h1>
+    <ul>
+      <li>100 days. 30 rainy days, 31 days with many umbrellas sold, 24 days with <b>both</b>.<br>
+          Multiplying gives 0.30 × 0.31 = 0.093. The data says 24 ÷ 100 = <b>0.24</b>. Multiplying fails here.</li>
+      <li>A customer buys a phone. The same customer buys a phone cover.</li>
+      <li>Two cards drawn, the first kept out: an Ace first, an Ace second. After one Ace is gone, only 3 of the 51 cards left are Aces.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 11">
+  <div class="content">
+    <p class="tag">Practice: Dependent · question 1 of 5</p>
+    <h1>Question 11 of 15</h1>
+    <p class="scenario">A = heavy rain today. B = a street shop sells many umbrellas.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can both happen? Does rain change the chance of umbrella sales?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Dependent</p><p>Both can happen, and rain raises the chance of umbrella sales. One affects the other.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 12">
+  <div class="content">
+    <p class="tag">Practice: Dependent · question 2 of 5</p>
+    <h1>Question 12 of 15</h1>
+    <p class="scenario">A = a customer buys a phone. B = the same customer buys a phone cover.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Does buying a phone change the chance of buying a cover?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Dependent</p><p>Yes. A customer who buys a phone is much more likely to buy a cover.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 13">
+  <div class="content">
+    <p class="tag">Practice: Dependent · question 3 of 5</p>
+    <h1>Question 13 of 15</h1>
+    <p class="scenario">Draw two cards from a deck and keep the first out. A = Ace first. B = Ace second.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> After the first card is removed, is the deck the same?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Dependent</p><p>No. After an Ace is removed, only 3 of the 51 cards left are Aces. The first card changed the deck.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 14">
+  <div class="content">
+    <p class="tag">Practice: Dependent · question 4 of 5</p>
+    <h1>Question 14 of 15</h1>
+    <p class="scenario">A bag has 5 red and 5 blue marbles. Draw two <b>without</b> putting the first back. A = first is red. B = second is red.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Does the first marble change what is left in the bag?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Dependent</p><p>Yes. If the first was red, only 4 of the 9 left are red. If it was blue, 5 of the 9 are red.</p></div>
+  </div>
+</section>
+
+<section class="slide quiz" aria-label="Question 15">
+  <div class="content">
+    <p class="tag">Practice: Dependent · question 5 of 5</p>
+    <h1>Question 15 of 15</h1>
+    <p class="scenario">Roll a die once. A = you roll a 6. B = you roll more than 4.</p>
+    <p class="options"><b>Which one?</b> Mutually exclusive · Independent · Dependent</p>
+    <p class="hint"><b>Hint:</b> Can both happen? If you roll a 6, is “more than 4” certain?</p>
+    <button class="reveal" type="button" aria-expanded="false">Show answer</button>
+    <div class="answer" hidden><p class="label">Answer: Dependent</p><p>Both can happen (a 6 is both). Knowing A happened makes B certain, so one changes the other.</p></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Mutually exclusive is not independent">
+  <div class="content">
+    <h1>Mutually exclusive is not independent</h1>
+    <p>Roll a die once. A = odd (1, 3, 5). B = even (2, 4, 6).</p>
+    <p>If the roll is odd, even is impossible. If the roll is even, odd is impossible. Each event wipes out the other.</p>
+    <p>One event changes the chance of the other, so they are <b>dependent</b>.</p>
+    <p class="note">If two events cannot happen together, they are never independent.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Possible combinations">
+  <div class="content wide">
+    <h1>Possible combinations</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Mutually exclusive</th><th>Independent</th><th>Dependent</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Yes</td><td>No</td><td>Yes</td><td>One coin toss: A = Heads, B = Tails</td></tr>
+          <tr><td>No</td><td>Yes</td><td>No</td><td>You visit Bangkok, the PM visits Bangkok</td></tr>
+          <tr><td>No</td><td>No</td><td>Yes</td><td>Rain, many umbrellas sold</td></tr>
+          <tr><td>Yes</td><td>Yes</td><td>No</td><td><b>Impossible</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Clue words">
+  <div class="content wide">
+    <h1>Clue words: which type?</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Type</th><th>Look for the words</th></tr></thead>
+        <tbody>
+          <tr><td><b>Mutually exclusive</b></td><td>one coin toss, one card, one roll, one status, “cannot both”, “only one”</td></tr>
+          <tr><td><b>Independent</b></td><td>“independent”, “separate trips”, “does not affect”, “put it back”, a coin and a die</td></tr>
+          <tr><td><b>Dependent</b></td><td>“without putting it back”, “affects”, “changes the chance”, “more likely if”</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:.8em">No clue word? Ask the two questions: can both happen together? Does one change the chance of the other?</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Flow-chart: which type">
+  <div class="content wide">
+    <h1>Flow-chart: which type?</h1>
+    <div class="flow">
+      <div class="decision c13 order-a">Can both events happen together?</div>
+      <div class="arrow c1 order-b">No ↓</div>
+      <div class="arrow c23 order-b">Yes ↓</div>
+      <div class="end c1 order-b">Mutually exclusive<small>(also dependent)</small></div>
+      <div class="decision c23 order-b">Does knowing one happened change the chance of the other?</div>
+      <div class="arrow c2 order-c">No ↓</div>
+      <div class="arrow c3 order-c">Yes ↓</div>
+      <div class="end c2 order-c">Independent</div>
+      <div class="end c3 order-c">Dependent</div>
+    </div>
+    <p class="note" style="margin-top:.9em">Check the type first. The formula comes second.</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Rules at a glance">
+  <div class="content wide">
+    <h1>Rules at a glance</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Type</th><th>AND (both)</th><th>OR (at least one)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Mutually exclusive</b></td><td>0</td><td>P(A) + P(B)</td></tr>
+          <tr><td><b>Independent</b></td><td>P(A) × P(B)</td><td>P(A) + P(B) − P(A ∩ B)</td></tr>
+          <tr><td><b>Dependent</b></td><td>Do not just multiply. Use the overlap count in the data.</td><td>P(A) + P(B) − P(A ∩ B)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Misconception check">
+  <div class="content wide">
+    <h1>Misconception check</h1>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Claim</th><th>True?</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>OR means add</td><td>Not always</td><td>The overlap gets counted twice</td></tr>
+          <tr><td>AND means multiply</td><td>Only if independent</td><td>Otherwise use the overlap count</td></tr>
+          <tr><td>Mutually exclusive means independent</td><td>No</td><td>If one happens the other cannot, so they are dependent</td></tr>
+          <tr><td>Different names mean independent</td><td>No</td><td>Test it: does one change the chance of the other?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="endslide" aria-label="Wrap-up">
+  <div class="content">
+    <h1>Well done</h1>
+    <p>You can now tell AND from OR, and name how two events relate: mutually exclusive, independent or dependent.</p>
+    <p class="note">Coming next: Given That.</p>
+    <p style="margin-top:1em"><button class="restart" type="button" onclick="go(1)">Restart</button></p>
+  </div>
+</section>
+
+</main>
+
+<nav class="navbar" aria-label="Slide navigation">
+  <button id="prev" type="button" onclick="step(-1)">← Previous</button>
+  <span class="counter" id="counter" aria-live="polite"></span>
+  <button id="next" type="button" onclick="step(1)">Next →</button>
+</nav>
+
+<script>
+/* ================= NAVIGATION ================= */
+var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+var N = slides.length;
+var cur = 0;
+slides.forEach(function (s, i) { s.setAttribute("data-num", i + 1); });
+
+function resetAnswers(s) {
+  s.querySelectorAll(".answer").forEach(function (a) { a.hidden = true; });
+  s.querySelectorAll(".reveal").forEach(function (b) { b.textContent = "Show answer"; b.setAttribute("aria-expanded", "false"); });
+}
+function show(n, fromHash) {
+  n = Math.max(0, Math.min(N - 1, n));
+  resetAnswers(slides[cur]);
+  slides[cur].classList.remove("active");
+  cur = n;
+  slides[cur].classList.add("active");
+  slides[cur].scrollTop = 0;
+  document.getElementById("counter").textContent = (cur + 1) + " / " + N;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === N - 1;
+  document.getElementById("progress").style.width = ((cur + 1) / N * 100) + "%";
+  if (!fromHash) { try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) {} }
+}
+function step(d) { show(cur + d); }
+function go(n) { show(n === 1 ? 0 : n - 1); }
+function fromHash() {
+  var m = /^#(\d+)$/.exec(location.hash);
+  show(m ? parseInt(m[1], 10) - 1 : 0, true);
+}
+window.addEventListener("hashchange", fromHash);
+
+document.addEventListener("click", function (e) {
+  var b = e.target.closest && e.target.closest(".reveal");
+  if (!b) return;
+  var a = b.parentNode.querySelector(".answer");
+  a.hidden = !a.hidden;
+  b.textContent = a.hidden ? "Show answer" : "Hide answer";
+  b.setAttribute("aria-expanded", a.hidden ? "false" : "true");
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "ArrowRight" || e.key === "PageDown") { step(1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { step(-1); e.preventDefault(); }
+  else if (e.key === "Home") { show(0); e.preventDefault(); }
+  else if (e.key === "End") { show(N - 1); e.preventDefault(); }
+});
+
+var tx = null, ty = null;
+document.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener("touchend", function (e) {
+  if (tx === null) return;
+  var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  tx = ty = null;
+}, { passive: true });
+
+fromHash();
+
+/* ================= THEME + FULLSCREEN ================= */
+(function () {
+  var root = document.documentElement;
+  function systemDark() { return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; }
+  function isDark() { var t = root.getAttribute("data-theme"); return t ? t === "dark" : systemDark(); }
+  function paint() {
+    var d = isDark();
+    root.classList.toggle("is-dark", d); root.classList.toggle("is-light", !d);
+    var b = document.getElementById("theme");
+    if (b) { b.setAttribute("aria-label", d ? "Switch to light theme" : "Switch to dark theme"); b.title = d ? "Switch to light theme" : "Switch to dark theme"; }
+  }
+  var tb = document.getElementById("theme");
+  if (tb) tb.addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("cp-theme", next); } catch (e) {}
+    paint();
+  });
+  if (window.matchMedia) { try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint); } catch (e) {} }
+  paint();
+
+  var fsb = document.getElementById("fs");
+  var canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+  if (canFs) root.classList.add("can-fs");
+  function inFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function syncFs() {
+    root.classList.toggle("is-fs", inFs());
+    if (fsb) { var t = inFs() ? "Exit full screen" : "Full screen"; fsb.setAttribute("aria-label", t); fsb.title = t; }
+  }
+  window.toggleFs = function () {
+    try {
+      if (inFs()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+      else { (root.requestFullscreen || root.webkitRequestFullscreen).call(root); }
+    } catch (e) {}
+  };
+  if (fsb) fsb.addEventListener("click", window.toggleFs);
+  document.addEventListener("fullscreenchange", syncFs);
+  document.addEventListener("webkitfullscreenchange", syncFs);
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "f" || e.key === "F") { window.toggleFs(); }
+  });
+  syncFs();
+})();
+</script>
+</body>
+</html>
