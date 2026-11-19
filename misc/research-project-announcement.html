@@ -80,6 +80,11 @@
   .glist small{color:var(--muted)}
   .gadd{flex:none;padding:6px 14px;border-radius:8px;background:var(--tut);color:#fff;font-weight:700;text-decoration:none}
   .gnote{font-size:.92rem;color:var(--muted);margin:8px 0 0}
+  .iphone{display:flex;flex-direction:column}
+  .steps-mini{font-size:.92rem;color:var(--muted);margin:6px 0 0;padding-left:20px}
+  .iphone .steps-mini{padding-left:0}
+  .onebyone{margin-top:14px}
+  .onebyone summary{cursor:pointer;color:var(--tut);font-weight:700;font-size:.95rem}
   .submit-note{margin:14px 0 0;color:var(--muted)}
 
   .parts{counter-reset:p;list-style:none;margin:0;padding:0}
@@ -185,20 +190,33 @@
     </ol>
     <div class="save">
       <h3>Save these dates to your phone</h3>
-      <p>Each date gets two reminders: 10 hours before and 2 hours before.</p>
+      <p>Pick your phone. The calendar file adds every date with two reminders: 10 hours before and 2 hours before.</p>
       <div class="btns">
-        <a class="btn ios" href="project-dates.ics" download>iPhone: add all dates</a>
+        <div class="iphone">
+          <a class="btn ios" href="project-dates.ics">iPhone: add all dates</a>
+          <p class="steps-mini">Tap the button, then tap <b>Add All</b> and choose your calendar.</p>
+          <p class="steps-mini">Or <a href="webcal://calendar.google.com/calendar/ical/c8a0074c119c94b0634864b6a201f2225caf831e392e639c25bc70cd2d227bc8%40group.calendar.google.com/public/basic.ics">subscribe to the class calendar</a>: it updates by itself if a date changes. Then set alerts in Settings &gt; Calendar &gt; Default Alert Times.</p>
+        </div>
         <details class="android">
           <summary class="btn">Android: add dates</summary>
           <div class="panel">
             <div class="opt">
               <h4>I have Samsung Calendar (use this first)</h4>
-              <p>Tap the button, then open the file with <b>Samsung Calendar</b>. All dates are added with both reminders.</p>
-              <a class="btn ios" href="project-dates.ics" download>Add all dates to Samsung Calendar</a>
+              <a class="btn ios" href="project-dates.ics" download>Download all dates</a>
+              <ol class="steps-mini">
+                <li>Tap the button. A file downloads.</li>
+                <li>Tap the downloaded file (in the pop-up or in Downloads).</li>
+                <li>Choose <b>Samsung Calendar</b> and tap <b>Save</b>.</li>
+              </ol>
+              <p class="gnote">All dates are added with both reminders.</p>
             </div>
             <div class="opt">
               <h4>I do not have Samsung Calendar: use Google Calendar</h4>
-              <p>Tap <b>Add</b> for each date. Google Calendar opens. Tap <b>Save</b>.</p>
+              <p>Tap the button. Google Calendar opens and asks to add the calendar. Tap <b>Add</b>.</p>
+              <a class="btn ios" href="https://calendar.google.com/calendar/r?cid=YzhhMDA3NGMxMTljOTRiMDYzNDg2NGI2YTIwMWYyMjI1Y2FmODMxZTM5MmU2MzljMjViYzcwY2QyZDIyN2JjOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t" target="_blank" rel="noopener">Add the BUS3201 calendar</a>
+              <p class="gnote">It updates by itself if a date changes. Then set reminders once: in Google Calendar, open <b>Settings</b>, tap this calendar, then <b>Event notifications</b>, and add <b>10 hours</b> and <b>2 hours</b>.</p>
+              <details class="onebyone">
+                <summary>Button not working? Add dates one by one</summary>
               <ul class="glist">
           <li><span><b>Due: Get ready for Tutorial 1</b><br><small>Fri 20 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Get%20ready%20for%20Tutorial%201&amp;dates=20261120T235900%2F20261121T000000&amp;ctz=Asia%2FDhaka&amp;details=Install%20AnyDesk%2C%20turn%20on%20Excel%20Analysis%20ToolPak%2C%20post%20your%20screenshot%20in%20Classwork." target="_blank" rel="noopener">Add</a></li>
           <li><span><b>Tutorial 1 (evening)</b><br><small>Sat 21 Nov, 6:45 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Tutorial%201%20%28evening%29&amp;dates=20261121T184500%2F20261121T204500&amp;ctz=Asia%2FDhaka&amp;details=Join%20from%20your%20PC%20and%20your%20mobile%20phone%20in%20Google%20Classroom.%20End%20time%20is%20open." target="_blank" rel="noopener">Add</a></li>
@@ -216,6 +234,7 @@
           <li><span><b>Class: Course review and project limitations</b><br><small>Sat 12 Dec</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Class%3A%20Course%20review%20and%20project%20limitations&amp;dates=20261212%2F20261213&amp;ctz=Asia%2FDhaka" target="_blank" rel="noopener">Add</a></li>
               </ul>
               <p class="gnote">Google Calendar uses your own reminder time. To get our reminders, open each event and set 10 hours and 2 hours before.</p>
+              </details>
             </div>
           </div>
         </details>
