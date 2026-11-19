@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Project Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Familjen+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#eef2f3; --sheet:#ffffff; --ink:#18242e; --muted:#566874; --rule:#d3dde1;
+    --tut:#0f6e66; --tut-soft:#dcefec; --due:#a8321c; --due-soft:#f7e3dd; --plain-soft:#e4eaed;
+    --m1:#18242e; --m2:#566874; --m3:#0f6e66; --m4:#3f8f87;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#10171c; --sheet:#172129; --ink:#e6edf0; --muted:#9db0ba; --rule:#2a3943;
+      --tut:#5cc2b7; --tut-soft:#173a38; --due:#f08a70; --due-soft:#3d2219; --plain-soft:#22303a;
+      --m1:#e6edf0; --m2:#9db0ba; --m3:#5cc2b7; --m4:#2f7d75;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#10171c; --sheet:#172129; --ink:#e6edf0; --muted:#9db0ba; --rule:#2a3943;
+    --tut:#5cc2b7; --tut-soft:#173a38; --due:#f08a70; --due-soft:#3d2219; --plain-soft:#22303a;
+    --m1:#e6edf0; --m2:#9db0ba; --m3:#5cc2b7; --m4:#2f7d75;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:18px/1.65 "Atkinson Hyperlegible",system-ui,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:40px 16px 64px}
+  h1,h2,h3{font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.2;margin:0}
+  h1{font-size:clamp(2rem,6vw,2.9rem);font-weight:700;letter-spacing:-.01em}
+  h2{font-size:1.45rem;font-weight:700;margin-bottom:12px}
+  h3{font-size:1.12rem;font-weight:600;margin:0 0 4px}
+  p{margin:0 0 10px}
+  b,strong{font-weight:700}
+
+  .head{margin-bottom:28px}
+  .course{color:var(--muted);margin:0 0 10px}
+  .lead{font-size:1.1rem;max-width:62ch;margin-top:16px}
+  .weight{display:inline-block;margin-top:6px;padding:4px 12px;border-radius:999px;background:var(--plain-soft);font-weight:700}
+
+  .block{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;padding:22px 20px;margin-bottom:20px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:.95rem;margin-bottom:14px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .sw.t{background:var(--tut)} .sw.d{background:var(--due)} .sw.c{background:var(--muted)}
+  ol.route{list-style:none;margin:0;padding:0;position:relative}
+  ol.route::before{content:"";position:absolute;left:43px;top:8px;bottom:8px;width:2px;background:var(--rule)}
+  .stop{display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:start;padding:10px 0;position:relative}
+  .date{text-align:center;position:relative;z-index:1;background:var(--sheet);padding:2px 0}
+  .day{display:block;font-family:"Familjen Grotesk",sans-serif;font-weight:700;font-size:2.3rem;line-height:1}
+  .wk{display:block;font-size:.85rem;color:var(--muted)}
+  .what{padding:8px 14px;border-radius:10px;background:var(--plain-soft);border-left:5px solid var(--muted)}
+  .what .time{display:block;font-size:.92rem;color:var(--muted)}
+  .what .title{font-weight:700;font-size:1.05rem}
+  .stop.t .day{color:var(--tut)} .stop.t .what{background:var(--tut-soft);border-left-color:var(--tut)}
+  .stop.d .day{color:var(--due)} .stop.d .what{background:var(--due-soft);border-left-color:var(--due)}
+  .stop .what.due{background:var(--due-soft);border-left-color:var(--due);margin-top:8px}
+  .submit-note{margin:14px 0 0;color:var(--muted)}
+
+  .parts{counter-reset:p;list-style:none;margin:0;padding:0}
+  .parts > li{counter-increment:p;position:relative;padding:0 0 18px 52px}
+  .parts > li:last-child{padding-bottom:0}
+  .parts > li::before{content:counter(p);position:absolute;left:0;top:-2px;width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;background:var(--ink);color:var(--sheet);font-family:"Familjen Grotesk",sans-serif;font-weight:700}
+  .parts ul{margin:4px 0 10px;padding-left:20px}
+  .parts ul li{margin:2px 0}
+  .flag{border-left:4px solid var(--due);padding:6px 12px;background:var(--due-soft);border-radius:6px;margin:6px 0 10px}
+
+  .bar{display:flex;height:54px;border-radius:10px;overflow:hidden;margin:6px 0 10px}
+  .bar div{display:flex;align-items:center;justify-content:center;font-family:"Familjen Grotesk",sans-serif;font-weight:700;font-size:1.25rem;color:var(--sheet)}
+  .bar .a{flex:4;background:var(--m1)} .bar .b{flex:3;background:var(--m2)}
+  .bar .c{flex:9;background:var(--m3)} .bar .e{flex:9;background:var(--m4);color:#fff}
+  .bar-key{display:grid;grid-template-columns:4fr 3fr 9fr 9fr;font-size:.9rem;color:var(--muted);gap:4px}
+  .bar-key span{overflow-wrap:anywhere}
+  @media (max-width:520px){.bar-key{grid-template-columns:1fr 1fr}.bar-key span::before{content:attr(data-n) ": "}}
+
+  ol.steps{margin:0 0 12px;padding-left:22px}
+  ol.steps li{margin:6px 0}
+  .path{font-size:.95rem;background:var(--plain-soft);padding:2px 6px;border-radius:5px}
+
+  .fname{font-family:"Familjen Grotesk",sans-serif;font-weight:600;font-size:clamp(1rem,4.2vw,1.35rem);
+    display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 4px}
+  .seg{display:inline-flex;flex-direction:column;align-items:center}
+  .seg b{padding:4px 8px;border-radius:6px;background:var(--plain-soft)}
+  .seg small{font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400;font-size:.75rem;color:var(--muted);margin-top:3px}
+  .seg.dt b{background:var(--due-soft);color:var(--due)}
+  .us{align-self:flex-start;padding:4px 0}
+  .files{list-style:none;padding:0;margin:12px 0 0}
+  .files li{padding:6px 0;border-top:1px solid var(--rule);overflow-wrap:anywhere;font-size:1rem}
+  .files li span{color:var(--muted);font-size:.9rem;display:block}
+
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:8px 4px;border-bottom:1px solid var(--rule);text-align:left}
+  th{color:var(--muted);font-weight:400;font-size:.95rem}
+  td:last-child{font-weight:700;color:var(--due)}
+
+  .ask{background:var(--tut-soft);border-color:transparent}
+  .ask h2{color:var(--tut)}
+  .sign{margin-top:28px}
+
+  @media (max-width:520px){
+    body{font-size:17px}
+    main{padding-top:28px}
+    .block{padding:18px 14px}
+    .stop{grid-template-columns:62px 1fr;gap:10px}
+    ol.route::before{left:30px}
+    .day{font-size:1.9rem}
+    .parts > li{padding-left:46px}
+  }
+  @media print{
+    body{background:#fff;font-size:12pt}
+    .block{break-inside:avoid;border-color:#bbb}
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="head">
+    <p class="course">BUS3201 Research Methodology, Fall 2026</p>
+    <h1>Research Project: tasks, dates and rules</h1>
+    <p class="lead">Dear Students, we have finished all the theory topics of this course. Now we start the Research Project. Please read this whole page and save the dates.</p>
+    <span class="weight">25 marks out of 100</span>
+  </header>
+
+  <section class="block" aria-labelledby="dates">
+    <h2 id="dates">Your dates</h2>
+    <div class="legend">
+      <span><i class="sw d"></i>Submission due</span>
+      <span><i class="sw t"></i>Evening tutorial</span>
+      <span><i class="sw c"></i>Class</span>
+    </div>
+    <ol class="route">
+      <li class="stop d"><div class="date"><span class="day">20</span><span class="wk">Fri, Nov</span></div>
+        <div class="what"><span class="time">11:59 PM</span><span class="title">Get ready for Tutorial 1</span><br>Post your screenshot (see below).</div></li>
+      <li class="stop t"><div class="date"><span class="day">21</span><span class="wk">Sat, Nov</span></div>
+        <div class="what"><span class="time">6:45 PM</span><span class="title">Tutorial 1</span></div></li>
+      <li class="stop d"><div class="date"><span class="day">22</span><span class="wk">Sun, Nov</span></div>
+        <div class="what"><span class="time">11:59 PM</span><span class="title">Revised Proposal due</span></div></li>
+      <li class="stop t"><div class="date"><span class="day">23</span><span class="wk">Mon, Nov</span></div>
+        <div class="what"><span class="time">6:45 PM</span><span class="title">Tutorial 2</span></div></li>
+      <li class="stop d"><div class="date"><span class="day">24</span><span class="wk">Tue, Nov</span></div>
+        <div class="what"><span class="time">11:59 PM</span><span class="title">Google Form due</span><br>Shared with me as Editor.</div></li>
+      <li class="stop t"><div class="date"><span class="day">26</span><span class="wk">Thu, Nov</span></div>
+        <div>
+          <div class="what"><span class="time">6:45 PM</span><span class="title">Tutorial 3</span></div>
+          <div class="what due"><span class="time">11:59 PM</span><span class="title">Pilot responses due</span><br>10 to 15 responses.</div>
+        </div></li>
+      <li class="stop"><div class="date"><span class="day">28</span><span class="wk">Sat, Nov</span></div>
+        <div class="what"><span class="time">Class</span><span class="title">Discussion of your analyses + how to write the report</span></div></li>
+      <li class="stop d"><div class="date"><span class="day">30</span><span class="wk">Mon, Nov</span></div>
+        <div class="what"><span class="time">11:59 PM</span><span class="title">Excel Analysis due</span></div></li>
+      <li class="stop d"><div class="date"><span class="day">3</span><span class="wk">Thu, Dec</span></div>
+        <div class="what"><span class="time">11:59 PM</span><span class="title">Final Report due</span><br>Both .docx and .pdf.</div></li>
+      <li class="stop"><div class="date"><span class="day">5</span><span class="wk">Sat, Dec</span></div>
+        <div class="what"><span class="time">Classes on 5, 10 and 12 Dec</span><span class="title">Course review, final exam paper discussion, limitations of your projects</span></div></li>
+    </ol>
+    <p class="submit-note">Submit everything in <b>Google Classroom &gt; Classwork</b>.</p>
+  </section>
+
+  <section class="block" aria-labelledby="todo">
+    <h2 id="todo">What you will do</h2>
+    <ol class="parts">
+      <li>
+        <h3>Revised Research Proposal</h3>
+        <p>Update the proposal you submitted on 8 October. Your research knowledge is much better now, so use it. Your revised proposal must include:</p>
+        <ul>
+          <li>a clear research problem</li>
+          <li>research objectives</li>
+          <li>research questions</li>
+          <li>hypotheses</li>
+          <li>variables</li>
+          <li>sampling plan</li>
+          <li>the statistical tests you will use</li>
+        </ul>
+        <p>You <b>may change your topic</b>. You may also choose the <b>common topic</b> that I have already given you.</p>
+      </li>
+      <li>
+        <h3>Questionnaire in Google Forms</h3>
+        <p>Make the questionnaire for your proposal in Google Forms. Share it with me as <b>Editor</b> (my usual email). I will edit it and approve it.</p>
+        <p>After approval, collect a <b>small pilot: 10 to 15 responses</b>. This gives you real data-collection experience. Submit the response sheet.</p>
+      </li>
+      <li>
+        <h3>Data Analysis in Excel</h3>
+        <p>Each of you will get <b>your own dataset</b>, made for your questionnaire. No two students have the same data.</p>
+        <p class="flag">The dataset is <b>simulated (made by computer) for practice</b>. It is not collected from real people.</p>
+        <p>We will do the analysis together in <b>3 evening tutorial classes</b>. After that, you finish the analysis and submit your Excel file.</p>
+      </li>
+      <li>
+        <h3>Final Report</h3>
+        <p>Write a report on the findings from your dataset. In the report, say clearly that the analysed data is simulated. Report your pilot (real) responses in a separate section. Submit <b>both .docx and .pdf</b>.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block" aria-labelledby="marks">
+    <h2 id="marks">Marks out of 25</h2>
+    <div class="bar" role="img" aria-label="Proposal 4, Google Form 3, Excel Analysis 9, Report 9">
+      <div class="a">4</div><div class="b">3</div><div class="c">9</div><div class="e">9</div>
+    </div>
+    <div class="bar-key">
+      <span data-n="4">Proposal</span><span data-n="3">Google Form</span><span data-n="9">Excel Analysis</span><span data-n="9">Report</span>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="ready">
+    <h2 id="ready">Get ready for Tutorial 1</h2>
+    <p>Do this by <b>Fri 20 Nov, 11:59 PM</b>.</p>
+    <ol class="steps">
+      <li>Install <b>AnyDesk</b> on your PC or laptop.</li>
+      <li>In <b>Microsoft Excel</b>, turn on the <b>Analysis ToolPak</b>:<br>
+        <span class="path">File &gt; Options &gt; Add-ins &gt; Manage: Excel Add-ins &gt; Go &gt; tick Analysis ToolPak &gt; OK</span></li>
+      <li>Open <span class="path">Data &gt; Data Analysis</span>. Take a <b>screenshot</b> of the window that opens and post it in Classwork.</li>
+    </ol>
+    <p>In every tutorial, join from <b>two devices</b>: your <b>PC</b> and your <b>mobile phone</b>, both in Google Classroom. I will connect to some students' PCs and share the screen with everyone. You will do the same steps on your own data at the same time.</p>
+  </section>
+
+  <section class="block" aria-labelledby="names">
+    <h2 id="names">File names: very important</h2>
+    <p>Name every file like this. The date is the day you submit, written as year, month, day.</p>
+    <div class="fname" aria-label="Date underscore StudentID underscore Name underscore Part">
+      <span class="seg dt"><b>20261122</b><small>Date</small></span><span class="us">_</span>
+      <span class="seg"><b>2231045</b><small>Student ID</small></span><span class="us">_</span>
+      <span class="seg"><b>Rahim</b><small>Name</small></span><span class="us">_</span>
+      <span class="seg"><b>Proposal</b><small>Part</small></span>
+    </div>
+    <ul class="files">
+      <li>20261122_2231045_Rahim_Proposal.docx</li>
+      <li>20261126_2231045_Rahim_Pilot.xlsx</li>
+      <li>20261130_2231045_Rahim_Analysis.xlsx</li>
+      <li>20261203_2231045_Rahim_Report.docx<span>and</span>20261203_2231045_Rahim_Report.pdf</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="late">
+    <h2 id="late">Late submission</h2>
+    <table>
+      <tr><th>Days late</th><th>Marks cut from that part</th></tr>
+      <tr><td>1 to 3 days</td><td>10%</td></tr>
+      <tr><td>Day 4</td><td>11.5%</td></tr>
+      <tr><td>Day 5</td><td>13%</td></tr>
+      <tr><td>Each day after</td><td>1.5% more</td></tr>
+    </table>
+    <p style="margin-top:12px">No submission is accepted after <b>Fri 11 Dec, 11:59 PM</b>.</p>
+  </section>
+
+  <section class="block" aria-labelledby="rules">
+    <h2 id="rules">Rules</h2>
+    <p>Use only your own dataset. Every dataset is different, so copied work is easy to be caught.</p>
+  </section>
+
+  <section class="block ask" aria-labelledby="q">
+    <h2 id="q">Questions?</h2>
+    <p>First, write your question or confusion in our section's <b>WhatsApp group</b>. If something is still not clear, you may also ask me in class.</p>
+  </section>
+
+</main>
+</body>
+</html>
