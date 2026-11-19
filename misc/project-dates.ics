@@ -48,16 +48,17 @@ UID:bus3201-project-2026-02@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART:20261122T175900Z
 DTEND:20261122T180000Z
-SUMMARY:BUS3201 Project: Due: Revised Proposal
-DESCRIPTION:Submit in Google Classroom > Classwork.
+SUMMARY:BUS3201 Project: Due: Revised Proposal and Google Form
+DESCRIPTION:Submit the proposal in Google Classroom > Classwork. Share yo
+ ur Google Form with your teacher as Editor.
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Revised Proposal
+DESCRIPTION:BUS3201 Project: Due: Revised Proposal and Google Form
 TRIGGER:-PT10H
 END:VALARM
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Revised Proposal
+DESCRIPTION:BUS3201 Project: Due: Revised Proposal and Google Form
 TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
@@ -83,26 +84,8 @@ END:VEVENT
 BEGIN:VEVENT
 UID:bus3201-project-2026-04@research-toolkit
 DTSTAMP:20261119T120000Z
-DTSTART:20261124T175900Z
-DTEND:20261124T180000Z
-SUMMARY:BUS3201 Project: Due: Google Form
-DESCRIPTION:Share your Google Form with your teacher as Editor.
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Google Form
-TRIGGER:-PT10H
-END:VALARM
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Google Form
-TRIGGER:-PT2H
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:bus3201-project-2026-05@research-toolkit
-DTSTAMP:20261119T120000Z
-DTSTART:20261126T124500Z
-DTEND:20261126T144500Z
+DTSTART:20261125T124500Z
+DTEND:20261125T144500Z
 SUMMARY:BUS3201 Project: Tutorial 3 (evening)
 DESCRIPTION:Join from your PC and your mobile phone in Google Classroom. 
  End time is open.
@@ -118,7 +101,7 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-06@research-toolkit
+UID:bus3201-project-2026-05@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART:20261126T175900Z
 DTEND:20261126T180000Z
@@ -136,7 +119,7 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-07@research-toolkit
+UID:bus3201-project-2026-06@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART;VALUE=DATE:20261128
 DTEND;VALUE=DATE:20261129
@@ -156,10 +139,10 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-08@research-toolkit
+UID:bus3201-project-2026-07@research-toolkit
 DTSTAMP:20261119T120000Z
-DTSTART:20261130T175900Z
-DTEND:20261130T180000Z
+DTSTART:20261129T175900Z
+DTEND:20261129T180000Z
 SUMMARY:BUS3201 Project: Due: Excel Analysis
 DESCRIPTION:Submit in Google Classroom > Classwork.
 BEGIN:VALARM
@@ -174,25 +157,29 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-09@research-toolkit
+UID:bus3201-project-2026-08@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART:20261203T175900Z
 DTEND:20261203T180000Z
-SUMMARY:BUS3201 Project: Due: Final Report (.docx and .pdf)
-DESCRIPTION:Submit in Google Classroom > Classwork.
+SUMMARY:BUS3201 Project: Due: Final Report (.docx and .pdf) + course revi
+ ew in class
+DESCRIPTION:Submit in Google Classroom > Classwork. Course review in toda
+ y's class.
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Final Report (.docx and .pdf)
+DESCRIPTION:BUS3201 Project: Due: Final Report (.docx and .pdf) + course 
+ review in class
 TRIGGER:-PT10H
 END:VALARM
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Due: Final Report (.docx and .pdf)
+DESCRIPTION:BUS3201 Project: Due: Final Report (.docx and .pdf) + course 
+ review in class
 TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-10@research-toolkit
+UID:bus3201-project-2026-09@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART;VALUE=DATE:20261205
 DTEND;VALUE=DATE:20261206
@@ -209,7 +196,7 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-11@research-toolkit
+UID:bus3201-project-2026-10@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART;VALUE=DATE:20261210
 DTEND;VALUE=DATE:20261211
@@ -226,7 +213,7 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-12@research-toolkit
+UID:bus3201-project-2026-11@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART:20261211T175900Z
 DTEND:20261211T180000Z
@@ -244,19 +231,22 @@ TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:bus3201-project-2026-13@research-toolkit
+UID:bus3201-project-2026-12@research-toolkit
 DTSTAMP:20261119T120000Z
 DTSTART;VALUE=DATE:20261212
 DTEND;VALUE=DATE:20261213
-SUMMARY:BUS3201 Project: Class: Course review and project limitations
+SUMMARY:BUS3201 Project: Class: Overall course review and project limitat
+ ions
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Class: Course review and project limitations
+DESCRIPTION:BUS3201 Project: Class: Overall course review and project lim
+ itations
 TRIGGER:-PT10H
 END:VALARM
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:BUS3201 Project: Class: Course review and project limitations
+DESCRIPTION:BUS3201 Project: Class: Overall course review and project lim
+ itations
 TRIGGER:-PT2H
 END:VALARM
 END:VEVENT
