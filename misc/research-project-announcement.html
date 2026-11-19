@@ -60,6 +60,26 @@
   .stop.t .day{color:var(--tut)} .stop.t .what{background:var(--tut-soft);border-left-color:var(--tut)}
   .stop.d .day{color:var(--due)} .stop.d .what{background:var(--due-soft);border-left-color:var(--due)}
   .stop .what.due{background:var(--due-soft);border-left-color:var(--due);margin-top:8px}
+  .save{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+  .save h3{margin-bottom:4px}
+  .save > p{color:var(--muted);font-size:.95rem}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 4px}
+  .btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:10px;font-weight:700;font-size:1rem;
+    text-decoration:none;cursor:pointer;border:2px solid var(--ink);color:var(--ink);background:var(--sheet);font-family:inherit}
+  .btn.ios{background:var(--ink);color:var(--sheet)}
+  .btn:focus-visible,.gadd:focus-visible,.android summary:focus-visible{outline:3px solid var(--tut);outline-offset:2px}
+  .android{flex:1 1 100%}
+  .android summary{list-style:none;display:inline-flex}
+  .android summary::-webkit-details-marker{display:none}
+  .android[open] summary{border-color:var(--tut);color:var(--tut)}
+  .panel{margin-top:10px;padding:14px;border-radius:10px;background:var(--plain-soft)}
+  .panel h4{font-family:"Familjen Grotesk",sans-serif;font-size:1.02rem;margin:0 0 4px}
+  .panel .opt + .opt{margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+  .glist{list-style:none;margin:8px 0 0;padding:0}
+  .glist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--rule)}
+  .glist small{color:var(--muted)}
+  .gadd{flex:none;padding:6px 14px;border-radius:8px;background:var(--tut);color:#fff;font-weight:700;text-decoration:none}
+  .gnote{font-size:.92rem;color:var(--muted);margin:8px 0 0}
   .submit-note{margin:14px 0 0;color:var(--muted)}
 
   .parts{counter-reset:p;list-style:none;margin:0;padding:0}
@@ -163,6 +183,44 @@
       <li class="stop"><div class="date"><span class="day">5</span><span class="wk">Sat, Dec</span></div>
         <div class="what"><span class="time">Classes on 5, 10 and 12 Dec</span><span class="title">Course review, final exam paper discussion, limitations of your projects</span></div></li>
     </ol>
+    <div class="save">
+      <h3>Save these dates to your phone</h3>
+      <p>Each date gets two reminders: 10 hours before and 2 hours before.</p>
+      <div class="btns">
+        <a class="btn ios" href="project-dates.ics" download>iPhone: add all dates</a>
+        <details class="android">
+          <summary class="btn">Android: add dates</summary>
+          <div class="panel">
+            <div class="opt">
+              <h4>I have Samsung Calendar (use this first)</h4>
+              <p>Tap the button, then open the file with <b>Samsung Calendar</b>. All dates are added with both reminders.</p>
+              <a class="btn ios" href="project-dates.ics" download>Add all dates to Samsung Calendar</a>
+            </div>
+            <div class="opt">
+              <h4>I do not have Samsung Calendar: use Google Calendar</h4>
+              <p>Tap <b>Add</b> for each date. Google Calendar opens. Tap <b>Save</b>.</p>
+              <ul class="glist">
+          <li><span><b>Due: Get ready for Tutorial 1</b><br><small>Fri 20 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Get%20ready%20for%20Tutorial%201&amp;dates=20261120T235900%2F20261121T000000&amp;ctz=Asia%2FDhaka&amp;details=Install%20AnyDesk%2C%20turn%20on%20Excel%20Analysis%20ToolPak%2C%20post%20your%20screenshot%20in%20Classwork." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Tutorial 1 (evening)</b><br><small>Sat 21 Nov, 6:45 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Tutorial%201%20%28evening%29&amp;dates=20261121T184500%2F20261121T204500&amp;ctz=Asia%2FDhaka&amp;details=Join%20from%20your%20PC%20and%20your%20mobile%20phone%20in%20Google%20Classroom.%20End%20time%20is%20open." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Due: Revised Proposal</b><br><small>Sun 22 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Revised%20Proposal&amp;dates=20261122T235900%2F20261123T000000&amp;ctz=Asia%2FDhaka&amp;details=Submit%20in%20Google%20Classroom%20%3E%20Classwork." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Tutorial 2 (evening)</b><br><small>Mon 23 Nov, 6:45 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Tutorial%202%20%28evening%29&amp;dates=20261123T184500%2F20261123T204500&amp;ctz=Asia%2FDhaka&amp;details=Join%20from%20your%20PC%20and%20your%20mobile%20phone%20in%20Google%20Classroom.%20End%20time%20is%20open." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Due: Google Form</b><br><small>Tue 24 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Google%20Form&amp;dates=20261124T235900%2F20261125T000000&amp;ctz=Asia%2FDhaka&amp;details=Share%20your%20Google%20Form%20with%20your%20teacher%20as%20Editor." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Tutorial 3 (evening)</b><br><small>Thu 26 Nov, 6:45 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Tutorial%203%20%28evening%29&amp;dates=20261126T184500%2F20261126T204500&amp;ctz=Asia%2FDhaka&amp;details=Join%20from%20your%20PC%20and%20your%20mobile%20phone%20in%20Google%20Classroom.%20End%20time%20is%20open." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Due: Pilot responses (10 to 15)</b><br><small>Thu 26 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Pilot%20responses%20%2810%20to%2015%29&amp;dates=20261126T235900%2F20261127T000000&amp;ctz=Asia%2FDhaka&amp;details=Submit%20the%20response%20sheet%20in%20Google%20Classroom%20%3E%20Classwork." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Class: Discussion of analyses + how to write the report</b><br><small>Sat 28 Nov</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Class%3A%20Discussion%20of%20analyses%20%2B%20how%20to%20write%20the%20report&amp;dates=20261128%2F20261129&amp;ctz=Asia%2FDhaka" target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Due: Excel Analysis</b><br><small>Mon 30 Nov, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Excel%20Analysis&amp;dates=20261130T235900%2F20261201T000000&amp;ctz=Asia%2FDhaka&amp;details=Submit%20in%20Google%20Classroom%20%3E%20Classwork." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Due: Final Report (.docx and .pdf)</b><br><small>Thu 3 Dec, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Due%3A%20Final%20Report%20%28.docx%20and%20.pdf%29&amp;dates=20261203T235900%2F20261204T000000&amp;ctz=Asia%2FDhaka&amp;details=Submit%20in%20Google%20Classroom%20%3E%20Classwork." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Class: Course review</b><br><small>Sat 5 Dec</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Class%3A%20Course%20review&amp;dates=20261205%2F20261206&amp;ctz=Asia%2FDhaka" target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Class: Final exam paper discussion</b><br><small>Thu 10 Dec</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Class%3A%20Final%20exam%20paper%20discussion&amp;dates=20261210%2F20261211&amp;ctz=Asia%2FDhaka" target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Last day for late submissions</b><br><small>Fri 11 Dec, 11:59 PM</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Last%20day%20for%20late%20submissions&amp;dates=20261211T235900%2F20261212T000000&amp;ctz=Asia%2FDhaka&amp;details=Nothing%20is%20accepted%20after%2011%3A59%20PM%20today." target="_blank" rel="noopener">Add</a></li>
+          <li><span><b>Class: Course review and project limitations</b><br><small>Sat 12 Dec</small></span><a class="gadd" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=BUS3201%20Project%3A%20Class%3A%20Course%20review%20and%20project%20limitations&amp;dates=20261212%2F20261213&amp;ctz=Asia%2FDhaka" target="_blank" rel="noopener">Add</a></li>
+              </ul>
+              <p class="gnote">Google Calendar uses your own reminder time. To get our reminders, open each event and set 10 hours and 2 hours before.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
     <p class="submit-note">Submit everything in <b>Google Classroom &gt; Classwork</b>.</p>
   </section>
 
