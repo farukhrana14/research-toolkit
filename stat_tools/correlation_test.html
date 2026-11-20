@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correlation Test Decision Tool</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --border: #d7deea;
+      --text: #1f2a37;
+      --muted: #5b6777;
+      --accent: #1f4e79;
+      --accent-soft: #eaf2fb;
+      --danger: #b42318;
+      --danger-soft: #fff3f2;
+      --warning: #8a5a00;
+      --warning-soft: #fff8e6;
+      --info-soft: #eef6ff;
+      --shadow: 0 8px 24px rgba(31, 42, 55, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .app-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #ffffff, #fbfdff);
+    }
+
+    .title {
+      margin: 0 0 6px;
+      font-size: clamp(22px, 4vw, 28px);
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .topbar {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--accent-soft);
+    }
+
+    .topbar-label {
+      display: block;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .radio-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 13px;
+      border: 1px solid #b9c6d8;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      min-width: 0;
+      font-size: 15px;
+    }
+
+    .radio-option input {
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .radio-option strong {
+      display: block;
+    }
+
+    .radio-option span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid #b9c6d8;
+      border-radius: 10px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.12);
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .help-card {
+      margin: 0 0 18px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: var(--info-soft);
+      padding: 14px 16px;
+      font-size: 14px;
+    }
+
+    .help-card summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    .help-card p {
+      margin: 10px 0 0;
+    }
+
+    .help-card code {
+      display: inline-block;
+      background: #fff;
+      border: 1px solid #d7deea;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .field small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 11px 18px;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    button:hover {
+      opacity: 0.95;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: var(--danger-soft);
+      border: 1px solid #f3c7c2;
+      color: var(--danger);
+    }
+
+    .message.warning {
+      background: var(--warning-soft);
+      border: 1px solid #f1d9a6;
+      color: var(--warning);
+    }
+
+    .result-box {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fcfdff;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin-top: 10px;
+    }
+
+    .result-item {
+      padding: 12px;
+      border: 1px solid #e4eaf2;
+      border-radius: 10px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .result-item.hidden {
+      display: none;
+    }
+
+    .result-label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 17px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .result-note {
+      display: block;
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .decision-stack {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .decision-card {
+      border: 1px solid #dbe5f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    .decision-heading {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .decision-text {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .decision-text.reject {
+      color: var(--danger);
+    }
+
+    .decision-text.fail {
+      color: var(--accent);
+    }
+
+    .decision-detail {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .reminder {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .scale-card {
+      margin: 0 20px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .scale-card p {
+      margin: 10px 0 0;
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid #e4eaf2;
+    }
+
+    th {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    tr.active-row td {
+      background: #fff8e6;
+      font-weight: 700;
+    }
+
+    .notes-card {
+      margin: 0 20px 20px;
+      border: 1px solid #cfe0f5;
+      border-radius: 12px;
+      background: var(--info-soft);
+      padding: 16px;
+    }
+
+    .notes-title {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: var(--accent);
+    }
+
+    .notes-card p {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .notes-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: #fbfdff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 820px) {
+      .grid-two,
+      .result-grid,
+      .radio-group {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 10px;
+      }
+
+      .header,
+      .topbar,
+      .panel,
+      .footer {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .notes-card,
+      .scale-card {
+        margin-left: 14px;
+        margin-right: 14px;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .section-title {
+        font-size: 18px;
+      }
+
+      .result-value {
+        font-size: 16px;
+      }
+
+      .decision-text {
+        font-size: 15px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+
+      th,
+      td {
+        padding: 8px 6px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      select,
+      input[type="number"] {
+        font-size: 16px;
+        padding: 11px 12px;
+      }
+
+      .title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app-card">
+      <div class="header">
+        <h1 class="title">Correlation Test Decision Tool</h1>
+        <p class="subtitle">Test whether a Pearson or Spearman correlation is significant. Type r and n. All calculations run in your browser.</p>
+      </div>
+
+      <div class="topbar">
+        <span class="topbar-label">Select Test</span>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="testType" value="pearson" checked />
+            <div>
+              <strong>Pearson correlation</strong>
+              <span>For numbers: interval or ratio data. Interval data have equal gaps but no true zero (for example, temperature in °C). Ratio data have equal gaps and a true zero (for example, sales or age).</span>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="testType" value="spearman" />
+            <div>
+              <strong>Spearman rank correlation</strong>
+              <span>For ordered data, for example single Likert items. Ordinal means ordered groups whose gaps are not equal.</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title" id="section-title">Pearson Correlation Test</h2>
+
+        <details class="help-card">
+          <summary>How do I get r in Excel or Google Sheets?</summary>
+          <p><strong>Pearson:</strong> type <code>=CORREL(A2:A31, B2:B31)</code>. Change the ranges to your two columns.</p>
+          <p><strong>Spearman:</strong> first rank each column. In a new column, type <code>=RANK.AVG(A2, $A$2:$A$31, 1)</code> and copy it down. Do the same for the second column. Then use <code>=CORREL</code> on the two rank columns.</p>
+          <p><strong>Video tutorials:</strong> <a href="https://www.youtube.com/watch?v=Nc0cTp4UdBk" target="_blank" rel="noopener">Pearson</a> | <a href="https://www.youtube.com/watch?v=tGExJ15dKhQ" target="_blank" rel="noopener">Spearman</a></p>
+          <p><strong>Tip:</strong> copy the full value that CORREL gives you (for example 0.48231). Do not round it first, because rounding can change the p-value a little.</p>
+          <p><strong>n</strong> is the number of pairs: the number of rows that have a value in both columns.</p>
+        </details>
+
+        <div class="grid-two">
+          <div class="field">
+            <label for="r-value" id="r-label">Correlation coefficient (r)</label>
+            <input type="number" id="r-value" step="any" min="-1" max="1" inputmode="decimal" />
+            <small>A number between −1 and 1. Paste the full value from Excel.</small>
+          </div>
+
+          <div class="field">
+            <label for="n-value">Number of pairs (n)</label>
+            <input type="number" id="n-value" step="1" min="3" inputmode="numeric" />
+            <small>A whole number, at least 3.</small>
+          </div>
+
+          <div class="field">
+            <label for="alpha">Significance level (α)</label>
+            <select id="alpha">
+              <option value="0.01">0.01</option>
+              <option value="0.05" selected>0.05</option>
+              <option value="0.10">0.10</option>
+            </select>
+            <small>The risk you accept of finding a relation that is not really there.</small>
+          </div>
+
+          <div class="field">
+            <label for="scale">Strength scale</label>
+            <select id="scale">
+              <option value="cohen" selected>Cohen (1988)</option>
+              <option value="dancey">Adapted from Dancey and Reidy</option>
+            </select>
+            <small>Both scales are shown in the table below.</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="calc">Calculate</button>
+          <button type="button" class="secondary" id="reset">Reset</button>
+        </div>
+
+        <div id="msg" class="message"></div>
+        <div id="warn" class="message"></div>
+
+        <div class="result-box">
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="result-label">Test used</span>
+              <div class="result-value" id="out-test">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label" id="out-r-label">r</span>
+              <div class="result-value" id="out-r">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">n (number of pairs)</span>
+              <div class="result-value" id="out-n">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Degrees of freedom (df = n − 2)</span>
+              <div class="result-value" id="out-df">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">t Statistic</span>
+              <div class="result-value" id="out-t">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Right-tailed p-value</span>
+              <div class="result-value" id="out-p-right">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Left-tailed p-value</span>
+              <div class="result-value" id="out-p-left">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Two-tailed p-value</span>
+              <div class="result-value" id="out-p-two">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Direction</span>
+              <div class="result-value" id="out-direction">—</div>
+            </div>
+
+            <div class="result-item">
+              <span class="result-label">Strength</span>
+              <div class="result-value" id="out-strength">—</div>
+            </div>
+
+            <div class="result-item" id="item-r2">
+              <span class="result-label">r² (shared variation)</span>
+              <div class="result-value" id="out-r2">—</div>
+            </div>
+          </div>
+
+          <div class="decision-stack">
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: ρ &gt; 0 (positive relation)</div>
+              <div class="decision-text fail" id="decision-gt">—</div>
+              <div class="decision-detail" id="detail-gt"></div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: ρ &lt; 0 (negative relation)</div>
+              <div class="decision-text fail" id="decision-lt">—</div>
+              <div class="decision-detail" id="detail-lt"></div>
+            </div>
+
+            <div class="decision-card">
+              <div class="decision-heading">If H₁: ρ ≠ 0 (any relation)</div>
+              <div class="decision-text fail" id="decision-neq">—</div>
+              <div class="decision-detail" id="detail-neq"></div>
+            </div>
+          </div>
+
+          <div class="reminder">Correlation shows a relation, not cause and effect.</div>
+        </div>
+      </div>
+
+      <div class="scale-card">
+        <h3 class="notes-title">How strong is the relation?</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>|r| (size, ignoring the sign)</th>
+                <th>Cohen (1988)</th>
+                <th>Adapted from Dancey and Reidy</th>
+              </tr>
+            </thead>
+            <tbody id="scale-body">
+              <tr data-cohen="negligible" data-dancey="negligible"><td>below 0.10</td><td>Negligible</td><td>Negligible</td></tr>
+              <tr data-cohen="small" data-dancey="weak"><td>0.10 to 0.29</td><td>Small</td><td>Weak</td></tr>
+              <tr data-cohen="medium" data-dancey="weak"><td>0.30 to 0.39</td><td>Medium</td><td>Weak</td></tr>
+              <tr data-cohen="medium" data-dancey="moderate"><td>0.40 to 0.49</td><td>Medium</td><td>Moderate</td></tr>
+              <tr data-cohen="large" data-dancey="moderate"><td>0.50 to 0.69</td><td>Large</td><td>Moderate</td></tr>
+              <tr data-cohen="large" data-dancey="strong"><td>0.70 to 0.99</td><td>Large</td><td>Strong</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>These labels are rules of thumb, not fixed laws. Pick one scale and say which one you used in your report.</p>
+        <p>Dancey and Reidy's published bands leave small gaps (for example, between 0.3 and 0.4). This tool smooths out those edges so every value gets a label. That is why it says "adapted from".</p>
+      </div>
+
+      <div class="notes-card">
+        <h3 class="notes-title">Important classroom notes</h3>
+        <p><strong>Choose the alternative hypothesis (H₁) before you look at the result.</strong></p>
+        <p><strong>Caution:</strong> the three decision lines above are three different hypothesis decisions, not three things that are true at the same time.</p>
+        <p><strong>H₀ (null hypothesis):</strong> ρ = 0. This means there is no relation between the two variables in the population.</p>
+        <p><strong>Formula:</strong> t = r × √(n − 2) ÷ √(1 − r²), with df = n − 2. The p-value comes from Student's t-distribution.</p>
+        <p><strong>Spearman:</strong> this tool uses the same t formula for Spearman's ρ. It is accurate when n is about 10 or more.</p>
+        <p>Say "fail to reject H₀", not "accept H₀". Failing to reject means the data do not give enough evidence. It does not prove that there is no relation.</p>
+      </div>
+
+      <div class="footer">
+        Classroom statistical tool. Calculations are performed entirely in the browser using the Student's t-distribution.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      /* ---------------- Student's t distribution ----------------
+         Same incomplete-beta code as t_test.html. Fully client-side.
+      */
+
+      function logGamma(z) {
+        const coefficients = [
+          676.5203681218851,
+          -1259.1392167224028,
+          771.32342877765313,
+          -176.61502916214059,
+          12.507343278686905,
+          -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7
+        ];
+
+        if (z < 0.5) {
+          return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+        }
+
+        z -= 1;
+        let x = 0.99999999999980993;
+        for (let i = 0; i < coefficients.length; i++) {
+          x += coefficients[i] / (z + i + 1);
+        }
+
+        const t = z + coefficients.length - 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+      }
+
+      function betacf(a, b, x) {
+        const MAX_ITER = 200;
+        const EPS = 3e-14;
+        const FPMIN = 1e-300;
+
+        const qab = a + b;
+        const qap = a + 1;
+        const qam = a - 1;
+
+        let c = 1;
+        let d = 1 - qab * x / qap;
+        if (Math.abs(d) < FPMIN) d = FPMIN;
+        d = 1 / d;
+        let h = d;
+
+        for (let m = 1; m <= MAX_ITER; m++) {
+          const m2 = 2 * m;
+
+          let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+          d = 1 + aa * d;
+          if (Math.abs(d) < FPMIN) d = FPMIN;
+          c = 1 + aa / c;
+          if (Math.abs(c) < FPMIN) c = FPMIN;
+          d = 1 / d;
+          h *= d * c;
+
+          aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+          d = 1 + aa * d;
+          if (Math.abs(d) < FPMIN) d = FPMIN;
+          c = 1 + aa / c;
+          if (Math.abs(c) < FPMIN) c = FPMIN;
+          d = 1 / d;
+
+          const del = d * c;
+          h *= del;
+
+          if (Math.abs(del - 1) < EPS) break;
+        }
+
+        return h;
+      }
+
+      function regularizedBeta(x, a, b) {
+        if (x <= 0) return 0;
+        if (x >= 1) return 1;
+
+        const logBt =
+          logGamma(a + b) -
+          logGamma(a) -
+          logGamma(b) +
+          a * Math.log(x) +
+          b * Math.log(1 - x);
+
+        const bt = Math.exp(logBt);
+
+        if (x < (a + 1) / (a + b + 2)) {
+          return bt * betacf(a, b, x) / a;
+        }
+        return 1 - bt * betacf(b, a, 1 - x) / b;
+      }
+
+      function tCDF(t, df) {
+        if (!Number.isFinite(t) || !Number.isFinite(df) || df <= 0) return NaN;
+        if (t === 0) return 0.5;
+
+        const x = df / (df + t * t);
+        const ib = regularizedBeta(x, df / 2, 0.5);
+
+        if (t > 0) return 1 - 0.5 * ib;
+        return 0.5 * ib;
+      }
+
+      function clamp01(x) {
+        return Math.max(0, Math.min(1, x));
+      }
+
+      /* Tail probabilities are computed directly from the incomplete beta,
+         so very small p-values do not lose precision to 1 − CDF. */
+      function tUpperTail(t, df) {
+        if (t === 0) return 0.5;
+        const half = 0.5 * regularizedBeta(df / (df + t * t), df / 2, 0.5);
+        return t > 0 ? half : 1 - half;
+      }
+
+      function tRightTail(t, df) {
+        return clamp01(tUpperTail(t, df));
+      }
+
+      function tLeftTail(t, df) {
+        return clamp01(tUpperTail(-t, df));
+      }
+
+      function tTwoTail(t, df) {
+        return clamp01(2 * tUpperTail(Math.abs(t), df));
+      }
+
+      function tCritical(alpha, df, twoTailed) {
+        const target = twoTailed ? 1 - alpha / 2 : 1 - alpha;
+        let lo = 0;
+        let hi = 1;
+
+        while (tCDF(hi, df) < target && hi < 1e8) hi *= 2;
+
+        for (let i = 0; i < 100; i++) {
+          const mid = (lo + hi) / 2;
+          if (tCDF(mid, df) < target) lo = mid;
+          else hi = mid;
+        }
+        return (lo + hi) / 2;
+      }
+
+      /* ---------------- Strength scales ---------------- */
+
+      function strengthLabel(r, scale) {
+        const a = Math.abs(r);
+        if (scale === 'dancey') {
+          if (a < 0.10) return 'negligible';
+          if (a < 0.40) return 'weak';
+          if (a < 0.70) return 'moderate';
+          return 'strong';
+        }
+        if (a < 0.10) return 'negligible';
+        if (a < 0.30) return 'small';
+        if (a < 0.50) return 'medium';
+        return 'large';
+      }
+
+      function scaleSource(scale) {
+        return scale === 'dancey' ? 'adapted from Dancey and Reidy' : 'Cohen, 1988';
+      }
+
+      function strengthRowIndex(r) {
+        const a = Math.abs(r);
+        if (a < 0.10) return 0;
+        if (a < 0.30) return 1;
+        if (a < 0.40) return 2;
+        if (a < 0.50) return 3;
+        if (a < 0.70) return 4;
+        return 5;
+      }
+
+      function highlightRow(index) {
+        const rows = document.querySelectorAll('#scale-body tr');
+        rows.forEach((row, i) => row.classList.toggle('active-row', i === index));
+      }
+
+      /* ---------------- Helpers ---------------- */
+
+      function parseNum(id) {
+        const value = document.getElementById(id).value.trim();
+        if (value === '') return null;
+        const num = Number(value);
+        return Number.isFinite(num) ? num : null;
+      }
+
+      function formatFixed(value, digits) {
+        if (!Number.isFinite(value)) return '—';
+        return value.toFixed(digits);
+      }
+
+      function formatPValue(p) {
+        if (!Number.isFinite(p)) return '—';
+        if (p < 0.0001) return '< 0.0001';
+        return p.toFixed(4);
+      }
+
+      function formatAlpha(alpha) {
+        return alpha === 0.1 ? '0.10' : String(alpha);
+      }
+
+      function setMessage(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text || '';
+        el.className = 'message';
+        if (text) el.classList.add('show', type || 'error');
+      }
+
+      function pPhrase(p) {
+        const f = formatPValue(p);
+        return f.startsWith('<') ? 'p ' + f : 'p = ' + f;
+      }
+
+      function setText(id, text) {
+        document.getElementById(id).textContent = text;
+      }
+
+      function setDecision(key, text, isReject, detail) {
+        const el = document.getElementById('decision-' + key);
+        el.textContent = text;
+        el.className = 'decision-text ' + (isReject ? 'reject' : 'fail');
+        setText('detail-' + key, detail || '');
+      }
+
+      function selectedTest() {
+        return document.querySelector('input[name="testType"]:checked').value;
+      }
+
+      function symbol(test) {
+        return test === 'spearman' ? 'ρ' : 'r';
+      }
+
+      /* ---------------- Decision text ---------------- */
+
+      function decisionText(type, p, alpha) {
+        const a = formatAlpha(alpha);
+        if (type === 'gt') {
+          return p < alpha
+            ? 'p < ' + a + ', so we reject H₀. The data support a positive relation between the two variables.'
+            : 'p ≥ ' + a + ', so we fail to reject H₀. The data do not show a positive relation.';
+        }
+        if (type === 'lt') {
+          return p < alpha
+            ? 'p < ' + a + ', so we reject H₀. The data support a negative relation between the two variables.'
+            : 'p ≥ ' + a + ', so we fail to reject H₀. The data do not show a negative relation.';
+        }
+        return p < alpha
+          ? 'p < ' + a + ', so we reject H₀. The data support a relation between the two variables.'
+          : 'p ≥ ' + a + ', so we fail to reject H₀. The data do not show a relation.';
+      }
+
+      /* ---------------- UI ---------------- */
+
+      function updateLabels() {
+        const test = selectedTest();
+        const isSpearman = test === 'spearman';
+        setText('section-title', isSpearman ? 'Spearman Rank Correlation Test' : 'Pearson Correlation Test');
+        setText('r-label', isSpearman ? "Spearman's rank correlation (ρ, rho)" : 'Correlation coefficient (r)');
+        setText('out-r-label', isSpearman ? 'ρ (Spearman)' : 'r (Pearson)');
+        document.getElementById('item-r2').classList.toggle('hidden', isSpearman);
+      }
+
+      function clearOutputs() {
+        ['out-test', 'out-r', 'out-n', 'out-df', 'out-t', 'out-p-right', 'out-p-left',
+          'out-p-two', 'out-direction', 'out-strength', 'out-r2'].forEach(id => setText(id, '—'));
+        setDecision('gt', '—', false, '');
+        setDecision('lt', '—', false, '');
+        setDecision('neq', '—', false, '');
+        highlightRow(-1);
+      }
+
+      function calculate() {
+        const test = selectedTest();
+        const sym = symbol(test);
+        const r = parseNum('r-value');
+        const n = parseNum('n-value');
+        const alpha = Number(document.getElementById('alpha').value);
+        const scale = document.getElementById('scale').value;
+
+        setMessage('msg', '');
+        setMessage('warn', '');
+
+        if (r === null || n === null) {
+          clearOutputs();
+          setMessage('msg', 'Please enter both ' + sym + ' and n as numbers.');
+          return;
+        }
+
+        if (r < -1 || r > 1) {
+          clearOutputs();
+          setMessage('msg', sym + ' must be between −1 and 1. Please check the value you copied from Excel.');
+          return;
+        }
+
+        if (Math.abs(r) === 1) {
+          clearOutputs();
+          setMessage('msg', sym + ' cannot be exactly 1 or −1. With a perfect relation, the t value cannot be calculated.');
+          return;
+        }
+
+        if (!Number.isInteger(n) || n < 3) {
+          clearOutputs();
+          setMessage('msg', 'n must be a whole number of at least 3.');
+          return;
+        }
+
+        if (test === 'spearman' && n < 10) {
+          setMessage('warn', 'Note: n is below 10. The t formula for Spearman is only approximate with so few pairs, so treat this result with care.', 'warning');
+        }
+
+        const df = n - 2;
+        const t = r * Math.sqrt(df) / Math.sqrt(1 - r * r);
+        const pRight = tRightTail(t, df);
+        const pLeft = tLeftTail(t, df);
+        const pTwo = tTwoTail(t, df);
+        const critOne = tCritical(alpha, df, false);
+        const critTwo = tCritical(alpha, df, true);
+
+        let direction = 'None (r = 0)';
+        if (r > 0) direction = 'Positive: as one variable goes up, the other tends to go up.';
+        if (r < 0) direction = 'Negative: as one variable goes up, the other tends to go down.';
+
+        const label = strengthLabel(r, scale);
+        const labelCap = label.charAt(0).toUpperCase() + label.slice(1);
+
+        setText('out-test', test === 'spearman' ? 'Spearman rank correlation' : 'Pearson correlation');
+        setText('out-r', String(r));
+        setText('out-n', String(n));
+        setText('out-df', String(df));
+        setText('out-t', formatFixed(t, 4));
+        setText('out-p-right', formatPValue(pRight));
+        setText('out-p-left', formatPValue(pLeft));
+        setText('out-p-two', formatPValue(pTwo));
+        setText('out-direction', direction);
+        setText('out-strength', labelCap + ' (' + scaleSource(scale) + ')');
+        setText('out-r2', formatFixed(r * r, 4) + ' (' + formatFixed(r * r * 100, 1) + '% of the variation is shared)');
+        highlightRow(strengthRowIndex(r));
+
+        setDecision('gt', decisionText('gt', pRight, alpha), pRight < alpha,
+          'Right-tailed ' + pPhrase(pRight) + '. Critical t = ' + formatFixed(critOne, 4) + '.');
+        setDecision('lt', decisionText('lt', pLeft, alpha), pLeft < alpha,
+          'Left-tailed ' + pPhrase(pLeft) + '. Critical t = −' + formatFixed(critOne, 4) + '.');
+        setDecision('neq', decisionText('neq', pTwo, alpha), pTwo < alpha,
+          'Two-tailed ' + pPhrase(pTwo) + '. Critical t = ±' + formatFixed(critTwo, 4) + '.');
+      }
+
+      function reset() {
+        document.getElementById('r-value').value = '';
+        document.getElementById('n-value').value = '';
+        document.getElementById('alpha').value = '0.05';
+        document.getElementById('scale').value = 'cohen';
+        document.querySelector('input[name="testType"][value="pearson"]').checked = true;
+        updateLabels();
+        clearOutputs();
+        setMessage('msg', '');
+        setMessage('warn', '');
+      }
+
+      document.querySelectorAll('input[name="testType"]').forEach(el => {
+        el.addEventListener('change', () => {
+          updateLabels();
+          clearOutputs();
+          setMessage('msg', '');
+          setMessage('warn', '');
+        });
+      });
+
+      document.getElementById('scale').addEventListener('change', () => {
+        if (document.getElementById('out-t').textContent !== '—') calculate();
+      });
+
+      document.getElementById('calc').addEventListener('click', calculate);
+      document.getElementById('reset').addEventListener('click', reset);
+
+      updateLabels();
+    })();
+  </script>
+</body>
+</html>
