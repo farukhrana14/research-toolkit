@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questionnaire</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><style>:root{
+  --bg:#EDF1F5; --card:#FFFFFF; --ink:#16223A; --muted:#566279; --line:#D3DAE4;
+  --digital:#0B8A8A; --digital-soft:#D7EFEE; --shop:#D9901F; --shop-soft:#F8E8CC;
+  --btn:#16223A; --btn-ink:#FFFFFF; --focus:#0B8A8A; --warn-bg:#FBEFD9; --warn-ink:#6E4A0B; --err:#B42318;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1726; --card:#17223A; --ink:#E6ECF5; --muted:#A3AFC4; --line:#2B3956;
+  --digital:#3CC3C0; --digital-soft:#123A40; --shop:#F0B455; --shop-soft:#3E2F14;
+  --btn:#E6ECF5; --btn-ink:#0F1726; --focus:#3CC3C0; --warn-bg:#3E2F14; --warn-ink:#F6D59A; --err:#FF8A80;}}
+:root[data-theme="dark"]{
+  --bg:#0F1726; --card:#17223A; --ink:#E6ECF5; --muted:#A3AFC4; --line:#2B3956;
+  --digital:#3CC3C0; --digital-soft:#123A40; --shop:#F0B455; --shop-soft:#3E2F14;
+  --btn:#E6ECF5; --btn-ink:#0F1726; --focus:#3CC3C0; --warn-bg:#3E2F14; --warn-ink:#F6D59A; --err:#FF8A80;}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5.5vw,3.3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:700;margin:2.2rem 0 .6rem}
+h3{font-size:1.12rem;font-weight:700;margin:1.4rem 0 .4rem}
+p{margin:.55rem 0}
+a{color:var(--digital)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0}
+.course{font-weight:700;color:var(--muted);font-size:.95rem}
+.home{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;color:var(--btn-ink);background:var(--btn);padding:9px 16px;border-radius:999px;font-size:.95rem}
+.home svg{width:18px;height:18px}
+.home:hover{opacity:.9}
+/* the two-channel bar: digital on the left, offline shop on the right */
+.split{display:flex;height:14px;border-radius:999px;overflow:hidden;margin:18px 0 22px;background:var(--line)}
+.split span{display:block;height:100%}
+.split .d{background:var(--digital);flex:0 0 50%;transform-origin:left;animation:growL 1.1s cubic-bezier(.2,.8,.2,1) both}
+.split .s{background:var(--shop);flex:0 0 50%;transform-origin:right;animation:growR 1.1s cubic-bezier(.2,.8,.2,1) .15s both}
+@keyframes growL{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes growR{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.legend{display:flex;justify-content:space-between;font-weight:700;font-size:.95rem;margin-top:-12px}
+.legend .ld{color:var(--digital)} .legend .ls{color:var(--shop)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0}
+.note{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:12px 16px;margin:14px 0}
+.muted{color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--digital-soft)}
+.tablewrap{overflow-x:auto;margin:10px 0}
+code,.code{font-family:ui-monospace,Consolas,monospace;font-size:.85em;background:var(--digital-soft);color:var(--ink);border-radius:5px;padding:1px 6px;word-break:break-all}
+footer{color:var(--muted);font-size:.9rem;padding:40px 0 50px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.doc h1{font-size:clamp(1.7rem,4.5vw,2.6rem)}
+.doc h2{border-top:1px solid var(--line);padding-top:1.4rem}
+.doc ul,.doc ol{padding-left:1.3em} .doc li{margin:.3rem 0}
+.doc table{margin:10px 0 14px} .doc .tablewrap{overflow-x:auto}
+.doc .refs p{padding-left:1.4em;text-indent:-1.4em;font-size:.93rem}
+.doc blockquote{margin:0}
+.guidebox{display:flex;gap:12px;align-items:center;background:var(--shop-soft);border-radius:12px;padding:12px 16px;margin:14px 0;font-weight:700}
+.guidebox a{color:var(--ink)}</style></head>
+<body><main class="wrap"><div class="top"><span class="course">BUS3201 Research Methodology · Fall 2026</span><a class="home" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home</a></div><div class="doc"><h1>Purchase Intention of University Students in Dhaka: Digital Platforms versus Offline Shops</h1><div class="split" aria-hidden="true"><span class="d"></span><span class="s"></span></div><div class="legend" aria-hidden="true"><span class="ld">Digital platforms</span><span class="ls">Offline shops</span></div><div class="guidebox"><span>Before you make your Google Form, read the <a href="guide.html">Guide: Designing the Google Form and Collecting Data</a>.</span></div>
+<p><em>Questionnaire (QTR) | BUS3201 Research Methodology | Fall 2026</em></p>
+<h2 id="opening-text-for-the-google-form">Opening text for the Google Form</h2>
+<p>Hello! We are BBA students at the University of Liberal Arts Bangladesh (ULAB). We are doing a class research study on how university students in Dhaka choose where to shop: on digital platforms or in offline shops. The survey takes about 5 minutes. We do not ask for your name. Your answers are anonymous and are used only for this class study. You can stop at any time. Thank you for your help.</p>
+<p><em>Digital platforms</em> = Daraz, Facebook shops, brand websites and shopping apps. <em>Offline shops</em> = shops, shopping malls and markets that you visit in person.</p>
+<p><strong>Note for students:</strong> the small codes in brackets, such as [DPI1], are the column names in your Excel dataset. Do not type the codes in your Google Form. For Q10 to Q29, use “Linear scale” from 1 (Strongly disagree) to 5 (Strongly agree).</p>
+<h2 id="part-a-about-you">Part A: About you</h2>
+<p><strong>Q1. Do you agree to take part in this survey?</strong> <em>(Multiple choice, required)</em> - Yes, I agree (go on) - No, I do not agree (end the survey)</p>
+<p><strong>Q2. Are you now a student at a university in Dhaka?</strong> <em>(Multiple choice, required)</em> - Yes (go on) - No (end the survey)</p>
+<p><strong>Q3. What is your age group?</strong> [AgeGroup] <em>(Multiple choice)</em> - 18 to 20 - 21 to 23 - 24 or above</p>
+<p><strong>Q4. What is your gender?</strong> [Gender] <em>(Multiple choice)</em> - Male - Female - Prefer not to say</p>
+<p><strong>Q5. What type of university do you study in?</strong> [UniType] <em>(Multiple choice)</em> - Public - Private</p>
+<p><strong>Q6. What is your family’s total monthly income (in Taka)?</strong> [Income] <em>(Multiple choice)</em> - Below 30,000 - 30,000 to 60,000 - 60,001 to 100,000 - Above 100,000</p>
+<p><strong>Q7. How many times do you shop in a usual month (online or offline)?</strong> [ShopFreq] <em>(Multiple choice)</em> - Once or less - 2 to 3 times - 4 times or more</p>
+<p><strong>Q8. Did you buy anything from a digital platform in the past 30 days?</strong> [BoughtOnline30] <em>(Multiple choice)</em> - Yes - No</p>
+<p><strong>Q9. About how much money did you spend on digital platforms in the past 30 days? Write the amount in Taka, numbers only. Write 0 if you spent nothing.</strong> [Spend30] <em>(Short answer, number only. In Google Forms: Response validation &gt; Number)</em></p>
+<h2 id="rating-scale-for-q10-to-q29">Rating scale for Q10 to Q29</h2>
+<p>1 = Strongly disagree, 2 = Disagree, 3 = Neutral, 4 = Agree, 5 = Strongly agree <em>(Linear scale 1 to 5)</em></p>
+<h2 id="part-b-buying-on-digital-platforms">Part B: Buying on digital platforms</h2>
+<ul>
+<li><strong>Q10.</strong> I plan to buy products on digital platforms in the near future. [DPI1]</li>
+<li><strong>Q11.</strong> If I had a choice, I would use digital platforms as my main way of shopping. [DPI2]</li>
+<li><strong>Q12.</strong> I expect to shop on digital platforms more often in the next few months. [DPI3]</li>
+<li><strong>Q13.</strong> I would suggest digital platforms to people I know as a good place to shop. [DPI4]</li>
+</ul>
+<h2 id="part-c-buying-in-offline-shops">Part C: Buying in offline shops</h2>
+<ul>
+<li><strong>Q14.</strong> I plan to buy products from offline shops in the near future. [OPI1]</li>
+<li><strong>Q15.</strong> If I had a choice, I would use offline shops as my main way of shopping. [OPI2]</li>
+<li><strong>Q16.</strong> I expect to visit offline shops more often in the next few months. [OPI3]</li>
+<li><strong>Q17.</strong> I would suggest offline shops to people I know as a good place to shop. [OPI4]</li>
+</ul>
+<h2 id="part-d-price-value-of-digital-platforms">Part D: Price value of digital platforms</h2>
+<ul>
+<li><strong>Q18.</strong> Prices on digital platforms are affordable for me. [PV1]</li>
+<li><strong>Q19.</strong> Discounts and deals on digital platforms give me good value for money. [PV2]</li>
+<li><strong>Q20.</strong> On digital platforms, it is easy to compare the prices of different sellers. [PV3]</li>
+<li><strong>Q21.</strong> When I add all costs (such as delivery charges), buying on digital platforms is cheaper for me than buying in offline shops. [PV4]</li>
+</ul>
+<h2 id="part-e-convenience-of-digital-platforms">Part E: Convenience of digital platforms</h2>
+<ul>
+<li><strong>Q22.</strong> Digital platforms let me shop at any time and from any place. [CV1]</li>
+<li><strong>Q23.</strong> Finding products on digital platforms takes less time and effort than going to a shop. [CV2]</li>
+<li><strong>Q24.</strong> Completing a purchase on a digital platform is quick and easy. [CV3]</li>
+<li><strong>Q25.</strong> Overall, shopping on digital platforms saves me time. [CV4]</li>
+</ul>
+<h2 id="part-f-trust-in-digital-platforms">Part F: Trust in digital platforms</h2>
+<ul>
+<li><strong>Q26.</strong> I trust that products ordered from digital platforms will match their description and pictures. [TR1]</li>
+<li><strong>Q27.</strong> I believe the payment systems of digital platforms keep my money and information safe. [TR2]</li>
+<li><strong>Q28.</strong> I believe digital platforms will handle complaints and returns fairly. [TR3]</li>
+<li><strong>Q29.</strong> I feel safe when I buy from digital platforms. [TR4]</li>
+</ul>
+<h2 id="part-g-your-pocket-money">Part G: Your pocket money</h2>
+<p><strong>Q30. How much pocket money do you get in a usual month? Write the amount in Taka, numbers only. Write 0 if you get none.</strong> [Allowance] <em>(Short answer, number only. In Google Forms: Response validation &gt; Number)</em></p>
+<h2 id="closing-text-for-the-google-form">Closing text for the Google Form</h2>
+<p>Thank you for your time!</p>
+</div>
+<footer>BUS3201 Research Methodology, ULAB. Course teacher: Abu Noor Md Farukh.</footer></main></body></html>

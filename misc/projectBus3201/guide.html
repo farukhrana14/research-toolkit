@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Collection Guide</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet"><style>:root{
+  --bg:#EDF1F5; --card:#FFFFFF; --ink:#16223A; --muted:#566279; --line:#D3DAE4;
+  --digital:#0B8A8A; --digital-soft:#D7EFEE; --shop:#D9901F; --shop-soft:#F8E8CC;
+  --btn:#16223A; --btn-ink:#FFFFFF; --focus:#0B8A8A; --warn-bg:#FBEFD9; --warn-ink:#6E4A0B; --err:#B42318;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1726; --card:#17223A; --ink:#E6ECF5; --muted:#A3AFC4; --line:#2B3956;
+  --digital:#3CC3C0; --digital-soft:#123A40; --shop:#F0B455; --shop-soft:#3E2F14;
+  --btn:#E6ECF5; --btn-ink:#0F1726; --focus:#3CC3C0; --warn-bg:#3E2F14; --warn-ink:#F6D59A; --err:#FF8A80;}}
+:root[data-theme="dark"]{
+  --bg:#0F1726; --card:#17223A; --ink:#E6ECF5; --muted:#A3AFC4; --line:#2B3956;
+  --digital:#3CC3C0; --digital-soft:#123A40; --shop:#F0B455; --shop-soft:#3E2F14;
+  --btn:#E6ECF5; --btn-ink:#0F1726; --focus:#3CC3C0; --warn-bg:#3E2F14; --warn-ink:#F6D59A; --err:#FF8A80;}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5.5vw,3.3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:700;margin:2.2rem 0 .6rem}
+h3{font-size:1.12rem;font-weight:700;margin:1.4rem 0 .4rem}
+p{margin:.55rem 0}
+a{color:var(--digital)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0}
+.course{font-weight:700;color:var(--muted);font-size:.95rem}
+.home{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;color:var(--btn-ink);background:var(--btn);padding:9px 16px;border-radius:999px;font-size:.95rem}
+.home svg{width:18px;height:18px}
+.home:hover{opacity:.9}
+/* the two-channel bar: digital on the left, offline shop on the right */
+.split{display:flex;height:14px;border-radius:999px;overflow:hidden;margin:18px 0 22px;background:var(--line)}
+.split span{display:block;height:100%}
+.split .d{background:var(--digital);flex:0 0 50%;transform-origin:left;animation:growL 1.1s cubic-bezier(.2,.8,.2,1) both}
+.split .s{background:var(--shop);flex:0 0 50%;transform-origin:right;animation:growR 1.1s cubic-bezier(.2,.8,.2,1) .15s both}
+@keyframes growL{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes growR{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.legend{display:flex;justify-content:space-between;font-weight:700;font-size:.95rem;margin-top:-12px}
+.legend .ld{color:var(--digital)} .legend .ls{color:var(--shop)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0}
+.note{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:12px 16px;margin:14px 0}
+.muted{color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--digital-soft)}
+.tablewrap{overflow-x:auto;margin:10px 0}
+code,.code{font-family:ui-monospace,Consolas,monospace;font-size:.85em;background:var(--digital-soft);color:var(--ink);border-radius:5px;padding:1px 6px;word-break:break-all}
+footer{color:var(--muted);font-size:.9rem;padding:40px 0 50px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.doc h1{font-size:clamp(1.7rem,4.5vw,2.6rem)}
+.doc h2{border-top:1px solid var(--line);padding-top:1.4rem}
+.doc ul,.doc ol{padding-left:1.3em} .doc li{margin:.3rem 0}
+.doc table{margin:10px 0 14px} .doc .tablewrap{overflow-x:auto}
+.doc .refs p{padding-left:1.4em;text-indent:-1.4em;font-size:.93rem}
+.doc blockquote{margin:0}
+.guidebox{display:flex;gap:12px;align-items:center;background:var(--shop-soft);border-radius:12px;padding:12px 16px;margin:14px 0;font-weight:700}
+.guidebox a{color:var(--ink)}</style></head>
+<body><main class="wrap"><div class="top"><span class="course">BUS3201 Research Methodology · Fall 2026</span><a class="home" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Home</a></div><div class="doc"><h1>Guide: Designing the Google Form and Collecting Data</h1><div class="split" aria-hidden="true"><span class="d"></span><span class="s"></span></div><div class="legend" aria-hidden="true"><span class="ld">Digital platforms</span><span class="ls">Offline shops</span></div>
+<p><em>BUS3201 Research Methodology | Fall 2026 | Common topic: Purchase Intention of University Students in Dhaka: Digital Platforms versus Offline Shops</em></p>
+<p>This guide shows how to turn the questionnaire (QTR) into a Google Form, how to plan the sample, how to collect responses, and which responses cannot be used.</p>
+<h2 id="build-the-google-form">1. Build the Google Form</h2>
+<ol type="1">
+<li>Go to <strong>forms.google.com</strong> and start a <strong>Blank form</strong>. Sign in with your ULAB email.</li>
+<li><strong>Title:</strong> copy the study title from the QTR. <strong>Description:</strong> copy the opening text from the QTR.</li>
+<li><strong>Settings:</strong> turn <strong>off</strong> “Collect email addresses”. Do not ask for names, phone numbers or emails anywhere. This keeps answers anonymous.</li>
+<li>Type every question <strong>exactly</strong> as written in the QTR. Do not change words, options or order. Do not type the codes in brackets, such as [DPI1].</li>
+<li>Use the right question type:</li>
+</ol>
+<div class="tablewrap"><table>
+
+<thead>
+<tr class="header">
+<th>QTR questions</th>
+<th>Google Form question type</th>
+<th>Settings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Q1 to Q8</td>
+<td>Multiple choice</td>
+<td>Turn on <strong>Required</strong></td>
+</tr>
+<tr class="even">
+<td>Q9 and Q30</td>
+<td>Short answer</td>
+<td><strong>Required</strong>; Response validation &gt; <strong>Number</strong> &gt; <strong>Greater than or equal to</strong> 0</td>
+</tr>
+<tr class="odd">
+<td>Q10 to Q29</td>
+<td>Linear scale</td>
+<td>From <strong>1</strong> to <strong>5</strong>; label 1 = “Strongly disagree”, label 5 = “Strongly agree”; <strong>Required</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ol start="6" type="1">
+<li><strong>Sections and skip logic</strong> (so people who say No stop at once):
+<ul>
+<li>Put Q1 and Q2 in <strong>Section 1</strong>. Put Q3 to Q30 in <strong>Section 2</strong>.</li>
+<li>For Q1, click the three dots &gt; <strong>Go to section based on answer</strong>. Set “Yes, I agree” → Continue to next section, and “No, I do not agree” → <strong>Submit form</strong>.</li>
+<li>Do the same for Q2: “Yes” → Continue, “No” → <strong>Submit form</strong>.</li>
+</ul></li>
+<li>Add the closing text “Thank you for your time!” in <strong>Settings &gt; Presentation &gt; Confirmation message</strong>.</li>
+<li>Click <strong>Preview</strong> (eye icon) and fill the form once yourself to test it. Then delete this test response (<strong>Responses &gt; three dots &gt; Delete all responses</strong>).</li>
+<li><strong>Share with the teacher:</strong> click the three dots &gt; <strong>Add collaborators</strong> and add the teacher as <strong>Editor</strong>.</li>
+<li>In <strong>Responses</strong>, click <strong>Link to Sheets</strong>. Every answer now goes into a Google Sheet automatically.</li>
+</ol>
+<h2 id="plan-the-sample">2. Plan the sample</h2>
+<p>The sample has 4 groups, called <strong>cells</strong>: each cell is one gender and one type of university.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Male</th>
+<th>Female</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Public</td>
+<td>15</td>
+<td>15</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>Private</td>
+<td>15</td>
+<td>15</td>
+<td>30</td>
+</tr>
+<tr class="odd">
+<td>Total</td>
+<td>30</td>
+<td>30</td>
+<td>60</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>15 is the minimum</strong> in each cell: 15 × 4 = 60.</li>
+<li><strong>20 is your target</strong> in each cell. Collect between 15 and 20 in every cell, so the total is between 60 and 80.</li>
+<li>Why at least 15? Then each group (public, private, male, female) has at least 30 students, which the z-test needs.</li>
+<li>Keep the cells balanced. Do not collect 25 in one cell and 10 in another.</li>
+<li><strong>Check your counts every day:</strong> in the linked Google Sheet, count how many responses each cell has (for example, with a PivotTable of Gender by University type). When a cell reaches 20, stop asking people from that cell.</li>
+</ul>
+<h2 id="collect-the-data">3. Collect the data</h2>
+<ol type="1">
+<li><strong>Pilot first.</strong> Send the form to 10 to 15 students. Ask them if any question was unclear. Fix only unclear wording, and ask the teacher before you change anything. Keep pilot responses separate: they are not part of the main sample.</li>
+<li><strong>Who to ask:</strong> only students who study now at a university in Dhaka. Ask public university friends to share the form with their classmates to fill the public cells.</li>
+<li><strong>How to ask:</strong> send the link with one short, polite message. Example: “Assalamu Alaikum. I am a BBA student at ULAB doing a class research study on online and offline shopping. The survey takes 5 minutes and does not ask your name. Thank you!”</li>
+<li><strong>Where to share:</strong> class WhatsApp and Messenger groups, university clubs, and friends at other universities in Dhaka.</li>
+<li><strong>Be honest and neutral:</strong> do not tell people which answer you hope for.</li>
+</ol>
+<h2 id="what-to-avoid">4. What to avoid</h2>
+<ul>
+<li>Do not fill the form yourself, or ask one person to fill it many times.</li>
+<li>Do not make up responses. This is cheating and makes the study worthless.</li>
+<li>Do not pay people or promise gifts for answers.</li>
+<li>Do not change the questions after the main survey starts.</li>
+<li>Do not share the link in groups where most people are not university students in Dhaka.</li>
+<li>Do not collect names, phone numbers, emails or student IDs.</li>
+<li>Do not put pressure on anyone. Taking part is the person’s free choice.</li>
+</ul>
+<h2 id="responses-that-cannot-be-used">5. Responses that cannot be used</h2>
+<p>A response <strong>cannot be counted</strong> in the main sample if:</p>
+<ol type="1">
+<li>The person said <strong>No</strong> to consent (Q1).</li>
+<li>The person is <strong>not</strong> a student at a university in Dhaka (Q2).</li>
+<li>Gender is <strong>“Prefer not to say”</strong>. Thank the person, but this response does not fill a gender cell.</li>
+<li>Any question is <strong>empty</strong>.</li>
+<li>Q9 or Q30 is <strong>not a real amount</strong>, for example a negative number or an impossible amount (such as 10,00,000 Taka of pocket money in one month).</li>
+<li>The person chose the <strong>same number for all 20 statements</strong> (Q10 to Q29). Some statements ask about digital platforms and some about offline shops, so the same answer to all of them shows the person did not read the questions.</li>
+<li>It is a <strong>duplicate</strong>: the same answers sent twice within a few minutes. Keep only the first one.</li>
+<li>It is a <strong>pilot</strong> response.</li>
+</ol>
+<p>Keep a short note of every response you removed and why. Your report should say how many responses were collected, how many were removed, and how many were used.</p>
+</div>
+<footer>BUS3201 Research Methodology, ULAB. Course teacher: Abu Noor Md Farukh.</footer></main></body></html>
