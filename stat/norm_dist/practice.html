@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normal Distribution Practice</title>
+<script>document.documentElement.className = "js"; try { var t = localStorage.getItem("nd-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<style>
+  /* ---------- colours: black on white, white on dark; purple only for notes ---------- */
+  :root {
+    --bg: #ffffff; --fg: #000000; --line: #9a9a9a; --soft: #f3f3f3;
+    --note: #7030A0; --note-bg: #F4ECF9;
+    --fz: 1;                              /* A− / A+ multiplier */
+    --fsk: 1;                             /* extra lift in full screen */
+    --u: min(1vw, 1.78vh);                /* one unit of a 16:9 slide */
+    --k: calc(var(--fz) * var(--fsk) * var(--u));
+  }
+  :root, .slide {
+    --fs-body: max(16px, calc(var(--k) * 1.75));
+    --fs-q:    max(19px, calc(var(--k) * 2.75));
+    --fs-qs:   max(17px, calc(var(--k) * 1.95));
+    --fs-big:  max(18px, calc(var(--k) * 2.05));
+    --fs-h2:   max(24px, calc(var(--k) * 3.4));
+    --fs-hero: max(36px, calc(var(--k) * 6.2));
+    --fs-sm:   max(13px, calc(var(--k) * 1.2));
+  }
+  :root { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --soft: #1c1c1c; --note: #D2A8EE; --note-bg: #2A1936; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { color-scheme: dark; --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --soft: #1c1c1c; --note: #D2A8EE; --note-bg: #2A1936; }
+  }
+  html.is-fs { --fsk: 1.12; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: var(--fs-body); line-height: 1.45; overflow: hidden; }
+  button { font: inherit; color: var(--fg); background: transparent; cursor: pointer; }
+  button:focus-visible, summary:focus-visible { outline: 3px solid var(--note); outline-offset: 3px; }
+
+  /* ---------- top bar: everything top-right ---------- */
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 6px 0 10px; background: var(--bg); z-index: 5; font-size: 15px; }
+  .topic { opacity: .75; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; }
+  .tools { display: flex; align-items: center; gap: 6px; flex: none; }
+  .counter { font-size: 14px; opacity: .8; min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+  .icon-btn { border: 1px solid var(--line); border-radius: 6px; width: 36px; height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 14px; }
+  .icon-btn:hover { border-color: var(--fg); }
+  .icon-btn:disabled { opacity: .35; cursor: default; }
+  .nav-btn { font-size: 18px; font-weight: 700; }
+  .fz-btn { font-size: 12px; font-weight: 700; letter-spacing: -.5px; }
+  .pdf-btn { border: 1px solid var(--line); border-radius: 6px; padding: 0 10px; height: 30px; font-size: 13px; }
+  .pdf-btn:hover { border-color: var(--fg); }
+  .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .i-moon, .i-exit { display: none; }
+  html.is-dark .i-sun { display: block; } html.is-dark .i-moon { display: none; }
+  html.is-light .i-sun { display: none; } html.is-light .i-moon { display: block; }
+  html.is-fs .i-enter { display: none; } html.is-fs .i-exit { display: block; }
+  html:not(.can-fs) #fs { display: none; }
+  .progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--note); z-index: 6; transition: width .25s; }
+
+  /* ---------- slide frame: 3px bezel ---------- */
+  .deck { position: fixed; inset: 40px 3px 3px 3px; }
+  .slide { display: none; height: 100%; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: clamp(14px, 2.6vh, 40px) clamp(16px, 4vw, 80px); }
+  .js .slide.active { display: flex; flex-direction: column; }
+  .js .slide.active > .content { margin-top: auto; margin-bottom: auto; flex: none; }
+  .js .slide.top.active > .content { margin-top: clamp(4px, 3vh, 48px); }
+  .slide.center { text-align: center; } .slide.center .content { margin-left: auto; margin-right: auto; }
+  html:not(.js) .slide { display: block; margin-bottom: 30px; height: auto; }
+  .content { width: min(100%, 76vw); }
+  .content.wide { width: 100%; max-width: 92vw; }
+
+  /* ---------- text ---------- */
+  h1.hero { font-size: var(--fs-hero); line-height: 1.05; font-weight: 700; margin: .1em 0 .25em; }
+  h2 { font-size: var(--fs-h2); line-height: 1.15; font-weight: 700; margin-bottom: .45em; }
+  h3 { font-size: var(--fs-big); margin: .3em 0; }
+  .tag { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .12em; color: var(--note); font-weight: 700; margin-bottom: .8em; }
+  .subtitle { font-size: var(--fs-big); margin-bottom: .6em; }
+  .muted { opacity: .7; }
+  .lead { font-size: var(--fs-big); max-width: 46em; }
+  .pill { display: inline-block; font-size: var(--fs-sm); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: .35em 1em; margin-bottom: 1em; }
+  .qlabel { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .6em; }
+  .question { font-size: var(--fs-q); line-height: 1.45; max-width: 44em; }
+  .question.small { font-size: var(--fs-qs); }
+
+  /* ---------- See formula ---------- */
+  .see { margin-top: 1.1em; font-size: var(--fs-body); }
+  .see summary { display: inline-block; cursor: pointer; color: var(--note); text-decoration: underline; text-underline-offset: 4px; list-style: none; user-select: none; }
+  .see summary::-webkit-details-marker { display: none; }
+  .see summary::before { content: "▸"; display: inline-block; margin-right: .35em; text-decoration: none; }
+  .see[open] summary::before { content: "▾"; }
+  .see[open] summary { margin-bottom: .5em; }
+  .fbox { background: var(--note-bg); border-left: 5px solid var(--note); border-radius: 6px; padding: .6em 1em; max-width: 44em; }
+  .fbox .f { font-size: var(--fs-big); font-weight: 600; margin: .15em 0; }
+  .fbox p { font-size: var(--fs-body); margin-top: .3em; }
+
+  /* ---------- solutions ---------- */
+  .solution { margin-top: 1em; background: var(--note-bg); border-left: 5px solid var(--note); border-radius: 6px; padding: .7em 1.1em; font-size: var(--fs-big); line-height: 1.6; max-width: 46em; }
+  .slabel { font-weight: 700; color: var(--note); margin-bottom: .2em; }
+  .solution strong { font-weight: 700; }
+
+  /* ---------- grids ---------- */
+  .grid { display: grid; gap: .5em; }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid > div { border: 1px solid var(--line); border-radius: 8px; padding: .45em .8em; display: flex; flex-direction: column; gap: .1em; }
+  .grid b { color: var(--note); }
+  .grid span { font-size: var(--fs-sm); opacity: .8; }
+  .grid.formulas { margin-top: .8em; }
+  .formulas small { font-size: calc(var(--fs-sm) * .85); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; opacity: .7; }
+  .formulas strong { font-size: var(--fs-big); font-weight: 600; }
+  .formulas .span { grid-column: 1 / -1; }
+
+  .slide.dense { --k: calc(var(--fz) * var(--fsk) * var(--u) * .9); }
+
+  /* ---------- contents ---------- */
+  .toc { list-style: none; display: grid; gap: .45em; }
+  .toc li { display: flex; align-items: center; gap: .6em; border: 1px solid var(--line); border-radius: 8px; padding: .4em .8em; }
+  .toc a { color: var(--fg); text-decoration: none; }
+  .toc li > a:first-child { flex: 1; font-size: var(--fs-big); }
+  .toc li > a:first-child:hover { color: var(--note); text-decoration: underline; text-underline-offset: 4px; }
+  .toc .tn { display: inline-block; min-width: 4.6em; font-weight: 700; color: var(--note); }
+  .toc .sol { font-size: var(--fs-sm); border: 1px solid var(--line); border-radius: 999px; padding: .2em .9em; white-space: nowrap; }
+  .toc .sol:hover { border-color: var(--note); color: var(--note); }
+  .tochint { font-size: var(--fs-sm); margin-top: .8em; }
+  a:focus-visible { outline: 3px solid var(--note); outline-offset: 3px; }
+
+  /* ---------- contents drawer (right) ---------- */
+  .scrim { position: fixed; inset: 40px 0 0 0; background: rgba(0,0,0,.35); z-index: 7; }
+  .scrim[hidden] { display: none; }
+  .drawer { position: fixed; top: 40px; right: 0; bottom: 0; width: min(440px, 92vw); background: var(--bg); border-left: 1px solid var(--line); z-index: 8; padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; transform: translateX(105%); transition: transform .22s ease; visibility: hidden; font-size: 17px; }
+  html.drawer-open .drawer { transform: none; visibility: visible; }
+  html.drawer-open #toc-btn { border-color: var(--note); color: var(--note); }
+  .drawer .tag { font-size: 13px; margin-bottom: 2px; }
+  .dlist { list-style: none; display: grid; gap: 8px; }
+  .dlist li { border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 6px; }
+  .dlist li.here { border-color: var(--note); background: var(--note-bg); }
+  .dn { font-weight: 700; color: var(--note); white-space: nowrap; }
+  .dt { line-height: 1.3; }
+  .dl { grid-column: 2; display: flex; gap: 8px; }
+  .dl a, .dfoot a { color: var(--fg); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
+  .dl a:hover, .dfoot a:hover { border-color: var(--note); color: var(--note); }
+  .dl a.here { border-color: var(--note); background: var(--note); color: var(--bg); }
+  .dfoot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+  @media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+  @media print { .drawer, .scrim { display: none !important; } }
+
+  /* ---------- visual slide ---------- */
+  .visual { display: grid; grid-template-columns: 2.6fr .7fr; gap: 2vw; align-items: center; }
+  figure { text-align: center; }
+  figcaption { font-size: var(--fs-sm); opacity: .8; margin-top: .3em; }
+  svg.bell { width: 100%; max-height: 52vh; }
+  .bellimg { display: block; margin: 0 auto; max-width: 100%; max-height: calc(100vh - 40px - 3px - 14vh - var(--fs-h2) * 2); height: auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+  svg.bell .curve { fill: none; stroke: var(--fg); stroke-width: 4; stroke-linejoin: round; }
+  svg.bell .band { fill: var(--note-bg); stroke: none; }
+  svg.bell .ax { stroke: var(--fg); stroke-width: 2; }
+  svg.bell .mean { stroke: var(--note); stroke-width: 3; stroke-dasharray: 8 7; }
+  svg.bell text { fill: var(--fg); font-size: 20px; text-anchor: middle; font-family: inherit; }
+  svg.bell text.pct { fill: var(--note); font-weight: 700; font-size: 26px; }
+  .excel { border: 1px solid var(--line); border-radius: 8px; padding: 1em; text-align: center; }
+  .excel img { width: min(120px, 9vw); height: auto; }
+  .excel p { font-size: var(--fs-sm); opacity: .8; }
+
+  @media (max-width: 760px) {
+    .topic { display: none; } .topbar { justify-content: flex-end; }
+    #pdf, .fz-btn { display: none; }
+    .grid.two, .grid.three, .visual { grid-template-columns: 1fr; }
+    .content, .content.wide { width: 100%; max-width: 100%; }
+    .excel { display: none; }
+  }
+
+  /* ---------- print / Save PDF: one slide per page ---------- */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) { --bg: #fff; --fg: #000; --line: #999; --note: #7030A0; --note-bg: #F4ECF9; --u: 6.2px; --fsk: 1; }
+    html, body { height: auto; overflow: visible; background: #fff; color: #000; }
+    .topbar, .progress { display: none; }
+    .deck { position: static; }
+    .slide, .js .slide.active { display: flex !important; flex-direction: column; height: auto; min-height: 170mm; border: 0; overflow: visible; break-after: page; page-break-after: always; padding: 0; }
+    .see { display: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="topic">Normal Distribution · Practice</span>
+  <div class="tools">
+    <button class="pdf-btn" id="toc-btn" type="button" aria-expanded="false" aria-controls="drawer" title="Open contents (C)">☰ Contents</button>
+    <button class="icon-btn nav-btn" id="prev" type="button" aria-label="Previous slide" title="Previous slide (←)">&lt;</button>
+    <span class="counter" id="counter" aria-live="polite"></span>
+    <button class="icon-btn nav-btn" id="next" type="button" aria-label="Next slide" title="Next slide (→)">&gt;</button>
+    <button class="icon-btn fz-btn" id="fz-down" type="button" aria-label="Decrease font size" title="Decrease font size">A−</button>
+    <button class="icon-btn fz-btn" id="fz-up" type="button" aria-label="Increase font size" title="Increase font size">A+</button>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch theme" title="Switch theme"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+    <button class="icon-btn" id="fs" type="button" aria-label="Full screen" title="Full screen (F)"><svg class="i-enter" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="i-exit" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
+    <button class="pdf-btn" id="pdf" type="button" title="Opens the print window. Choose Save as PDF." onclick="window.print()">Save PDF</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Contents" aria-hidden="true">
+  <p class="tag">Contents</p>
+  <ol class="dlist"><li data-type="1"><span class="dn">Type 1</span><span class="dt">Finding the Z-Score</span><span class="dl"><a href="#" data-goto="t1" data-part="p">Problems</a><a href="#" data-goto="s1" data-part="s">Solutions</a></span></li><li data-type="2"><span class="dn">Type 2</span><span class="dt">Probability: Less Than (Left Side)</span><span class="dl"><a href="#" data-goto="t2" data-part="p">Problems</a><a href="#" data-goto="s2" data-part="s">Solutions</a></span></li><li data-type="3"><span class="dn">Type 3</span><span class="dt">Probability: Greater Than (Right Side)</span><span class="dl"><a href="#" data-goto="t3" data-part="p">Problems</a><a href="#" data-goto="s3" data-part="s">Solutions</a></span></li><li data-type="4"><span class="dn">Type 4</span><span class="dt">Probability: Between Two Values</span><span class="dl"><a href="#" data-goto="t4" data-part="p">Problems</a><a href="#" data-goto="s4" data-part="s">Solutions</a></span></li><li data-type="5"><span class="dn">Type 5</span><span class="dt">Finding X from a Given Probability (Inverse Normal)</span><span class="dl"><a href="#" data-goto="t5" data-part="p">Problems</a><a href="#" data-goto="s5" data-part="s">Solutions</a></span></li><li data-type="6"><span class="dn">Type 6</span><span class="dt">Confidence Intervals (Z-Interval)</span><span class="dl"><a href="#" data-goto="t6" data-part="p">Problems</a><a href="#" data-goto="s6" data-part="s">Solutions</a></span></li></ol>
+  <div class="dfoot">
+    <a href="#" data-goto="toc">Contents slide</a>
+    <a href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Open the Z-table ↗</a>
+  </div>
+</aside>
+
+<main class="deck" id="deck">
+
+<section class="slide center" aria-label="Title">
+  <div class="content">
+    <p class="tag">BBA · Intro to Statistics · Probability</p>
+    <h1 class="hero">Normal Distribution</h1>
+    <p class="subtitle">Practice Problems &amp; Worked Solutions</p>
+    <p class="muted">30 problems · 6 problem types</p>
+  </div>
+</section>
+
+<section class="slide" aria-label="Visual introduction">
+  <div class="content wide">
+    <p class="tag">A quick visual introduction</p>
+    <h2>The Normal Distribution</h2>
+    <div class="visual">
+      <figure><img class="bellimg" src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0ibWFpbi1zdmciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIxMjAwIiBoZWlnaHQ9Ijk2MCIgdmlld0JveD0iMCAwIDEyMDAgOTYwIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI5NjAiIHN0eWxlPSJmaWxsOiAjZmZmZmZmOyIvPjxkZWZzIGlkPSJkZWZzLWRlNzMwMSI+PGcgY2xhc3M9ImNsaXBzIj48Y2xpcFBhdGggaWQ9ImNsaXBkZTczMDF4eXBsb3QiIGNsYXNzPSJwbG90Y2xpcCI+PHJlY3Qgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXgiPjxyZWN0IHg9IjEyMCIgeT0iMCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iODAwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXkiPjxyZWN0IHg9IjAiIHk9IjE1MCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXh5Ij48cmVjdCB4PSIxMjAiIHk9IjE1MCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48L2c+PGcgY2xhc3M9ImdyYWRpZW50cyIvPjxnIGNsYXNzPSJwYXR0ZXJucyIvPjwvZGVmcz48ZyBjbGFzcz0iYmdsYXllciI+PHJlY3QgY2xhc3M9ImJnIiB4PSIxMjAiIHk9IjE1MCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7IHN0cm9rZS13aWR0aDogMDsiLz48L2c+PGcgY2xhc3M9ImxheWVyLWJlbG93Ij48ZyBjbGFzcz0iaW1hZ2VsYXllciIvPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJjYXJ0ZXNpYW5sYXllciI+PGcgY2xhc3M9InN1YnBsb3QgeHkiPjxnIGNsYXNzPSJsYXllci1zdWJwbG90Ij48ZyBjbGFzcz0ic2hhcGVsYXllciIvPjxnIGNsYXNzPSJpbWFnZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJtaW5vci1ncmlkbGF5ZXIiPjxnIGNsYXNzPSJ4Ii8+PGcgY2xhc3M9InkiLz48L2c+PGcgY2xhc3M9ImdyaWRsYXllciI+PGcgY2xhc3M9IngiPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTY3LjY1LDApIiBkPSJNMCwxNTB2NTYwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieGdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwNS42Njk5OTk5OTk5OTk5NiwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InhncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTgxLjcsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE5LjcxLDApIiBkPSJNMCwxNTB2NTYwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieGdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InhncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5OTUuNzQsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEzMy43NSwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PC9nPjxnIGNsYXNzPSJ5Ij48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjI0LjQ0KSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCw1NjYuNzQpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDUwOS4wMykiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNDUxLjMzKSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwzOTMuNjIpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDMzNS45MTk5OTk5OTk5OTk5NikiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjc4LjIxMDAwMDAwMDAwMDA0KSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwyMjAuNTEpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2Mi44MSkiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48L2c+PC9nPjxnIGNsYXNzPSJ6ZXJvbGluZWxheWVyIj48cGF0aCBjbGFzcz0ieXpsIHpsIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDY4Mi4xNSkiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoNjgsIDY4LCA2OCk7IHN0cm9rZS1vcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsiLz48L2c+PGcgY2xhc3M9ImxheWVyLWJldHdlZW4iPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PGcgY2xhc3M9ImltYWdlbGF5ZXIiLz48L2c+PHBhdGggY2xhc3M9InhsaW5lcy1iZWxvdyIvPjxwYXRoIGNsYXNzPSJ5bGluZXMtYmVsb3ciLz48ZyBjbGFzcz0ib3ZlcmxpbmVzLWJlbG93Ii8+PGcgY2xhc3M9InhheGlzbGF5ZXItYmVsb3ciLz48ZyBjbGFzcz0ieWF4aXNsYXllci1iZWxvdyIvPjxnIGNsYXNzPSJvdmVyYXhlcy1iZWxvdyIvPjxnIGNsYXNzPSJvdmVycGxvdCI+PGcgY2xhc3M9Inh5IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMjAsMTUwKSI+PGcgY2xhc3M9ImJhcmxheWVyIG1sYXllciI+PGcgY2xhc3M9InRyYWNlIGJhcnMiIHN0eWxlPSJvcGFjaXR5OiAwLjU1OyI+PGcgY2xhc3M9InBvaW50cyI+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNOC43Nyw1MzIuMTVWNTIwLjZIMTA0LjQ4VjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTEwOS41Miw1MzIuMTVWNDkxLjc1SDIwNS4yM1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48ZyBjbGFzcz0icG9pbnQiPjxwYXRoIGQ9Ik0yMTAuMjcsNTMyLjE1VjM0Ny40OUgzMDUuOThWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNMzExLjAyLDUzMi4xNVYxMzkuNzZINDA2LjczVjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTQxMS43Nyw1MzIuMTVWNTMuMkg1MDcuNDhWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNNTEyLjUyLDUzMi4xNVYxMTAuOUg2MDguMjNWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNNjEzLjI3LDUzMi4xNVYzOTkuNDNINzA4Ljk4VjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTcxNC4wMiw1MzIuMTVWNDc0LjQ0SDgwOS43M1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48ZyBjbGFzcz0icG9pbnQiPjxwYXRoIGQ9Ik04MTQuNzcsNTMyLjE1VjUyNi4zOEg5MTAuNDhWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNOTE1LjUyLDUzMi4xNVY1MjYuMzhIMTAxMS4yM1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48L2c+PC9nPjwvZz48ZyBjbGFzcz0ic2NhdHRlcmxheWVyIG1sYXllciI+PGcgY2xhc3M9InRyYWNlIHNjYXR0ZXIgdHJhY2U2YzI2YTIiIHN0eWxlPSJzdHJva2UtbWl0ZXJsaW1pdDogMjsgb3BhY2l0eTogMTsiPjxnIGNsYXNzPSJmaWxscyIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIi8+PGcgY2xhc3M9ImVycm9yYmFycyIvPjxnIGNsYXNzPSJsaW5lcyI+PHBhdGggY2xhc3M9ImpzLWxpbmUiIGQ9Ik01Ni42Myw1MjAuNkwxNTcuMzgsNDkxLjc1TDI1OC4xMywzNDcuNDlMMzU4Ljg4LDEzOS43Nkw0NTkuNjMsNTMuMkw1NjAuMzgsMTEwLjlMNjYxLjEzLDM5OS40M0w3NjEuODgsNDc0LjQ0TDg2Mi42Myw1MjYuMzhMOTYzLjM4LDUyNi4zOCIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoMjE5LCA2OSwgNjkpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLWRhc2hhcnJheTogM3B4LCAzcHg7IHN0cm9rZS13aWR0aDogMi41cHg7IG9wYWNpdHk6IDE7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludHMiPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTYuNjMsNTIwLjYpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTU3LjM4LDQ5MS43NSkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PHBhdGggY2xhc3M9InBvaW50IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTguMTMsMzQ3LjQ5KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM1OC44OCwxMzkuNzYpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDU5LjYzLDUzLjIpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTYwLjM4LDExMC45KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY2MS4xMywzOTkuNDMpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzYxLjg4LDQ3NC40NCkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PHBhdGggY2xhc3M9InBvaW50IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4NjIuNjMsNTI2LjM4KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDk2My4zOCw1MjYuMzgpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0idGV4dCIvPjwvZz48ZyBjbGFzcz0idHJhY2Ugc2NhdHRlciB0cmFjZTdkZTg2YiIgc3R5bGU9InN0cm9rZS1taXRlcmxpbWl0OiAyOyBvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImZpbGxzIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiLz48ZyBjbGFzcz0iZXJyb3JiYXJzIi8+PGcgY2xhc3M9ImxpbmVzIj48cGF0aCBjbGFzcz0ianMtbGluZSIgZD0iTTcuMjIsNTI5LjkyTDQzLjE2LDUyNy4wN0w0NS4xNiw1MjYuODRMNjkuMTIsNTIzLjMyTDcxLjEyLDUyMi45NUw5My4wOCw1MTcuOUw5NS4wOCw1MTcuMzRMMTEzLjA1LDUxMS40TDExNS4wNSw1MTAuNjNMMTMxLjAyLDUwMy41N0wxMzMuMDIsNTAyLjU2TDE0OSw0OTMuNDNMMTUwLjk5LDQ5Mi4xNUwxNjYuOTcsNDgwLjU5TDE2OC45Nyw0NzguOTdMMTg0Ljk0LDQ2NC42M0wxODYuOTQsNDYyLjY1TDIwMC45Miw0NDcuNTZMMjAyLjkxLDQ0NS4yM0wyMTguODksNDI0Ljg4TDIyMC44OSw0MjIuMTJMMjM2Ljg2LDM5OC40TDIzOC44NiwzOTUuMjJMMjU2LjgzLDM2NC42MUwyNTguODMsMzYwLjk5TDI3OC44LDMyMi42NEwyODAuNzksMzE4LjZMMzA0Ljc2LDI2OC4wNEwzMDYuNzUsMjYzLjY5TDM2NC42NiwxMzguMzlMMzY2LjY2LDEzNC40TDM4NC42MywxMDAuNzZMMzg2LjYzLDk3LjMxTDQwMC42MSw3NS4wM0w0MDIuNiw3Mi4xNUw0MTQuNTksNTYuNTJMNDE2LjU4LDU0LjIyTDQyNi41Nyw0NC4wNkw0MjguNTYsNDIuMzFMNDM4LjU1LDM1LjAzTDQ0MC41NSwzMy44OEw0NDguNTMsMzAuMjhMNDUwLjUzLDI5LjY0TDQ1OC41MiwyOC4xMkw0NjAuNTIsMjguMDFMNDY4LjUsMjguNkw0NzAuNSwyOS4wMkw0NzguNDksMzEuNzFMNDgwLjQ4LDMyLjY0TDQ4OC40NywzNy4zOUw0OTAuNDcsMzguODNMNTAwLjQ1LDQ3LjQ4TDUwMi40NSw0OS41TDUxMi40Myw2MC45NEw1MTQuNDMsNjMuNDlMNTI2LjQxLDgwLjQ4TDUyOC40MSw4My41OEw1NDIuMzksMTA3LjJMNTQ0LjM5LDExMC44Mkw1NjIuMzYsMTQ1Ljc0TDU2NC4zNSwxNDkuODNMNTg4LjMyLDIwMS4xOEw1OTAuMzEsMjA1LjU4TDY0MC4yNCwzMTMuNzlMNjQyLjIzLDMxNy44Nkw2NjQuMiwzNjAuMzNMNjY2LjIsMzYzLjk2TDY4NC4xNywzOTQuNjRMNjg2LjE3LDM5Ny44Mkw3MDIuMTQsNDIxLjYyTDcwNC4xNCw0MjQuMzhMNzIwLjExLDQ0NC44TDcyMi4xMSw0NDcuMTRMNzM4LjA5LDQ2NC4yN0w3NDAuMDgsNDY2LjIyTDc1Ni4wNiw0ODAuM0w3NTguMDUsNDgxLjg4TDc3NC4wMyw0OTMuMkw3NzYuMDMsNDk0LjQ2TDc5Miw1MDMuMzlMNzk0LDUwNC4zN0w4MTEuOTcsNTEyLjAyTDgxMy45Nyw1MTIuNzRMODMxLjk0LDUxOC4zNUw4MzMuOTQsNTE4Ljg3TDg1NS45LDUyMy42MUw4NTcuOSw1MjMuOTZMODgzLjg2LDUyNy40Nkw4ODUuODYsNTI3LjY2TDkxNy44MSw1MzBMOTE5LjgsNTMwLjFMOTYzLjc0LDUzMS40N0w5NjUuNzMsNTMxLjUxTDEwMDMuNjgsNTMxLjkyIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBmaWxsOiBub25lOyBzdHJva2U6IHJnYig0NiwgMTM5LCA4Nyk7IHN0cm9rZS1vcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDMuNXB4OyBvcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0icG9pbnRzIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiLz48ZyBjbGFzcz0idGV4dCIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIi8+PC9nPjwvZz48L2c+PC9nPjxwYXRoIGNsYXNzPSJ4bGluZXMtYWJvdmUgY3Jpc3AiIGQ9IiIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZS13aWR0aDogMXB4OyBzdHJva2U6IHJnYigwLCAwLCAwKTsgc3Ryb2tlLW9wYWNpdHk6IDA7Ii8+PHBhdGggY2xhc3M9InlsaW5lcy1hYm92ZSBjcmlzcCIgZD0iIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlLXdpZHRoOiAxcHg7IHN0cm9rZTogcmdiKDAsIDAsIDApOyBzdHJva2Utb3BhY2l0eTogMDsiLz48ZyBjbGFzcz0ib3ZlcmxpbmVzLWFib3ZlIi8+PGcgY2xhc3M9InhheGlzbGF5ZXItYWJvdmUiPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2Ny42NSwwKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inh0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMCw3MTF2NSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzA1LjY2OTk5OTk5OTk5OTk2LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU4MS43LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3MTkuNzEsMCkiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inh0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMCw3MTF2NSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTk1Ljc0LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTMzLjc1LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNjcuNjUsMCkiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7Ij4yMDwvdGV4dD48L2c+PGcgY2xhc3M9Inh0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIwIiB5PSI3MzUuMiIgc3R5bGU9ImZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxNnB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgd2hpdGUtc3BhY2U6IHByZTsgb3BhY2l0eTogMTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwNS42Njk5OTk5OTk5OTk5NiwwKSI+MzA8L3RleHQ+PC9nPjxnIGNsYXNzPSJ4dGljayI+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iNzM1LjIiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiPjQwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTgxLjcsMCkiPjUwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE5LjcxLDApIj42MDwvdGV4dD48L2c+PGcgY2xhc3M9Inh0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIwIiB5PSI3MzUuMiIgc3R5bGU9ImZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxNnB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgd2hpdGUtc3BhY2U6IHByZTsgb3BhY2l0eTogMTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSI+NzA8L3RleHQ+PC9nPjxnIGNsYXNzPSJ4dGljayI+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iNzM1LjIiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5OTUuNzQsMCkiPjgwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEzMy43NSwwKSI+OTA8L3RleHQ+PC9nPjwvZz48ZyBjbGFzcz0ieWF4aXNsYXllci1hYm92ZSI+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjgyLjE1KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjI0LjQ0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNTY2Ljc0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNTA5LjAzKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNDUxLjMzKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMzkzLjYyKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMzM1LjkxOTk5OTk5OTk5OTk2KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjc4LjIxMDAwMDAwMDAwMDA0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjIwLjUxKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMTYyLjgxKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PGcgY2xhc3M9Inl0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0iZW5kIiB4PSIxMTAuOCIgeT0iNS42IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDY4Mi4xNSkiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7Ij4wPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDYyNC40NCkiPjEwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDU2Ni43NCkiPjIwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDUwOS4wMykiPjMwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDQ1MS4zMykiPjQwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDM5My42MikiPjUwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDMzNS45MTk5OTk5OTk5OTk5NikiPjYwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDI3OC4yMTAwMDAwMDAwMDAwNCkiPjcwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDIyMC41MSkiPjgwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2Mi44MSkiPjkwPC90ZXh0PjwvZz48L2c+PGcgY2xhc3M9Im92ZXJheGVzLWFib3ZlIi8+PC9nPjwvZz48ZyBjbGFzcz0icG9sYXJsYXllciIvPjxnIGNsYXNzPSJzbWl0aGxheWVyIi8+PGcgY2xhc3M9InRlcm5hcnlsYXllciIvPjxnIGNsYXNzPSJnZW9sYXllciIvPjxnIGNsYXNzPSJmdW5uZWxhcmVhbGF5ZXIiLz48ZyBjbGFzcz0icGllbGF5ZXIiLz48ZyBjbGFzcz0iaWNpY2xlbGF5ZXIiLz48ZyBjbGFzcz0idHJlZW1hcGxheWVyIi8+PGcgY2xhc3M9InN1bmJ1cnN0bGF5ZXIiLz48ZyBjbGFzcz0iZ2xpbWFnZXMiLz48ZGVmcyBpZD0idG9wZGVmcy1kZTczMDEiPjxnIGNsYXNzPSJjbGlwcyIvPjxjbGlwUGF0aCBpZD0ibGVnZW5kZGU3MzAxIj48cmVjdCB3aWR0aD0iNDE4IiBoZWlnaHQ9IjM0IiB4PSIwIiB5PSIwIi8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xhc3M9ImxheWVyLWFib3ZlIj48ZyBjbGFzcz0iaW1hZ2VsYXllciI+PC9nPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJpbmZvbGF5ZXIiPjxnIGNsYXNzPSJsZWdlbmQiIHBvaW50ZXItZXZlbnRzPSJhbGwiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQyMSw4Ny45OTk5OTk5OTk5OTk5NykiPjxyZWN0IGNsYXNzPSJiZyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiB3aWR0aD0iNDE4IiBoZWlnaHQ9IjM0IiB4PSIwIiB5PSIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoNjgsIDY4LCA2OCk7IHN0cm9rZS1vcGFjaXR5OiAxOyBmaWxsOiByZ2IoMCwgMCwgMCk7IGZpbGwtb3BhY2l0eTogMDsgc3Ryb2tlLXdpZHRoOiAwcHg7Ii8+PGcgY2xhc3M9InNjcm9sbGJveCIgdHJhbnNmb3JtPSIiIGNsaXAtcGF0aD0idXJsKCNsZWdlbmRkZTczMDEpIj48ZyBjbGFzcz0iZ3JvdXBzIj48ZyBjbGFzcz0idHJhY2VzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2LjkpIiBzdHlsZT0ib3BhY2l0eTogMTsiPjx0ZXh0IGNsYXNzPSJsZWdlbmR0ZXh0IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQwIiB5PSI2LjI0IiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyI+SGlzdG9ncmFtPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAwLjU1OyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiLz48ZyBjbGFzcz0ibGVnZW5kc3ltYm9scyI+PGcgY2xhc3M9ImxlZ2VuZHBvaW50cyI+PHBhdGggY2xhc3M9ImxlZ2VuZHVuZGVmaW5lZCIgZD0iTTYsNkgtNlYtNkg2WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAsMCkiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48L2c+PC9nPjxyZWN0IGNsYXNzPSJsZWdlbmR0b2dnbGUiIHg9IjAiIHk9Ii0xMS45IiB3aWR0aD0iMTE5LjgyODEyNSIgaGVpZ2h0PSIyMy44IiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7Ii8+PC9nPjxnIGNsYXNzPSJ0cmFjZXMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEyMi4zMjgxMjUsMTYuOSkiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PHRleHQgY2xhc3M9ImxlZ2VuZHRleHQiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iNDAiIHk9IjYuMjQiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7Ij5GcmVxLiBQb2x5Z29uPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiPjxwYXRoIGNsYXNzPSJqcy1saW5lIiBkPSJNNSwwaDMwIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoMjE5LCA2OSwgNjkpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLWRhc2hhcnJheTogM3B4LCAzcHg7IHN0cm9rZS13aWR0aDogMi41cHg7Ii8+PC9nPjxnIGNsYXNzPSJsZWdlbmRzeW1ib2xzIj48ZyBjbGFzcz0ibGVnZW5kcG9pbnRzIj48cGF0aCBjbGFzcz0ic2NhdHRlcnB0cyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAsMCkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PC9nPjwvZz48L2c+PHJlY3QgY2xhc3M9ImxlZ2VuZHRvZ2dsZSIgeD0iMCIgeT0iLTExLjkiIHdpZHRoPSIxNDQuOTIxODc1IiBoZWlnaHQ9IjIzLjgiIHN0eWxlPSJmaWxsOiByZ2IoMCwgMCwgMCk7IGZpbGwtb3BhY2l0eTogMDsiLz48L2c+PGcgY2xhc3M9InRyYWNlcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY5Ljc1LDE2LjkpIiBzdHlsZT0ib3BhY2l0eTogMTsiPjx0ZXh0IGNsYXNzPSJsZWdlbmR0ZXh0IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQwIiB5PSI2LjI0IiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyI+Tm9ybWFsIEN1cnZlPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiPjxwYXRoIGNsYXNzPSJqcy1saW5lIiBkPSJNNSwwaDMwIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoNDYsIDEzOSwgODcpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAzLjVweDsiLz48L2c+PGcgY2xhc3M9ImxlZ2VuZHN5bWJvbHMiPjxnIGNsYXNzPSJsZWdlbmRwb2ludHMiLz48L2c+PC9nPjxyZWN0IGNsYXNzPSJsZWdlbmR0b2dnbGUiIHg9IjAiIHk9Ii0xMS45IiB3aWR0aD0iMTQ0LjkyMTg3NSIgaGVpZ2h0PSIyMy44IiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7Ii8+PC9nPjwvZz48L2c+PHJlY3QgY2xhc3M9InNjcm9sbGJhciIgcng9IjIwIiByeT0iMyIgd2lkdGg9IjAiIGhlaWdodD0iMCIgeD0iMCIgeT0iMCIgc3R5bGU9ImZpbGw6IHJnYigxMjgsIDEzOSwgMTY0KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0iZy1ndGl0bGUiPjx0ZXh0IGNsYXNzPSJndGl0bGUiIHg9IjYwMCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLTAuM2VtIiBzdHlsZT0ib3BhY2l0eTogMTsgZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDI4cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyBmb250LXdlaWdodDogMTAwMDsgd2hpdGUtc3BhY2U6IHByZTsiPjx0c3BhbiBjbGFzcz0ibGluZSIgZHk9Ii0xLjY1ZW0iIHg9IjYwMCIgeT0iMTAwIj5IaXN0b2dyYW0g4oaSIEZyZXEuIFBvbHlnb24g4oaSIE5vcm1hbCBDdXJ2ZTwvdHNwYW4+PHRzcGFuIGNsYXNzPSJsaW5lIiBkeT0iLTAuMzQ5OTk5OTk5OTk5OTk5ODdlbSIgeD0iNjAwIiB5PSIxMDAiPjx0c3BhbiBzdHlsZT0iZm9udC1zaXplOjE2cHg7Zm9udC13ZWlnaHQ6bm9ybWFsOyI+bj0zMDAsIE1lYW49NTAsIFNEPTEwIHwgMiBkZWNpbWFsIHBsYWNlczwvdHNwYW4+PC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJnLXh0aXRsZSI+PHRleHQgY2xhc3M9Inh0aXRsZSIgeD0iNjMwIiB5PSI5MzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJvcGFjaXR5OiAxOyBmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTlweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IGZvbnQtd2VpZ2h0OiA2MDA7IHdoaXRlLXNwYWNlOiBwcmU7Ij5WYWx1ZTwvdGV4dD48L2c+PGcgY2xhc3M9ImcteXRpdGxlIj48dGV4dCBjbGFzcz0ieXRpdGxlIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAsNjMuNjkzNzUsNDMwKSIgeD0iNjMuNjkzNzUiIHk9IjQzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9Im9wYWNpdHk6IDE7IGZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxOXB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgZm9udC13ZWlnaHQ6IDYwMDsgd2hpdGUtc3BhY2U6IHByZTsiPkZyZXF1ZW5jeTwvdGV4dD48L2c+PC9nPjxnIGlkPSJzaWdtYS1iYW5kcyIgc3R5bGU9ImZvbnQtZmFtaWx5OiBzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sICdTZWdvZSBVSScsIEFyaWFsLCBzYW5zLXNlcmlmOyI+PGRlZnM+PG1hcmtlciBpZD0ic2ItYXJyb3ciIHZpZXdCb3g9IjAgMCAxMCAxMCIgcmVmWD0iOSIgcmVmWT0iNSIgbWFya2VyV2lkdGg9IjciIG1hcmtlckhlaWdodD0iNyIgb3JpZW50PSJhdXRvLXN0YXJ0LXJldmVyc2UiPjxwYXRoIGQ9Ik0wLDBMMTAsNUwwLDEwWiIgZmlsbD0iIzFmMWYxZiIvPjwvbWFya2VyPjwvZGVmcz48bGluZSB4MT0iMTY3LjY3IiB5MT0iNjgyLjE1IiB4Mj0iMTY3LjY3IiB5Mj0iNjc2LjU1IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGxpbmUgeDE9IjMwNS42OCIgeTE9IjY4Mi4xNSIgeDI9IjMwNS42OCIgeTI9IjYxMy45MyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxsaW5lIHgxPSI0NDMuNjkiIHkxPSI2ODIuMTUiIHgyPSI0NDMuNjkiIHkyPSIzNzYuNDAiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48bGluZSB4MT0iNzE5LjcxIiB5MT0iNjgyLjE1IiB4Mj0iNzE5LjcxIiB5Mj0iMzc2LjQwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGxpbmUgeDE9Ijg1Ny43MiIgeTE9IjY4Mi4xNSIgeDI9Ijg1Ny43MiIgeTI9IjYxMy45MyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxsaW5lIHgxPSI5OTUuNzMiIHkxPSI2ODIuMTUiIHgyPSI5OTUuNzMiIHkyPSI2NzYuNTUiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48bGluZSB4MT0iNTgxLjciIHkxPSI2ODIuMTUiIHgyPSI1ODEuNyIgeTI9IjE3OC4wNSIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWRhc2hhcnJheT0iOSA3Ii8+PHRleHQgeD0iNTEyLjcwIiB5PSI0NzAuNDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjhweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjM0LjElPC90ZXh0Pjx0ZXh0IHg9IjM3NC42OSIgeT0iNjExLjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjI0cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4xMy42JTwvdGV4dD48bGluZSB4MT0iMjA2LjY4IiB5MT0iNjA0LjAwIiB4Mj0iMjM2LjY4IiB5Mj0iNjU1LjAwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjx0ZXh0IHg9IjIwMi42OCIgeT0iNTk2LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjIycHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4yLjElPC90ZXh0PjxsaW5lIHgxPSIxNDAuMDciIHkxPSI2MTcuMTQiIHgyPSIxNDAuMDciIHkyPSI2NzQuMTQiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjc2ItYXJyb3cpIi8+PHRleHQgeD0iMTQwLjA3IiB5PSI2MDkuMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjJweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjAuMSU8L3RleHQ+PHRleHQgeD0iNjUwLjcxIiB5PSI0NzAuNDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjhweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjM0LjElPC90ZXh0Pjx0ZXh0IHg9Ijc4OC43MiIgeT0iNjExLjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjI0cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4xMy42JTwvdGV4dD48bGluZSB4MT0iOTU2LjczIiB5MT0iNjA0LjAwIiB4Mj0iOTI2LjczIiB5Mj0iNjU1LjAwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjx0ZXh0IHg9Ijk2MC43MyIgeT0iNTk2LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjIycHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4yLjElPC90ZXh0PjxsaW5lIHgxPSIxMDIzLjMzIiB5MT0iNjE3LjE0IiB4Mj0iMTAyMy4zMyIgeTI9IjY3NC4xNCIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjEuOCIgbWFya2VyLWVuZD0idXJsKCNzYi1hcnJvdykiLz48dGV4dCB4PSIxMDIzLjMzIiB5PSI2MDkuMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjJweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjAuMSU8L3RleHQ+PHRleHQgeD0iMTY3LjY3IiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs684oiSM8+DPC90ZXh0Pjx0ZXh0IHg9IjMwNS42OCIgeT0iNzY0LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij7OvOKIkjLPgzwvdGV4dD48dGV4dCB4PSI0NDMuNjkiIHk9Ijc2NC4wMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjYwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo1cHg7c3Ryb2tlLWxpbmVqb2luOnJvdW5kOyI+zrziiJLPgzwvdGV4dD48dGV4dCB4PSI1ODEuNzAiIHk9Ijc2NC4wMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjYwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo1cHg7c3Ryb2tlLWxpbmVqb2luOnJvdW5kOyI+zrw8L3RleHQ+PHRleHQgeD0iNzE5LjcxIiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs68K8+DPC90ZXh0Pjx0ZXh0IHg9Ijg1Ny43MiIgeT0iNzY0LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij7OvCsyz4M8L3RleHQ+PHRleHQgeD0iOTk1LjczIiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs68KzPPgzwvdGV4dD48bGluZSB4MT0iNDQzLjY5IiB5MT0iODA0IiB4Mj0iNzE5LjcxIiB5Mj0iODA0IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIgbWFya2VyLXN0YXJ0PSJ1cmwoI3NiLWFycm93KSIgbWFya2VyLWVuZD0idXJsKCNzYi1hcnJvdykiLz48bGluZSB4MT0iNDQzLjY5IiB5MT0iNzk1IiB4Mj0iNDQzLjY5IiB5Mj0iODEzIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI3MTkuNzEiIHkxPSI3OTUiIHgyPSI3MTkuNzEiIHkyPSI4MTMiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNTgxLjciIHk9Ijc5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjcwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo2cHg7Ij42OC4zJSB3aXRoaW4gwrExz4M8L3RleHQ+PGxpbmUgeDE9IjMwNS42OCIgeTE9Ijg0NiIgeDI9Ijg1Ny43MiIgeTI9Ijg0NiIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiIG1hcmtlci1zdGFydD0idXJsKCNzYi1hcnJvdykiIG1hcmtlci1lbmQ9InVybCgjc2ItYXJyb3cpIi8+PGxpbmUgeDE9IjMwNS42OCIgeTE9IjgzNyIgeDI9IjMwNS42OCIgeTI9Ijg1NSIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iODU3LjcyIiB5MT0iODM3IiB4Mj0iODU3LjcyIiB5Mj0iODU1IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjU4MS43IiB5PSI4MzkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NnB4OyI+OTUuNCUgd2l0aGluIMKxMs+DPC90ZXh0PjxsaW5lIHgxPSIxNjcuNjciIHkxPSI4ODgiIHgyPSI5OTUuNzMiIHkyPSI4ODgiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIiBtYXJrZXItc3RhcnQ9InVybCgjc2ItYXJyb3cpIiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjxsaW5lIHgxPSIxNjcuNjciIHkxPSI4NzkiIHgyPSIxNjcuNjciIHkyPSI4OTciIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9Ijk5NS43MyIgeTE9Ijg3OSIgeDI9Ijk5NS43MyIgeTI9Ijg5NyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI1ODEuNyIgeT0iODgxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjZweDsiPjk5LjclIHdpdGhpbiDCsTPPgzwvdGV4dD48L2c+PC9zdmc+" alt="Histogram, frequency polygon and normal curve (mean 50, SD 10) with the areas between each σ marked: 34.1%, 13.6%, 2.1% and 0.1% on each side; 68.3% within ±1σ, 95.4% within ±2σ, 99.7% within ±3σ"><figcaption>Symmetric bell shape · about 68% within ±1σ, 95% within ±2σ, 99.7% within ±3σ</figcaption></figure>
+      <div class="excel"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAM50lEQVR4nO3daXSU5RmH8f+EGAhbgqAEjhwqrue4i8cgWLTUDZWKUkBQTAQqjWhBQRAoS5ClUkUUWVzAKFpwR1FAtIILLmhdsIpLqbaigCAIAYLZph/sVKsEkvd5tztev48w7/08erh4Zl5mMolkMikANqVFvQEA3hEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGpUe9gapk98+N7EeFZDbPimppxMD6icsSUe+huhJx+pE6UUZbFWJGnIOORcBxDPfHCBlxDDnygC3Em0LEkOIVcqQ3sSzFK0klG7dFvQXEQItRZ8Xmz21kJ7C1eH+IkxgpUZ/GkZzAluOVOInxvahP49ADth5vChEjJcqIQw24tsSbQsRIiSri0AKubfGmEDFSooiYt1IChoUScG09fVM4hZES9inMCQz4LMyICRgwLPCAa/vT5xSeRuOHwjqFOYEBwwgYCEgYpzABA4YRMGAYAQOGETAQoKBfBxMwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgWGy/H/jnYuWIoqi3gGrqMDk/6i38BCcwYBgBA4YRMGAYAQOGcRMrYlXdGNnTza043kRhn9HiBAYMI2DAMAIGDCNgwDACBgwjYMAwAgYMI2DAMAIGDCNgwDACBgwjYMAwAgYMI2DAMAIGDCNgwDACBgwjYMAwAgYMI2DAMAIGDCNgwDACBgwjYMAwAgYMI2DAMAIGDCNgwDACBgwjYMAwAgYMI2DAsEi/4Ht237G6uP25nq7dXVaqwsdmaNazC3zelTT6wgIN6txH6Wl1PF0/b9XTGvbErT7vCvipSE/gxvUber623n4ZmtB9kE5qc5SPO5LOOfZUDTkv33O8ktQ40/t/F1ATkQY8fP7NKi7Z6fn6OmlpmtV3rOpl1PVlP00aNNa0vBFOM7aV7NC4xbN92Q+wL5EG/PnXGzTiwVucZhyW01rjLhroy35uumSYcrKaOc0Yueh2bdj+tS/7AfYl8ptY97+8SEtXv+w0Y8Cve6jDESc6zbigbSd1O/lMpxlPv/+SHnv3eacZQE1EHrAkDbp3krbu3O75+kQioZmXj1aDupmerj+gURNN7TPc8/qStKl4q4YtvM1pBlBTsQh447avNeT+KU4zWjdrqUk9B3u6dtplI9S0YbbT+oPunaQtu7Y5zQBqKhYBS9Jjbzyrx994zmlGXseuOuPoU2p0zcWndNZ5J5zmtO6CVxZr8TsvOs0AvEgkk8lAF8jun1vtBfZvmKVXC+ereVZTz+ut37pJ7cb20rZdxft8bE52M70+foGy6jfyvN6XW79SuzG9tL1khzKbZ9X4+pUjijyvjXB1mJzv6br1E5cl/N3J92JzAkvSlh3bNOjeSU4zWjQ5QFN6D6nWY6fnjXKKV5KuKpqg7SU7nGYAXsUqYElauvplPbDyKacZPdt11vknnr7Xx+R17Kozj2nvtM6cFY/q+fdfd5oBuIhdwJJ0/YKpWrdlg9OMW/pcr2aNmuzx91o1zdHEHoOc5n+6aZ1GPzzdaQbgKpYBF5fs1JVzb5DL6/MDGjXR1Et/+k9DiURCMy4frYb16nueXZmsVMHc8dr1bYnnGYAfIv0ww968+OGbumv5I7qiU3fPM37T9lfq0e4cPfTa0v/92hWduqvjkSc57W3ms/P12ifvOs1IqerGyJ5ubnm9iRIk9hmtWJ7AKWMfuV1rN37uNGNK76HKyf7u7ZFtDjxI47q5ve3ywy8/1YTHea8z4iHWAZeU7lbB3EJVVFZ6npFdv5Gm541SnbQ0zew7RpkZ9TzPKq+sUMHcQu0uK/U8A/BTrAOWpFVr39P0Z+53mnHmMe31xJAZanfocU5zbn66SG9/tsZpBuCn2AcsSZOeuFMfrFvrNONUxw87rP73R7rpqblOMwC/mQi4tLxMA+aMU1lFeSTrf1teqgFzCiNbH6iKiYAl6b3PP9aURXMiWXvSwju15gu3ZwBAEMwELElTFxfprc8+CHXN19eu1vRnHgh1TaC6TAVcUVmp398d3l3gktLdKphTqMqk97vgQJBMBSxJH2/4TOMfmxnKWmMfuV3//GpdKGsBXpgLWJJmPbdAKz96K9A1Xljzhu5a/kigawCuTAacTCZ15T03aGdA70UuLtmpgfdMcHovNhAGkwFL0r82f6lRD04LZLYfn4YCwmA2YEkqenGhnvv7q77O9OPzyEBYTAcsSdOW3OfvvMX+zgOCZDrgOmlpKvztVb7OLOx+ldISpv+34GfE9J/Uazrnqe3B/n43Uu4hx+rqsy/xdSYQFLMBH3XQoRrWpV8gs0d2vUJHtmwTyGzATyYDzkjfT3f0G6eM9P0CmV83PUN39Bvn9A2FQBhMBjy8S38d3eqwQNc4rvURGnp+30DXAFyZC7jtwUdpcOfLQllr6PmX67jWR4SyFuCFqYDr7ZehWf3GqE5aONtOT6ujO/qNU930jFDWA2rKVMBjLxqow3N+EeqaR7Zso1FdB4S6JlBdZgJuf/gJGnBGj0jWvurs3so95NhI1gb2xkTADepmalbfMZG9wSItkaZZ/cY6/URLIAgmAp7Yc7BaN2vpNGPJOy85Xd/mwIM0vvvVTjMAv8U+4E5H5Sq/Y1enGU/+bbl6z7hOyz9Y5TSn/+ndnL/VAfBTrAPOqt9It+f/0WnG5uKtuvb+G5VMJjXwnhuq9b3BVUkkEprZd7QaZTZw2hPgl1gHfGOvIWrZ5ECnGdfMu1Gbi7dK+u7LuIfPv9lp3kH752hyz2ucZgB+iW3A5x7fURef0tlpxkOvLdWit5b/368teHWJnnprhdPcS0/torOP7eA0A/BDLANu2jBbt+aNdJqx4ZvNGvaXm/b4e4Pn/Umb/nsqe3Vr3kg1adDYaQbgKpYBT+0zXAdU8eXc1fWHeyfqmype724u3qrB9012mp+T1Uw3XTLMaQbgKnYBd889Wxe07eQ0Y95LT2rZe6/s9TFPv/2CFryy2Gmdbief6bxXwEWsAs7JaqYpvYc6zVi3ZYNGPjStWo8dNv9mfbFlo9N6U/sM14GN93eaAXgVq4Bvyx/l9Lryu38qmqDikp3Vevz2kh0aWOT242ObNszWtMtGeL4ecBGbgC/75QU665j2TjPuXvGoXljzRo2uWfHBKt294lGndc89vqN6tT/PaQbgRSwCbtU0R5N6Dnaa8emmdRrz8HRP1455eLrWbvzcaf0be12rFlnNnGYANRV5wIlEQjMuH62G9ep7nlGZrFTB3PEqKd3t6fqS0t0qmFuoikrvX2LWOLOhbrlwiOfrAS8iD3hApx7O7y+e+ex8vfbJu04zVq19T7c9M89pxmmHtVVebhenGUBNRBrwIc1baWy3K51mfLT+M014fLYv+5n8xF16f90/nGaMOed3ar1/C1/2A+xLZAGnJdI0s+8Yp8/YlldWqGCOf98XXFpepgFzxqm0vMzzjPoZ9XRrt+uUlkj4sidgbxJBfwNfdv/cPS7Q9/SLNPXS4U6z//zUXE1ceIfTjD0Zcl6+Rl9Y4DRj6OO36IE3l+zzcStHFDmtg/B0mJzv6br1E5cF9rd5ZCfwrtLdKqso93z90tUva8qiOT7u6HvTltynhW/+1fP1ZRXlKin71scdAXuWHtXCC15Z7PxWxqBUVFYqf3bNP0yR2TwrgN0AVYv8LjQA7wgYMCyyp9D4TlU3RvZ0c8vrTZQgsc9ocQIDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYBgBA4YRMGAYAQOGETBgGAEDhhEwYFgimUwGukB2/9xgF4iRzOZZNb5m5Ygi/zeCQHSYnO/puvUTlyX83cn3OIEBwwgYMIyAAcMIGDAsPeoN/Nx5vTECSJzAgGkEDBhGwIBhBAwYRsCAYQQMGEbAgGEEDBhGwIBhBAwYRsCAYQQMBCjID/NLBAyYRsCAYQQMGEbAQECCfv0rETBgWuABf3P364H/LRQHXn6kLGqvME5fiRMYMI2AAZ+FdfpKIQVc259G8/QZKWHGK3ECA6aFFnBtPYU5fZES9ukrhXwC17aIiRcpUcQrRfAUurZETLxIiSpeKaLXwNYjJl6kRBmvFML3A++Nxe8OJl5I0YebEuldaGsnMfFCik+8UsQncIqFk5h4EadwU2IRcEocQyZcxDHclFgF/ENRxky0P29xDvbHYhswgH3jrZSAYQQMGEbAgGEEDBhGwIBhBAwYRsCAYQQMGEbAgGEEDBhGwIBhBAwYRsCAYQQMGEbAgGEEDBj2H3+XO8zAY8YrAAAAAElFTkSuQmCC" alt="Excel icon"><h3>Practice with Excel</h3><p>Use Excel's formulas to check your calculations.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="toc" aria-label="Contents">
+  <div class="content wide">
+    <p class="tag">Contents</p>
+    <h2>Problem types</h2>
+    <ol class="toc"><li><a href="#" data-goto="t1"><span class="tn">Type 1</span>Finding the Z-Score</a><a class="sol" href="#" data-goto="s1">Solutions</a></li><li><a href="#" data-goto="t2"><span class="tn">Type 2</span>Probability: Less Than (Left Side)</a><a class="sol" href="#" data-goto="s2">Solutions</a></li><li><a href="#" data-goto="t3"><span class="tn">Type 3</span>Probability: Greater Than (Right Side)</a><a class="sol" href="#" data-goto="s3">Solutions</a></li><li><a href="#" data-goto="t4"><span class="tn">Type 4</span>Probability: Between Two Values</a><a class="sol" href="#" data-goto="s4">Solutions</a></li><li><a href="#" data-goto="t5"><span class="tn">Type 5</span>Finding X from a Given Probability (Inverse Normal)</a><a class="sol" href="#" data-goto="s5">Solutions</a></li><li><a href="#" data-goto="t6"><span class="tn">Type 6</span>Confidence Intervals (Z-Interval)</a><a class="sol" href="#" data-goto="s6">Solutions</a></li></ol>
+    <p class="muted tochint">Click a type to jump to its problems, or Solutions to jump to its worked answers. During the lesson, the ☰ Contents button at the top opens the same list as a drawer on any slide.</p>
+  </div>
+</section>
+
+<section class="slide dense" aria-label="Reminders and formulas">
+  <div class="content wide">
+    <p class="tag">Before you begin</p>
+    <h2>Quick reminders &amp; formulas to keep handy</h2>
+    <div class="grid three">
+      <div><b>μ (mu)</b><span>Mean (middle / average)</span></div><div><b>σ (sigma)</b><span>Standard deviation (spread)</span></div>
+      <div><b>Z-score</b><span>How many σ away from μ</span></div><div><b>Z-table</b><span>Gives the area to the LEFT of Z</span></div>
+      <div><b>Bell curve</b><span>Symmetric, with the mean in the centre</span></div><div><b>Standardisation</b><span>Convert X into a Z-score</span></div>
+    </div>
+    <div class="grid two formulas">
+      <div><small>Z-score</small><strong>Z = (X − μ) ÷ σ</strong></div>
+      <div><small>Find X from Z</small><strong>X = μ + Z · σ</strong></div>
+      <div><small>Area to the right</small><strong>P(X &gt; a) = 1 − P(X &lt; a)</strong></div>
+      <div><small>Area between two values</small><strong>P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</strong></div>
+      <div class="span"><small>Confidence interval (Z-interval)</small><strong>CI = X̄ ± Z* · (σ ÷ √n)</strong><span>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%)</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="t1" data-type="1" data-part="p" aria-label="Type 1 — Finding the Z-Score">
+  <div class="content">
+    <p class="pill">Type 1</p>
+    <h2>Type 1 — Finding the Z-Score</h2>
+    <p class="lead">Turn a real value (X) into a Z-score using Z = (X − μ) ÷ σ</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="p" aria-label="Type 1, question 1">
+  <div class="content wide">
+    <p class="tag">Type 1 — Finding the Z-Score</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">The average height of students in a school is 160 cm, and the standard deviation is 10 cm. If Sara is 175 cm tall, what is her Z-score?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><p>X = the value in the question, μ = mean, σ = standard deviation. Z tells you how many σ the value is above (+) or below (−) the mean.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="p" aria-label="Type 1, question 2">
+  <div class="content wide">
+    <p class="tag">Type 1 — Finding the Z-Score</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">A factory makes bags of chips. The average weight is 200 grams with a standard deviation of 5 grams. One bag weighs 190 grams. What is the Z-score for this bag?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><p>X = the value in the question, μ = mean, σ = standard deviation. Z tells you how many σ the value is above (+) or below (−) the mean.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="p" aria-label="Type 1, question 3">
+  <div class="content wide">
+    <p class="tag">Type 1 — Finding the Z-Score</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">Scores on a math test follow a normal distribution with a mean of 70 and standard deviation of 8. Tom scored 86. Find Tom&#x27;s Z-score.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><p>X = the value in the question, μ = mean, σ = standard deviation. Z tells you how many σ the value is above (+) or below (−) the mean.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="p" aria-label="Type 1, question 4">
+  <div class="content wide">
+    <p class="tag">Type 1 — Finding the Z-Score</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">A delivery company says packages arrive in an average of 5 days with a standard deviation of 1.5 days. One package arrived in 3 days. What is the Z-score?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><p>X = the value in the question, μ = mean, σ = standard deviation. Z tells you how many σ the value is above (+) or below (−) the mean.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="p" aria-label="Type 1, question 5">
+  <div class="content wide">
+    <p class="tag">Type 1 — Finding the Z-Score</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">Monthly sales at a store average $50,000 with a standard deviation of $8,000. Last month, the store sold $62,000. Calculate the Z-score for last month&#x27;s sales.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><p>X = the value in the question, μ = mean, σ = standard deviation. Z tells you how many σ the value is above (+) or below (−) the mean.</p></div></details>
+  </div>
+</section>
+
+<section class="slide" id="t2" data-type="2" data-part="p" aria-label="Type 2 — Probability: Less Than (Left Side)">
+  <div class="content">
+    <p class="pill">Type 2</p>
+    <h2>Type 2 — Probability: Less Than (Left Side)</h2>
+    <p class="lead">Find Z → look up the Z-table → that area is P(X &lt; value)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="p" aria-label="Type 2, question 1">
+  <div class="content wide">
+    <p class="tag">Type 2 — Probability: Less Than (Left Side)</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">The average salary at a company is $40,000 with a standard deviation of $5,000. What is the probability that a randomly chosen employee earns less than $47,500?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &lt; a) = area to the LEFT of Z in the Z-table</div><p>The Z-table always gives the area to the left of Z.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="p" aria-label="Type 2, question 2">
+  <div class="content wide">
+    <p class="tag">Type 2 — Probability: Less Than (Left Side)</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">The weight of apples at a market is normally distributed with mean 150 grams and standard deviation 20 grams. What is the chance that a randomly picked apple weighs less than 130 grams?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &lt; a) = area to the LEFT of Z in the Z-table</div><p>The Z-table always gives the area to the left of Z.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="p" aria-label="Type 2, question 3">
+  <div class="content wide">
+    <p class="tag">Type 2 — Probability: Less Than (Left Side)</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">Students spend an average of 3 hours studying per day with a standard deviation of 0.5 hours. What is the probability that a student studies less than 2 hours today?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &lt; a) = area to the LEFT of Z in the Z-table</div><p>The Z-table always gives the area to the left of Z.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="p" aria-label="Type 2, question 4">
+  <div class="content wide">
+    <p class="tag">Type 2 — Probability: Less Than (Left Side)</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">A light bulb lasts on average 1,000 hours with a standard deviation of 50 hours. What is the probability that a bulb lasts less than 975 hours?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &lt; a) = area to the LEFT of Z in the Z-table</div><p>The Z-table always gives the area to the left of Z.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="p" aria-label="Type 2, question 5">
+  <div class="content wide">
+    <p class="tag">Type 2 — Probability: Less Than (Left Side)</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">Heights of adult men are normally distributed with mean 170 cm and standard deviation 7 cm. What is the probability that a man picked at random is shorter than 163 cm?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &lt; a) = area to the LEFT of Z in the Z-table</div><p>The Z-table always gives the area to the left of Z.</p></div></details>
+  </div>
+</section>
+
+<section class="slide" id="t3" data-type="3" data-part="p" aria-label="Type 3 — Probability: Greater Than (Right Side)">
+  <div class="content">
+    <p class="pill">Type 3</p>
+    <h2>Type 3 — Probability: Greater Than (Right Side)</h2>
+    <p class="lead">Find Z → look up the left area → subtract from 1: P(X &gt; a) = 1 − P(X &lt; a)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="p" aria-label="Type 3, question 1">
+  <div class="content wide">
+    <p class="tag">Type 3 — Probability: Greater Than (Right Side)</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">Average time to finish a race is 55 minutes with a standard deviation of 5 minutes. What is the probability that a runner finishes in more than 62 minutes?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &gt; a) = 1 − P(X &lt; a)</div><p>Look up the left area in the Z-table, then subtract it from 1.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="p" aria-label="Type 3, question 2">
+  <div class="content wide">
+    <p class="tag">Type 3 — Probability: Greater Than (Right Side)</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">A café sells cups of coffee. The amount of coffee per cup is normally distributed with mean 250 ml and standard deviation 10 ml. What is the probability that a cup has more than 265 ml?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &gt; a) = 1 − P(X &lt; a)</div><p>Look up the left area in the Z-table, then subtract it from 1.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="p" aria-label="Type 3, question 3">
+  <div class="content wide">
+    <p class="tag">Type 3 — Probability: Greater Than (Right Side)</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">The average price of a movie ticket is $12 with a standard deviation of $2. If ticket prices follow a normal distribution, what is the probability a ticket costs more than $15?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &gt; a) = 1 − P(X &lt; a)</div><p>Look up the left area in the Z-table, then subtract it from 1.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="p" aria-label="Type 3, question 4">
+  <div class="content wide">
+    <p class="tag">Type 3 — Probability: Greater Than (Right Side)</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">Students&#x27; exam marks have a mean of 65 and standard deviation of 10. What is the probability that a student scores more than 80?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &gt; a) = 1 − P(X &lt; a)</div><p>Look up the left area in the Z-table, then subtract it from 1.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="p" aria-label="Type 3, question 5">
+  <div class="content wide">
+    <p class="tag">Type 3 — Probability: Greater Than (Right Side)</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">A machine fills bottles with juice. Mean fill = 500 ml, standard deviation = 8 ml. What is the probability a randomly chosen bottle has more than 514 ml of juice?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z = (X − μ) ÷ σ</div><div class="f">P(X &gt; a) = 1 − P(X &lt; a)</div><p>Look up the left area in the Z-table, then subtract it from 1.</p></div></details>
+  </div>
+</section>
+
+<section class="slide" id="t4" data-type="4" data-part="p" aria-label="Type 4 — Probability: Between Two Values">
+  <div class="content">
+    <p class="pill">Type 4</p>
+    <h2>Type 4 — Probability: Between Two Values</h2>
+    <p class="lead">Find Z for both values → P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="p" aria-label="Type 4, question 1">
+  <div class="content wide">
+    <p class="tag">Type 4 — Probability: Between Two Values</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">Battery life of phones is normally distributed with mean 18 hours and standard deviation 2 hours. What is the probability a phone lasts between 16 and 21 hours?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z₁ = (a − μ) ÷ σ &nbsp;and&nbsp; Z₂ = (b − μ) ÷ σ</div><div class="f">P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</div><p>Look up both left areas, then subtract the smaller from the larger.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="p" aria-label="Type 4, question 2">
+  <div class="content wide">
+    <p class="tag">Type 4 — Probability: Between Two Values</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">Daily temperatures in a city are normally distributed with mean 30°C and standard deviation 4°C. What is the probability the temperature is between 26°C and 36°C?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z₁ = (a − μ) ÷ σ &nbsp;and&nbsp; Z₂ = (b − μ) ÷ σ</div><div class="f">P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</div><p>Look up both left areas, then subtract the smaller from the larger.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="p" aria-label="Type 4, question 3">
+  <div class="content wide">
+    <p class="tag">Type 4 — Probability: Between Two Values</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">Weekly pocket money for kids averages $20 with a standard deviation of $4. What is the probability a child gets between $16 and $24 in a given week?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z₁ = (a − μ) ÷ σ &nbsp;and&nbsp; Z₂ = (b − μ) ÷ σ</div><div class="f">P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</div><p>Look up both left areas, then subtract the smaller from the larger.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="p" aria-label="Type 4, question 4">
+  <div class="content wide">
+    <p class="tag">Type 4 — Probability: Between Two Values</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">The time customers wait at a bank has a mean of 10 minutes and standard deviation of 3 minutes. What is the chance a customer waits between 7 and 13 minutes?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z₁ = (a − μ) ÷ σ &nbsp;and&nbsp; Z₂ = (b − μ) ÷ σ</div><div class="f">P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</div><p>Look up both left areas, then subtract the smaller from the larger.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="p" aria-label="Type 4, question 5">
+  <div class="content wide">
+    <p class="tag">Type 4 — Probability: Between Two Values</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">A shoe company makes shoes with average size 8 and standard deviation 1.5. If sizes follow a normal distribution, what is the probability that a randomly selected customer wears a size between 6.5 and 9.5?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">Z₁ = (a − μ) ÷ σ &nbsp;and&nbsp; Z₂ = (b − μ) ÷ σ</div><div class="f">P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</div><p>Look up both left areas, then subtract the smaller from the larger.</p></div></details>
+  </div>
+</section>
+
+<section class="slide" id="t5" data-type="5" data-part="p" aria-label="Type 5 — Finding X from a Given Probability (Inverse Normal)">
+  <div class="content">
+    <p class="pill">Type 5</p>
+    <h2>Type 5 — Finding X from a Given Probability (Inverse Normal)</h2>
+    <p class="lead">Find Z from the Z-table → then X = μ + Z · σ</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="p" aria-label="Type 5, question 1">
+  <div class="content wide">
+    <p class="tag">Type 5 — Finding X from a Given Probability (Inverse Normal)</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">Scores on a business exam are normally distributed with mean 72 and standard deviation 9. A student needs to be in the top 10% to win a prize. What is the minimum score they need?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">X = μ + Z · σ</div><p>Find the Z whose LEFT area matches the question. For the bottom p%, the left area is p. For the top p%, the left area is 1 − p.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="p" aria-label="Type 5, question 2">
+  <div class="content wide">
+    <p class="tag">Type 5 — Finding X from a Given Probability (Inverse Normal)</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">Heights of women are normally distributed with mean 162 cm and standard deviation 6 cm. What height marks the bottom 20% (the shortest 20% of women)?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">X = μ + Z · σ</div><p>Find the Z whose LEFT area matches the question. For the bottom p%, the left area is p. For the top p%, the left area is 1 − p.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="p" aria-label="Type 5, question 3">
+  <div class="content wide">
+    <p class="tag">Type 5 — Finding X from a Given Probability (Inverse Normal)</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">A company&#x27;s monthly revenue is normally distributed with mean $80,000 and standard deviation $12,000. What revenue amount is exceeded only 5% of the time?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">X = μ + Z · σ</div><p>Find the Z whose LEFT area matches the question. For the bottom p%, the left area is p. For the top p%, the left area is 1 − p.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="p" aria-label="Type 5, question 4">
+  <div class="content wide">
+    <p class="tag">Type 5 — Finding X from a Given Probability (Inverse Normal)</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">The daily number of customers at a shop is normally distributed with mean 200 and standard deviation 25. On the quietest 15% of days, how many customers or fewer come in?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">X = μ + Z · σ</div><p>Find the Z whose LEFT area matches the question. For the bottom p%, the left area is p. For the top p%, the left area is 1 − p.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="p" aria-label="Type 5, question 5">
+  <div class="content wide">
+    <p class="tag">Type 5 — Finding X from a Given Probability (Inverse Normal)</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">Delivery times at a pizza place are normally distributed with mean 30 minutes and standard deviation 5 minutes. The manager promises a refund if delivery takes longer than a certain time, and wants this to happen only 2% of the time. What should that time limit be?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">X = μ + Z · σ</div><p>Find the Z whose LEFT area matches the question. For the bottom p%, the left area is p. For the top p%, the left area is 1 − p.</p></div></details>
+  </div>
+</section>
+
+<section class="slide" id="t6" data-type="6" data-part="p" aria-label="Type 6 — Confidence Intervals (Z-Interval)">
+  <div class="content">
+    <p class="pill">Type 6</p>
+    <h2>Type 6 — Confidence Intervals (Z-Interval)</h2>
+    <p class="lead">CI = X̄ ± Z* · (σ ÷ √n) &nbsp;|&nbsp; Z* = 1.645 (90%), 1.96 (95%), 2.576 (99%)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="p" aria-label="Type 6, question 1">
+  <div class="content wide">
+    <p class="tag">Type 6 — Confidence Intervals (Z-Interval)</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question">A researcher picks 50 students and finds their average study time is 3.2 hours per day. The population standard deviation is 0.8 hours. Build a 95% confidence interval for the true average study time of all students.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">CI = X̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%). The part after ± is the margin of error, E.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="p" aria-label="Type 6, question 2">
+  <div class="content wide">
+    <p class="tag">Type 6 — Confidence Intervals (Z-Interval)</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question">A store manager surveys 36 customers and finds the average purchase amount is $45. The known standard deviation is $12. Construct a 90% confidence interval for the true average purchase amount.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">CI = X̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%). The part after ± is the margin of error, E.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="p" aria-label="Type 6, question 3">
+  <div class="content wide">
+    <p class="tag">Type 6 — Confidence Intervals (Z-Interval)</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question">A factory checks 100 bolts and finds the average diameter is 10.3 mm. The population standard deviation is 0.5 mm. Find the 99% confidence interval for the true average diameter of all bolts.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">CI = X̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%). The part after ± is the margin of error, E.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="p" aria-label="Type 6, question 4">
+  <div class="content wide">
+    <p class="tag">Type 6 — Confidence Intervals (Z-Interval)</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question">A hospital records the recovery time of 64 patients. The sample average is 7.5 days and the population standard deviation is 2 days. Construct a 95% confidence interval for the true mean recovery time. Then write what the interval means in plain words.</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">CI = X̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%). The part after ± is the margin of error, E.</p></div></details>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="p" aria-label="Type 6, question 5">
+  <div class="content wide">
+    <p class="tag">Type 6 — Confidence Intervals (Z-Interval)</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question">A telecom company samples 81 customers. Average monthly bill = $72, population standard deviation = $9. (a) Build a 90% confidence interval. (b) Build a 99% confidence interval. (c) Which interval is wider, and why?</p>
+    <details class="see"><summary>See formula</summary><div class="fbox"><div class="f">CI = X̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%). The part after ± is the margin of error, E.</p></div></details>
+  </div>
+</section>
+
+<section class="slide center" aria-label="Worked solutions">
+  <div class="content">
+    <p class="tag">Answer key</p>
+    <h1 class="hero">Worked Solutions</h1>
+    <p class="subtitle">Step-by-step calculations · grouped by problem type</p>
+  </div>
+</section>
+
+<section class="slide" id="s1" data-type="1" data-part="s" aria-label="Solutions, Type 1 — Finding the Z-Score">
+  <div class="content">
+    <p class="pill">Type 1 · Solutions</p>
+    <h2>Type 1 — Finding the Z-Score</h2>
+    <p class="lead">Turn a real value (X) into a Z-score using Z = (X − μ) ÷ σ</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="s" aria-label="Type 1, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 1 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">The average height of students in a school is 160 cm, and the standard deviation is 10 cm. If Sara is 175 cm tall, what is her Z-score?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (X − μ) ÷ σ = (175 − 160) ÷ 10 = 15 ÷ 10 = <strong>1.50</strong>. Sara is 1.5 standard deviations above the mean.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="s" aria-label="Type 1, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 1 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">A factory makes bags of chips. The average weight is 200 grams with a standard deviation of 5 grams. One bag weighs 190 grams. What is the Z-score for this bag?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (190 − 200) ÷ 5 = −10 ÷ 5 = <strong>−2.00</strong>. The bag is 2 standard deviations below the mean.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="s" aria-label="Type 1, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 1 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">Scores on a math test follow a normal distribution with a mean of 70 and standard deviation of 8. Tom scored 86. Find Tom&#x27;s Z-score.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (86 − 70) ÷ 8 = 16 ÷ 8 = <strong>2.00</strong>. Tom is 2 standard deviations above the mean.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="s" aria-label="Type 1, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 1 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">A delivery company says packages arrive in an average of 5 days with a standard deviation of 1.5 days. One package arrived in 3 days. What is the Z-score?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (3 − 5) ÷ 1.5 = −2 ÷ 1.5 = <strong>−1.33</strong> (approximately). The package arrived 1.33 standard deviations faster than average.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="1" data-part="s" aria-label="Type 1, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 1 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">Monthly sales at a store average $50,000 with a standard deviation of $8,000. Last month, the store sold $62,000. Calculate the Z-score for last month&#x27;s sales.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (62,000 − 50,000) ÷ 8,000 = 12,000 ÷ 8,000 = <strong>1.50</strong>. Sales were 1.5 standard deviations above the mean.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s2" data-type="2" data-part="s" aria-label="Solutions, Type 2 — Probability: Less Than (Left Side)">
+  <div class="content">
+    <p class="pill">Type 2 · Solutions</p>
+    <h2>Type 2 — Probability: Less Than (Left Side)</h2>
+    <p class="lead">Find Z → look up the Z-table → that area is P(X &lt; value)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="s" aria-label="Type 2, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 2 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">The average salary at a company is $40,000 with a standard deviation of $5,000. What is the probability that a randomly chosen employee earns less than $47,500?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (47,500 − 40,000) ÷ 5,000 = <strong>1.50</strong>.<br>From the Z-table, P(Z &lt; 1.50) = <strong>0.9332</strong>.<br>Probability = <strong>93.32%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="s" aria-label="Type 2, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 2 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">The weight of apples at a market is normally distributed with mean 150 grams and standard deviation 20 grams. What is the chance that a randomly picked apple weighs less than 130 grams?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (130 − 150) ÷ 20 = <strong>−1.00</strong>.<br>From the Z-table, P(Z &lt; −1.00) = <strong>0.1587</strong>.<br>Probability = <strong>15.87%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="s" aria-label="Type 2, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 2 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">Students spend an average of 3 hours studying per day with a standard deviation of 0.5 hours. What is the probability that a student studies less than 2 hours today?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (2 − 3) ÷ 0.5 = <strong>−2.00</strong>.<br>From the Z-table, P(Z &lt; −2.00) = <strong>0.0228</strong>.<br>Probability = <strong>2.28%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="s" aria-label="Type 2, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 2 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">A light bulb lasts on average 1,000 hours with a standard deviation of 50 hours. What is the probability that a bulb lasts less than 975 hours?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (975 − 1,000) ÷ 50 = <strong>−0.50</strong>.<br>From the Z-table, P(Z &lt; −0.50) = <strong>0.3085</strong>.<br>Probability = <strong>30.85%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="2" data-part="s" aria-label="Type 2, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 2 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">Heights of adult men are normally distributed with mean 170 cm and standard deviation 7 cm. What is the probability that a man picked at random is shorter than 163 cm?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (163 − 170) ÷ 7 = <strong>−1.00</strong>.<br>From the Z-table, P(Z &lt; −1.00) = <strong>0.1587</strong>.<br>Probability = <strong>15.87%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s3" data-type="3" data-part="s" aria-label="Solutions, Type 3 — Probability: Greater Than (Right Side)">
+  <div class="content">
+    <p class="pill">Type 3 · Solutions</p>
+    <h2>Type 3 — Probability: Greater Than (Right Side)</h2>
+    <p class="lead">Find Z → look up the left area → subtract from 1: P(X &gt; a) = 1 − P(X &lt; a)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="s" aria-label="Type 3, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 3 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">Average time to finish a race is 55 minutes with a standard deviation of 5 minutes. What is the probability that a runner finishes in more than 62 minutes?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (62 − 55) ÷ 5 = <strong>1.40</strong>.<br>The Z-table gives the left area: P(Z &lt; 1.40) = <strong>0.9192</strong>.<br>Right side = 1 − 0.9192 = 0.0808, so the probability = <strong>8.08%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="s" aria-label="Type 3, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 3 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">A café sells cups of coffee. The amount of coffee per cup is normally distributed with mean 250 ml and standard deviation 10 ml. What is the probability that a cup has more than 265 ml?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (265 − 250) ÷ 10 = <strong>1.50</strong>.<br>The Z-table gives the left area: P(Z &lt; 1.50) = <strong>0.9332</strong>.<br>Right side = 1 − 0.9332 = 0.0668, so the probability = <strong>6.68%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="s" aria-label="Type 3, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 3 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">The average price of a movie ticket is $12 with a standard deviation of $2. If ticket prices follow a normal distribution, what is the probability a ticket costs more than $15?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (15 − 12) ÷ 2 = <strong>1.50</strong>.<br>The Z-table gives the left area: P(Z &lt; 1.50) = <strong>0.9332</strong>.<br>Right side = 1 − 0.9332 = 0.0668, so the probability = <strong>6.68%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="s" aria-label="Type 3, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 3 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">Students&#x27; exam marks have a mean of 65 and standard deviation of 10. What is the probability that a student scores more than 80?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (80 − 65) ÷ 10 = <strong>1.50</strong>.<br>The Z-table gives the left area: P(Z &lt; 1.50) = <strong>0.9332</strong>.<br>Right side = 1 − 0.9332 = 0.0668, so the probability = <strong>6.68%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="3" data-part="s" aria-label="Type 3, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 3 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">A machine fills bottles with juice. Mean fill = 500 ml, standard deviation = 8 ml. What is the probability a randomly chosen bottle has more than 514 ml of juice?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (514 − 500) ÷ 8 = <strong>1.75</strong>.<br>The Z-table gives the left area: P(Z &lt; 1.75) = <strong>0.9599</strong>.<br>Right side = 1 − 0.9599 = 0.0401, so the probability = <strong>4.01%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s4" data-type="4" data-part="s" aria-label="Solutions, Type 4 — Probability: Between Two Values">
+  <div class="content">
+    <p class="pill">Type 4 · Solutions</p>
+    <h2>Type 4 — Probability: Between Two Values</h2>
+    <p class="lead">Find Z for both values → P(a &lt; X &lt; b) = P(X &lt; b) − P(X &lt; a)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="s" aria-label="Type 4, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 4 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">Battery life of phones is normally distributed with mean 18 hours and standard deviation 2 hours. What is the probability a phone lasts between 16 and 21 hours?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (16 − 18) ÷ 2 = <strong>−1.00</strong>; Z₂ = (21 − 18) ÷ 2 = <strong>1.50</strong>.<br>Z-table: P(Z &lt; 1.50) = 0.9332; P(Z &lt; −1.00) = 0.1587.<br>Between = 0.9332 − 0.1587 = 0.7745, so the probability = <strong>77.45%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="s" aria-label="Type 4, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 4 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">Daily temperatures in a city are normally distributed with mean 30°C and standard deviation 4°C. What is the probability the temperature is between 26°C and 36°C?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (26 − 30) ÷ 4 = <strong>−1.00</strong>; Z₂ = (36 − 30) ÷ 4 = <strong>1.50</strong>.<br>Z-table: P(Z &lt; 1.50) = 0.9332; P(Z &lt; −1.00) = 0.1587.<br>Between = 0.9332 − 0.1587 = 0.7745, so the probability = <strong>77.45%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="s" aria-label="Type 4, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 4 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">Weekly pocket money for kids averages $20 with a standard deviation of $4. What is the probability a child gets between $16 and $24 in a given week?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (16 − 20) ÷ 4 = <strong>−1.00</strong>; Z₂ = (24 − 20) ÷ 4 = <strong>1.00</strong>.<br>Z-table: P(Z &lt; 1.00) = 0.8413; P(Z &lt; −1.00) = 0.1587.<br>Between = 0.8413 − 0.1587 = 0.6826, so the probability = <strong>68.26%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="s" aria-label="Type 4, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 4 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">The time customers wait at a bank has a mean of 10 minutes and standard deviation of 3 minutes. What is the chance a customer waits between 7 and 13 minutes?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (7 − 10) ÷ 3 = <strong>−1.00</strong>; Z₂ = (13 − 10) ÷ 3 = <strong>1.00</strong>.<br>Z-table: P(Z &lt; 1.00) = 0.8413; P(Z &lt; −1.00) = 0.1587.<br>Between = 0.8413 − 0.1587 = 0.6826, so the probability = <strong>68.26%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="4" data-part="s" aria-label="Type 4, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 4 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">A shoe company makes shoes with average size 8 and standard deviation 1.5. If sizes follow a normal distribution, what is the probability that a randomly selected customer wears a size between 6.5 and 9.5?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (6.5 − 8) ÷ 1.5 = <strong>−1.00</strong>; Z₂ = (9.5 − 8) ÷ 1.5 = <strong>1.00</strong>.<br>Z-table: P(Z &lt; 1.00) = 0.8413; P(Z &lt; −1.00) = 0.1587.<br>Between = 0.8413 − 0.1587 = 0.6826, so the probability = <strong>68.26%</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s5" data-type="5" data-part="s" aria-label="Solutions, Type 5 — Finding X from a Given Probability (Inverse Normal)">
+  <div class="content">
+    <p class="pill">Type 5 · Solutions</p>
+    <h2>Type 5 — Finding X from a Given Probability (Inverse Normal)</h2>
+    <p class="lead">Find Z from the Z-table → then X = μ + Z · σ</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="s" aria-label="Type 5, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 5 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">Scores on a business exam are normally distributed with mean 72 and standard deviation 9. A student needs to be in the top 10% to win a prize. What is the minimum score they need?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Top 10% means 90% of scores are below it. Left area = <strong>0.90</strong>.<br>From the Z-table, Z ≈ <strong>1.28</strong>.<br>X = μ + Z · σ = 72 + (1.28 × 9) = 83.52.<br>Minimum score needed: <strong>about 83.5</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="s" aria-label="Type 5, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 5 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">Heights of women are normally distributed with mean 162 cm and standard deviation 6 cm. What height marks the bottom 20% (the shortest 20% of women)?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Bottom 20% means 20% of heights are below it. Left area = <strong>0.20</strong>.<br>From the Z-table, Z ≈ <strong>−0.84</strong>.<br>X = μ + Z · σ = 162 + (−0.84 × 6) = 156.96.<br>The shortest 20% are below <strong>about 157.0 cm</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="s" aria-label="Type 5, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 5 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">A company&#x27;s monthly revenue is normally distributed with mean $80,000 and standard deviation $12,000. What revenue amount is exceeded only 5% of the time?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Exceeded 5% of the time means 95% of months are below it. Left area = <strong>0.95</strong>.<br>From the Z-table, Z ≈ <strong>1.645</strong>.<br>X = μ + Z · σ = 80,000 + (1.645 × 12,000) = 99,740.<br>Revenue is above <strong>about $99,740</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="s" aria-label="Type 5, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 5 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">The daily number of customers at a shop is normally distributed with mean 200 and standard deviation 25. On the quietest 15% of days, how many customers or fewer come in?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Quietest 15% means 15% of days are below it. Left area = <strong>0.15</strong>.<br>From the Z-table, Z ≈ <strong>−1.04</strong>.<br>X = μ + Z · σ = 200 + (−1.04 × 25) = 174.<br>On the quietest 15% of days: <strong>174 customers or fewer</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="5" data-part="s" aria-label="Type 5, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 5 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">Delivery times at a pizza place are normally distributed with mean 30 minutes and standard deviation 5 minutes. The manager promises a refund if delivery takes longer than a certain time, and wants this to happen only 2% of the time. What should that time limit be?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Longer than the limit 2% of the time means 98% of deliveries are below it. Left area = <strong>0.98</strong>.<br>From the Z-table, Z ≈ <strong>2.05</strong>.<br>X = μ + Z · σ = 30 + (2.05 × 5) = 40.25.<br>Time limit: <strong>about 40.25 minutes</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s6" data-type="6" data-part="s" aria-label="Solutions, Type 6 — Confidence Intervals (Z-Interval)">
+  <div class="content">
+    <p class="pill">Type 6 · Solutions</p>
+    <h2>Type 6 — Confidence Intervals (Z-Interval)</h2>
+    <p class="lead">CI = X̄ ± Z* · (σ ÷ √n) &nbsp;|&nbsp; Z* = 1.645 (90%), 1.96 (95%), 2.576 (99%)</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="s" aria-label="Type 6, solution 1">
+  <div class="content wide">
+    <p class="tag">Type 6 · Worked solution</p>
+    <p class="qlabel">Question 1</p>
+    <p class="question small">A researcher picks 50 students and finds their average study time is 3.2 hours per day. The population standard deviation is 0.8 hours. Build a 95% confidence interval for the true average study time of all students.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>E = Z* · (σ ÷ √n) = 1.96 × (0.8 ÷ √50) = 1.96 × 0.1131 = <strong>0.2217</strong>.<br>CI = 3.2 ± 0.2217 = <strong>(2.98, 3.42) hours</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="s" aria-label="Type 6, solution 2">
+  <div class="content wide">
+    <p class="tag">Type 6 · Worked solution</p>
+    <p class="qlabel">Question 2</p>
+    <p class="question small">A store manager surveys 36 customers and finds the average purchase amount is $45. The known standard deviation is $12. Construct a 90% confidence interval for the true average purchase amount.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>E = 1.645 × (12 ÷ √36) = 1.645 × 2 = <strong>3.29</strong>.<br>CI = 45 ± 3.29 = <strong>($41.71, $48.29)</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="s" aria-label="Type 6, solution 3">
+  <div class="content wide">
+    <p class="tag">Type 6 · Worked solution</p>
+    <p class="qlabel">Question 3</p>
+    <p class="question small">A factory checks 100 bolts and finds the average diameter is 10.3 mm. The population standard deviation is 0.5 mm. Find the 99% confidence interval for the true average diameter of all bolts.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>E = 2.576 × (0.5 ÷ √100) = 2.576 × 0.05 = <strong>0.1288</strong>.<br>CI = 10.3 ± 0.1288 = <strong>(10.17, 10.43) mm</strong>.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="s" aria-label="Type 6, solution 4">
+  <div class="content wide">
+    <p class="tag">Type 6 · Worked solution</p>
+    <p class="qlabel">Question 4</p>
+    <p class="question small">A hospital records the recovery time of 64 patients. The sample average is 7.5 days and the population standard deviation is 2 days. Construct a 95% confidence interval for the true mean recovery time. Then write what the interval means in plain words.</p>
+    <div class="solution"><p class="slabel">Solution</p><p>E = 1.96 × (2 ÷ √64) = 1.96 × 0.25 = <strong>0.49</strong>.<br>CI = 7.5 ± 0.49 = <strong>(7.01, 7.99) days</strong>.<br>Meaning: we are 95% confident that the true average recovery time of all patients is between 7.01 and 7.99 days.</p></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="6" data-part="s" aria-label="Type 6, solution 5">
+  <div class="content wide">
+    <p class="tag">Type 6 · Worked solution</p>
+    <p class="qlabel">Question 5</p>
+    <p class="question small">A telecom company samples 81 customers. Average monthly bill = $72, population standard deviation = $9. (a) Build a 90% confidence interval. (b) Build a 99% confidence interval. (c) Which interval is wider, and why?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>(a) E = 1.645 × (9 ÷ √81) = 1.645 → CI = <strong>($70.36, $73.64)</strong>.<br>(b) E = 2.576 × (9 ÷ √81) = 2.576 → CI = <strong>($69.42, $74.58)</strong>.<br>(c) The <strong>99% interval is wider</strong>: higher confidence needs a larger Z*, so the margin of error is larger.</p></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ================= NAVIGATION ================= */
+var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+var cur = 0;
+function show(n, fromHash) {
+  cur = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach(function (s, i) { s.classList.toggle("active", i === cur); });
+  slides[cur].scrollTop = 0;
+  document.getElementById("counter").textContent = (cur + 1) + " / " + slides.length;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === slides.length - 1;
+  document.getElementById("progress").style.width = ((cur + 1) / slides.length * 100) + "%";
+  if (typeof drawer !== "undefined" && drawer && drawerOpen()) markHere();
+  if (!fromHash) { try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) {} }
+}
+function step(d) { show(cur + d); }
+function fromHash() { var n = parseInt((location.hash || "").slice(1), 10); show(isNaN(n) ? 0 : n - 1, true); }
+window.addEventListener("hashchange", fromHash);
+document.getElementById("prev").onclick = function () { step(-1); };
+document.getElementById("next").onclick = function () { step(1); };
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "ArrowRight" || e.key === "PageDown") { step(1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { step(-1); e.preventDefault(); }
+  else if (e.key === "Home") { show(0); e.preventDefault(); }
+  else if (e.key === "End") { show(slides.length - 1); e.preventDefault(); }
+});
+var tx = null, ty = null;
+document.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener("touchend", function (e) {
+  if (tx === null) return;
+  var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  tx = ty = null;
+}, { passive: true });
+/* ================= CONTENTS DRAWER ================= */
+var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), tocBtn = document.getElementById("toc-btn");
+function setDrawer(open) {
+  document.documentElement.classList.toggle("drawer-open", open);
+  drawer.setAttribute("aria-hidden", open ? "false" : "true");
+  tocBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  tocBtn.title = open ? "Close contents (C or Esc)" : "Open contents (C)";
+  scrim.hidden = !open;
+  if (open) markHere();
+}
+function drawerOpen() { return document.documentElement.classList.contains("drawer-open"); }
+function markHere() {
+  var s = slides[cur], type = s.getAttribute("data-type"), part = s.getAttribute("data-part");
+  Array.prototype.forEach.call(drawer.querySelectorAll(".dlist li"), function (li) {
+    var on = li.getAttribute("data-type") === type;
+    li.classList.toggle("here", on);
+    Array.prototype.forEach.call(li.querySelectorAll("a"), function (a) { a.classList.toggle("here", on && a.getAttribute("data-part") === part); });
+  });
+}
+tocBtn.addEventListener("click", function () { setDrawer(!drawerOpen()); });
+scrim.addEventListener("click", function () { setDrawer(false); });
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Escape" && drawerOpen()) setDrawer(false);
+  else if (e.key === "c" || e.key === "C") setDrawer(!drawerOpen());
+});
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest("[data-goto]");
+  if (!a) return;
+  e.preventDefault();
+  var el = document.getElementById(a.getAttribute("data-goto"));
+  if (el) show(slides.indexOf(el));
+  setDrawer(false);
+});
+fromHash();
+
+/* ================= THEME + FULLSCREEN ================= */
+(function () {
+  var root = document.documentElement;
+  function systemDark() { return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; }
+  function isDark() { var t = root.getAttribute("data-theme"); return t ? t === "dark" : systemDark(); }
+  function paint() {
+    var d = isDark();
+    root.classList.toggle("is-dark", d); root.classList.toggle("is-light", !d);
+    var b = document.getElementById("theme");
+    var t = d ? "Switch to light theme" : "Switch to dark theme";
+    b.setAttribute("aria-label", t); b.title = t;
+  }
+  document.getElementById("theme").addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("nd-theme", next); } catch (e) {}
+    paint();
+  });
+  if (window.matchMedia) { try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint); } catch (e) {} }
+  paint();
+
+  var fsb = document.getElementById("fs");
+  if (root.requestFullscreen || root.webkitRequestFullscreen) root.classList.add("can-fs");
+  function inFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function syncFs() { root.classList.toggle("is-fs", inFs()); var t = inFs() ? "Exit full screen (F)" : "Full screen (F)"; fsb.setAttribute("aria-label", t); fsb.title = t; }
+  function toggleFs() {
+    try {
+      if (inFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+    } catch (e) {}
+  }
+  fsb.addEventListener("click", toggleFs);
+  document.addEventListener("fullscreenchange", syncFs);
+  document.addEventListener("webkitfullscreenchange", syncFs);
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "f" || e.key === "F") toggleFs();
+  });
+  syncFs();
+})();
+
+/* ================= FONT SIZE (A− / A+) ================= */
+(function () {
+  var MIN = -3, MAX = 5, n = 0;
+  try { var v = parseInt(localStorage.getItem("nd-fsize"), 10); if (!isNaN(v)) n = Math.max(MIN, Math.min(MAX, v)); } catch (e) {}
+  function apply(x) {
+    n = Math.max(MIN, Math.min(MAX, x));
+    document.documentElement.style.setProperty("--fz", (1 + n * 0.08).toFixed(2));
+    document.getElementById("fz-down").disabled = n <= MIN;
+    document.getElementById("fz-up").disabled = n >= MAX;
+    try { localStorage.setItem("nd-fsize", n); } catch (e) {}
+  }
+  document.getElementById("fz-down").onclick = function () { apply(n - 1); };
+  document.getElementById("fz-up").onclick = function () { apply(n + 1); };
+  apply(n);
+})();
+</script>
+</body>
+</html>

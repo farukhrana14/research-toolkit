@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business Statistics Learning Lab</title>
   <style>
-    \* { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background: #f4f6fb;
@@ -70,7 +70,7 @@
       color: inherit;
       border: 1.5px solid transparent;
     }
-    .card.live\:hover {
+    .card.live:hover {
       box-shadow: 0 6px 24px rgba(67,97,238,0.13);
       transform: translateY(-2px);
       border-color: #c3cdf7;
@@ -135,7 +135,7 @@
       border-radius: 4px;
       transition: background 0.2s;
     }
-    .card-action-links a\:hover {
+    .card-action-links a:hover {
       background: #dbeafe;
       color: #1E3A8A;
     }
@@ -202,6 +202,18 @@
           <a href="https://research-toolkit.netlify.app/stat/cond-prob/">Open slides</a>
         </div>
       </div>
+      <!-- LIVE CARD: Normal Distribution (whole card is a link) -->
+      <a class="card live" href="https://research-toolkit.netlify.app/stat/norm_dist/">
+        <div class="card-icon">🔔</div>
+        <div class="card-title">
+          <span>Normal Distribution</span>
+          <span class="badge-live">Live</span>
+        </div>
+        <div class="card-desc">Population vs sample, sampling distribution, Z-scores and the Z-table: lecture slides and 30 practice problems.</div>
+        <div class="card-action-links">
+          <span style="font-size:0.82rem;font-weight:700;color:#1F497D;background:#f0f4f9;padding:4px 10px;border-radius:4px;">Open</span>
+        </div>
+      </a>
       <!-- COMING SOON: Lab 3 -->
       <div class="card soon">
         <div class="card-icon">📊</div>
