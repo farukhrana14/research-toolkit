@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normal Distribution Lecture</title>
+<script>document.documentElement.className = "js"; try { var t = localStorage.getItem("nd-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<style>
+  /* ---------- colours: black on white, white on dark; purple only for notes ---------- */
+  :root {
+    --bg: #ffffff; --fg: #000000; --line: #9a9a9a; --soft: #f3f3f3;
+    --note: #7030A0; --note-bg: #F4ECF9;
+    --fz: 1;                              /* A− / A+ multiplier */
+    --fsk: 1;                             /* extra lift in full screen */
+    --u: min(1vw, 1.78vh);                /* one unit of a 16:9 slide */
+    --k: calc(var(--fz) * var(--fsk) * var(--u));
+  }
+  :root, .slide {
+    --fs-body: max(16px, calc(var(--k) * 1.75));
+    --fs-q:    max(19px, calc(var(--k) * 2.75));
+    --fs-qs:   max(17px, calc(var(--k) * 1.95));
+    --fs-big:  max(18px, calc(var(--k) * 2.05));
+    --fs-h2:   max(24px, calc(var(--k) * 3.4));
+    --fs-hero: max(36px, calc(var(--k) * 6.2));
+    --fs-sm:   max(13px, calc(var(--k) * 1.2));
+  }
+  :root { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --soft: #1c1c1c; --note: #D2A8EE; --note-bg: #2A1936; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { color-scheme: dark; --bg: #111111; --fg: #ffffff; --line: #6b6b6b; --soft: #1c1c1c; --note: #D2A8EE; --note-bg: #2A1936; }
+  }
+  html.is-fs { --fsk: 1.12; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: var(--fs-body); line-height: 1.45; overflow: hidden; }
+  button { font: inherit; color: var(--fg); background: transparent; cursor: pointer; }
+  button:focus-visible, summary:focus-visible { outline: 3px solid var(--note); outline-offset: 3px; }
+
+  /* ---------- top bar: everything top-right ---------- */
+  .topbar { position: fixed; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 6px 0 10px; background: var(--bg); z-index: 5; font-size: 15px; }
+  .topic { opacity: .75; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; }
+  .tools { display: flex; align-items: center; gap: 6px; flex: none; }
+  .counter { font-size: 14px; opacity: .8; min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+  .icon-btn { border: 1px solid var(--line); border-radius: 6px; width: 36px; height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 14px; }
+  .icon-btn:hover { border-color: var(--fg); }
+  .icon-btn:disabled { opacity: .35; cursor: default; }
+  .nav-btn { font-size: 18px; font-weight: 700; }
+  .fz-btn { font-size: 12px; font-weight: 700; letter-spacing: -.5px; }
+  .pdf-btn { border: 1px solid var(--line); border-radius: 6px; padding: 0 10px; height: 30px; font-size: 13px; }
+  .pdf-btn:hover { border-color: var(--fg); }
+  .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .i-moon, .i-exit { display: none; }
+  html.is-dark .i-sun { display: block; } html.is-dark .i-moon { display: none; }
+  html.is-light .i-sun { display: none; } html.is-light .i-moon { display: block; }
+  html.is-fs .i-enter { display: none; } html.is-fs .i-exit { display: block; }
+  html:not(.can-fs) #fs { display: none; }
+  .progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--note); z-index: 6; transition: width .25s; }
+
+  /* ---------- slide frame: 3px bezel ---------- */
+  .deck { position: fixed; inset: 40px 3px 3px 3px; }
+  .slide { display: none; height: 100%; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: clamp(14px, 2.6vh, 40px) clamp(16px, 4vw, 80px); }
+  .js .slide.active { display: flex; flex-direction: column; }
+  .js .slide.active > .content { margin-top: auto; margin-bottom: auto; flex: none; }
+  .js .slide.top.active > .content { margin-top: clamp(4px, 3vh, 48px); }
+  .slide.center { text-align: center; } .slide.center .content { margin-left: auto; margin-right: auto; }
+  html:not(.js) .slide { display: block; margin-bottom: 30px; height: auto; }
+  .content { width: min(100%, 76vw); }
+  .content.wide { width: 100%; max-width: 92vw; }
+
+  /* ---------- text ---------- */
+  h1.hero { font-size: var(--fs-hero); line-height: 1.05; font-weight: 700; margin: .1em 0 .25em; }
+  h2 { font-size: var(--fs-h2); line-height: 1.15; font-weight: 700; margin-bottom: .45em; }
+  h3 { font-size: var(--fs-big); margin: .3em 0; }
+  .tag { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .12em; color: var(--note); font-weight: 700; margin-bottom: .8em; }
+  .subtitle { font-size: var(--fs-big); margin-bottom: .6em; }
+  .muted { opacity: .7; }
+  .lead { font-size: var(--fs-big); max-width: 46em; }
+  .pill { display: inline-block; font-size: var(--fs-sm); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: .35em 1em; margin-bottom: 1em; }
+  .qlabel { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .6em; }
+  .question { font-size: var(--fs-q); line-height: 1.45; max-width: 44em; }
+  .question.small { font-size: var(--fs-qs); }
+
+  /* ---------- See formula ---------- */
+  .see { margin-top: 1.1em; font-size: var(--fs-body); }
+  .see summary { display: inline-block; cursor: pointer; color: var(--note); text-decoration: underline; text-underline-offset: 4px; list-style: none; user-select: none; }
+  .see summary::-webkit-details-marker { display: none; }
+  .see summary::before { content: "▸"; display: inline-block; margin-right: .35em; text-decoration: none; }
+  .see[open] summary::before { content: "▾"; }
+  .see[open] summary { margin-bottom: .5em; }
+  .fbox { background: var(--note-bg); border-left: 5px solid var(--note); border-radius: 6px; padding: .6em 1em; max-width: 44em; }
+  .fbox .f { font-size: var(--fs-big); font-weight: 600; margin: .15em 0; }
+  .fbox p { font-size: var(--fs-body); margin-top: .3em; }
+
+  /* ---------- solutions ---------- */
+  .solution { margin-top: 1em; background: var(--note-bg); border-left: 5px solid var(--note); border-radius: 6px; padding: .7em 1.1em; font-size: var(--fs-big); line-height: 1.6; max-width: 46em; }
+  .slabel { font-weight: 700; color: var(--note); margin-bottom: .2em; }
+  .solution strong { font-weight: 700; }
+
+  /* ---------- grids ---------- */
+  .grid { display: grid; gap: .5em; }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid > div { border: 1px solid var(--line); border-radius: 8px; padding: .45em .8em; display: flex; flex-direction: column; gap: .1em; }
+  .grid b { color: var(--note); }
+  .grid span { font-size: var(--fs-sm); opacity: .8; }
+  .grid.formulas { margin-top: .8em; }
+  .formulas small { font-size: calc(var(--fs-sm) * .85); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; opacity: .7; }
+  .formulas strong { font-size: var(--fs-big); font-weight: 600; }
+  .formulas .span { grid-column: 1 / -1; }
+
+  .slide.dense { --k: calc(var(--fz) * var(--fsk) * var(--u) * .9); }
+
+  /* ---------- contents ---------- */
+  .toc { list-style: none; display: grid; gap: .45em; }
+  .toc li { display: flex; align-items: center; gap: .6em; border: 1px solid var(--line); border-radius: 8px; padding: .4em .8em; }
+  .toc a { color: var(--fg); text-decoration: none; }
+  .toc li > a:first-child { flex: 1; font-size: var(--fs-big); }
+  .toc li > a:first-child:hover { color: var(--note); text-decoration: underline; text-underline-offset: 4px; }
+  .toc .tn { display: inline-block; min-width: 4.6em; font-weight: 700; color: var(--note); }
+  .toc .sol { font-size: var(--fs-sm); border: 1px solid var(--line); border-radius: 999px; padding: .2em .9em; white-space: nowrap; }
+  .toc .sol:hover { border-color: var(--note); color: var(--note); }
+  .tochint { font-size: var(--fs-sm); margin-top: .8em; }
+  a:focus-visible { outline: 3px solid var(--note); outline-offset: 3px; }
+
+  /* ---------- contents drawer (right) ---------- */
+  .scrim { position: fixed; inset: 40px 0 0 0; background: rgba(0,0,0,.35); z-index: 7; }
+  .scrim[hidden] { display: none; }
+  .drawer { position: fixed; top: 40px; right: 0; bottom: 0; width: min(440px, 92vw); background: var(--bg); border-left: 1px solid var(--line); z-index: 8; padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; transform: translateX(105%); transition: transform .22s ease; visibility: hidden; font-size: 17px; }
+  html.drawer-open .drawer { transform: none; visibility: visible; }
+  html.drawer-open #toc-btn { border-color: var(--note); color: var(--note); }
+  .drawer .tag { font-size: 13px; margin-bottom: 2px; }
+  .dlist { list-style: none; display: grid; gap: 8px; }
+  .dlist li { border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 6px; }
+  .dlist li.here { border-color: var(--note); background: var(--note-bg); }
+  .dn { font-weight: 700; color: var(--note); white-space: nowrap; }
+  .dt { line-height: 1.3; }
+  .dl { grid-column: 2; display: flex; gap: 8px; }
+  .dl a, .dfoot a { color: var(--fg); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
+  .dl a:hover, .dfoot a:hover { border-color: var(--note); color: var(--note); }
+  .dl a.here { border-color: var(--note); background: var(--note); color: var(--bg); }
+  .dfoot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+  @media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+  @media print { .drawer, .scrim { display: none !important; } }
+
+  /* ---------- visual slide ---------- */
+  .visual { display: grid; grid-template-columns: 2.6fr .7fr; gap: 2vw; align-items: center; }
+  figure { text-align: center; }
+  figcaption { font-size: var(--fs-sm); opacity: .8; margin-top: .3em; }
+  svg.bell { width: 100%; max-height: 52vh; }
+  .bellimg { display: block; margin: 0 auto; max-width: 100%; max-height: calc(100vh - 40px - 3px - 14vh - var(--fs-h2) * 2); height: auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+  svg.bell .curve { fill: none; stroke: var(--fg); stroke-width: 4; stroke-linejoin: round; }
+  svg.bell .band { fill: var(--note-bg); stroke: none; }
+  svg.bell .ax { stroke: var(--fg); stroke-width: 2; }
+  svg.bell .mean { stroke: var(--note); stroke-width: 3; stroke-dasharray: 8 7; }
+  svg.bell text { fill: var(--fg); font-size: 20px; text-anchor: middle; font-family: inherit; }
+  svg.bell text.pct { fill: var(--note); font-weight: 700; font-size: 26px; }
+  .excel { border: 1px solid var(--line); border-radius: 8px; padding: 1em; text-align: center; }
+  .excel img { width: min(120px, 9vw); height: auto; }
+  .excel p { font-size: var(--fs-sm); opacity: .8; }
+
+  @media (max-width: 760px) {
+    .topic { display: none; } .topbar { justify-content: flex-end; }
+    #pdf, .fz-btn { display: none; }
+    .grid.two, .grid.three, .visual { grid-template-columns: 1fr; }
+    .content, .content.wide { width: 100%; max-width: 100%; }
+    .excel { display: none; }
+  }
+
+  /* ---------- print / Save PDF: one slide per page ---------- */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) { --bg: #fff; --fg: #000; --line: #999; --note: #7030A0; --note-bg: #F4ECF9; --u: 6.2px; --fsk: 1; }
+    html, body { height: auto; overflow: visible; background: #fff; color: #000; }
+    .topbar, .progress { display: none; }
+    .deck { position: static; }
+    .slide, .js .slide.active { display: flex !important; flex-direction: column; height: auto; min-height: 170mm; border: 0; overflow: visible; break-after: page; page-break-after: always; padding: 0; }
+    .see { display: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ---------- lecture extras ---------- */
+  .toc.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toc .tn { min-width: 2em; }
+  .big { font-size: var(--fs-big) !important; opacity: 1 !important; }
+  .small { font-size: var(--fs-sm); }
+  .note { margin-top: .8em; border-left: 4px solid var(--note); padding: .2em .8em; max-width: 52em; }
+  .setup { font-size: var(--fs-body); margin-bottom: .4em; }
+  a.zt { color: var(--note); font-weight: 600; text-underline-offset: 3px; }
+  .tbl { width: 100%; border-collapse: collapse; margin-top: .3em; }
+  .tbl th, .tbl td { border: 1px solid var(--line); padding: .4em .7em; text-align: left; vertical-align: top; font-size: var(--fs-body); line-height: 1.35; }
+  .tbl th { background: var(--note-bg); }
+  .tbl.sym td:nth-child(n+2) { font-size: var(--fs-big); }
+  .grid.ex span { font-size: var(--fs-body); opacity: 1; line-height: 1.45; }
+  .grid.three.clt { grid-template-columns: 1fr 2.4fr 1fr; }
+  .clt b.k { display: inline; color: var(--fg); }
+  .big-f { margin: .4em 0 .9em; }
+  .big-f .f { font-size: var(--fs-big); line-height: 1.5; }
+  .props { display: grid; gap: .6em; }
+  .props > div { display: flex; gap: .8em; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: .55em .9em; }
+  .props .num { flex: none; width: 1.8em; height: 1.8em; border-radius: 50%; background: var(--note); color: var(--bg); display: grid; place-items: center; font-weight: 700; }
+  .props b { display: block; font-size: var(--fs-big); }
+  .props span { display: block; }
+  .flow { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; margin-top: 1em; font-size: var(--fs-big); }
+  .flow > span:nth-child(odd) { border: 1px solid var(--note); border-radius: 8px; padding: .3em .8em; }
+  .flow.vertical { flex-direction: column; align-items: stretch; gap: .35em; font-size: var(--fs-body); }
+  .flow.vertical > span { border: 1px solid var(--line) !important; border-radius: 8px; padding: .3em .8em; }
+  .side .big { margin-bottom: .6em; }
+  .sim { display: grid; grid-template-columns: 1fr 1fr; gap: 2vw; }
+  .simcap { font-size: var(--fs-sm); margin-bottom: .3em; }
+  .sim { align-items: end; row-gap: .3em !important; }
+  .simhead { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .8em; align-items: end; font-size: var(--fs-sm); line-height: 1.3; }
+  .sh-left { text-align: left; } .sh-mid { text-align: center; } .sh-right { text-align: right; }
+  .sh-mid b { color: var(--note); font-variant-numeric: tabular-nums; }
+  .exp { display: block; font-size: .85em; opacity: .65; margin-top: .15em; }
+  .eq { white-space: nowrap; }
+  .fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .9em; line-height: 1.1; margin: 0 .1em; }
+  .fr > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .2em; }
+  .badge { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: 1.9em; min-width: 1.9em; max-width: max(72px, calc(var(--k) * 5.27)); padding: 0 .4em; border: 1.5px solid var(--note); border-radius: 999px; font-size: calc(var(--fs-sm) + 2px); font-weight: 700; font-variant-numeric: tabular-nums; overflow: hidden; white-space: nowrap; vertical-align: middle; }
+  .simright { position: relative; }
+  .simwarn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(90%, 26em); background: var(--bg); border: 2px solid var(--note); border-radius: 8px; padding: .7em 2.2em .7em 1em; font-size: var(--fs-sm); box-shadow: 0 6px 24px rgba(0,0,0,.25); z-index: 2; }
+  .simwarn[hidden] { display: none; }
+  .simwarn-x { position: absolute; top: .2em; right: .4em; border: 0; font-size: 1.4em; line-height: 1; padding: .1em .3em; }
+  .simsvg { width: 100%; height: auto; max-height: 28vh; border: 1px solid var(--line); border-radius: 8px; }
+  .simsvg rect { fill: var(--note); opacity: .75; }
+  .simsvg line { stroke: var(--fg); stroke-width: 1.5; }
+  .simsvg text { fill: var(--fg); font-size: 12px; font-family: inherit; }
+  .simbtns { display: flex; gap: 8px; margin-top: .8em; flex-wrap: wrap; }
+  .simbtns { display: inline-grid !important; grid-template-columns: auto auto auto; }
+  .trythem { grid-column: 1 / 3; font-size: var(--fs-body); font-weight: 700; color: var(--note); background: transparent; border: 2px solid var(--note); border-radius: 6px; padding: .3em 1em; text-align: center; cursor: default; user-select: none; }
+  .trythem span { display: inline-block; animation: tryflash 1.1s ease-in-out infinite; }
+  @keyframes tryflash { 0%, 100% { opacity: 1; } 50% { opacity: .15; } }
+  @media (prefers-reduced-motion: reduce) { .trythem span { animation: none; } }
+  @media print { .simbtns { display: none !important; } }
+  .simbtns .pdf-btn { font-size: var(--fs-sm); height: auto; padding: .3em .9em; }
+  @media (max-width: 760px) { .toc.two-col, .sim, .grid.three.clt { grid-template-columns: 1fr; } .badge { max-width: 52px; } .sim > .popcap { order: 1; } .sim > #popsvg { order: 2; } .sim > .simhead { order: 3; } .sim > .simright { order: 4; } .sim > .simbtns { order: 5; } }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="topic">Normal Distribution · Lecture</span>
+  <div class="tools">
+    <button class="pdf-btn" id="toc-btn" type="button" aria-expanded="false" aria-controls="drawer" title="Open contents (C)">☰ Contents</button>
+    <button class="icon-btn nav-btn" id="prev" type="button" aria-label="Previous slide" title="Previous slide (←)">&lt;</button>
+    <span class="counter" id="counter" aria-live="polite"></span>
+    <button class="icon-btn nav-btn" id="next" type="button" aria-label="Next slide" title="Next slide (→)">&gt;</button>
+    <button class="icon-btn fz-btn" id="fz-down" type="button" aria-label="Decrease font size" title="Decrease font size">A−</button>
+    <button class="icon-btn fz-btn" id="fz-up" type="button" aria-label="Increase font size" title="Increase font size">A+</button>
+    <button class="icon-btn" id="theme" type="button" aria-label="Switch theme" title="Switch theme"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+    <button class="icon-btn" id="fs" type="button" aria-label="Full screen" title="Full screen (F)"><svg class="i-enter" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="i-exit" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
+    <button class="pdf-btn" id="pdf" type="button" title="Opens the print window. Choose Save as PDF." onclick="window.print()">Save PDF</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Contents" aria-hidden="true">
+  <p class="tag">Contents</p>
+  <ol class="dlist"><li data-type="pop"><span class="dn">1</span><span class="dt">Population and sample</span><span class="dl"><a href="#" data-goto="sec-pop" data-part="p">Go</a></span></li><li data-type="samp"><span class="dn">2</span><span class="dt">Sampling distribution</span><span class="dl"><a href="#" data-goto="sec-samp" data-part="p">Go</a></span></li><li data-type="norm"><span class="dn">3</span><span class="dt">The normal distribution</span><span class="dl"><a href="#" data-goto="sec-norm" data-part="p">Go</a></span></li><li data-type="z"><span class="dn">4</span><span class="dt">The Z-score</span><span class="dl"><a href="#" data-goto="sec-z" data-part="p">Go</a></span></li><li data-type="check"><span class="dn">5</span><span class="dt">Is my data normal?</span><span class="dl"><a href="#" data-goto="sec-check" data-part="p">Go</a></span></li><li data-type="infer"><span class="dn">6</span><span class="dt">What normality lets us do</span><span class="dl"><a href="#" data-goto="sec-infer" data-part="p">Go</a></span></li><li data-type="table"><span class="dn">7</span><span class="dt">Reading the Z-table</span><span class="dl"><a href="#" data-goto="sec-table" data-part="p">Go</a></span></li><li data-type="worked"><span class="dn">8</span><span class="dt">Worked examples</span><span class="dl"><a href="#" data-goto="sec-worked" data-part="p">Go</a></span></li><li data-type="ci"><span class="dn">9</span><span class="dt">Confidence interval</span><span class="dl"><a href="#" data-goto="sec-ci" data-part="p">Go</a></span></li><li data-type="wrap"><span class="dn">10</span><span class="dt">Summary</span><span class="dl"><a href="#" data-goto="sec-wrap" data-part="p">Go</a></span></li></ol>
+  <div class="dfoot">
+    <a href="#" data-goto="toc">Contents slide</a>
+    <a href="practice.html">Practice problems</a>
+    <a href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Open the Z-table ↗</a>
+  </div>
+</aside>
+
+<main class="deck" id="deck">
+
+<section class="slide center" aria-label="Title">
+  <div class="content">
+    <p class="tag">BBA · Intro to Statistics · Probability</p>
+    <h1 class="hero">Normal Distribution</h1>
+    <p class="subtitle">From samples to the bell curve, Z-scores and the Z-table</p>
+  </div>
+</section>
+
+<section class="slide" id="toc" aria-label="Contents">
+  <div class="content wide">
+    <p class="tag">Contents</p>
+    <h2>Today's lecture</h2>
+    <ol class="toc two-col"><li><a href="#" data-goto="sec-pop"><span class="tn">1</span>Population and sample</a></li><li><a href="#" data-goto="sec-samp"><span class="tn">2</span>Sampling distribution</a></li><li><a href="#" data-goto="sec-norm"><span class="tn">3</span>The normal distribution</a></li><li><a href="#" data-goto="sec-z"><span class="tn">4</span>The Z-score</a></li><li><a href="#" data-goto="sec-check"><span class="tn">5</span>Is my data normal?</a></li><li><a href="#" data-goto="sec-infer"><span class="tn">6</span>What normality lets us do</a></li><li><a href="#" data-goto="sec-table"><span class="tn">7</span>Reading the Z-table</a></li><li><a href="#" data-goto="sec-worked"><span class="tn">8</span>Worked examples</a></li><li><a href="#" data-goto="sec-ci"><span class="tn">9</span>Confidence interval</a></li><li><a href="#" data-goto="sec-wrap"><span class="tn">10</span>Summary</a></li></ol>
+    <p class="muted tochint">Click a topic to jump to it. The ☰ Contents button at the top opens the same list on any slide.</p>
+  </div>
+</section>
+
+<section class="slide " id="sec-pop" data-type="pop" data-part="p" aria-label="Population vs sample">
+  <div class="content wide">
+    <p class="tag">1 · Population and sample</p>
+    <h2>Population ≠ "People or human necessarily"</h2>
+    <div class="grid two">
+      <div><b>Population</b><span class="big">Every item we want to know about: all the people, packets, bolts, transactions or T-shirts that fit our question.</span></div>
+      <div><b>Sample</b><span class="big">The part of the population we actually pick and measure.</span></div>
+    </div>
+    <p class="note">A population does not have to be all the humans of a country or a city, and it does not necessarily have to be human: it may be human or may not be. It may be milk packs, bolts, invoices or T-shirts, whatever we want to measure and study.</p>
+  </div>
+</section>
+
+<section class="slide top dense" data-type="pop" data-part="p" aria-label="Population and sample examples">
+  <div class="content wide">
+    <p class="tag">1 · Population and sample</p>
+    <h2>Examples</h2>
+    <table class="tbl">
+      <thead><tr><th>Population</th><th>Sample</th></tr></thead>
+      <tbody>
+        <tr><td>Only about 50 people in the world are known to have the <b>Rh-null</b> blood group.</td><td>The population is so small that we can study all of them. This is a <b>census</b>: when the population is tiny, sampling isn't needed.</td></tr>
+        <tr><td><b>Aarong Dairy</b> produces about 5 million packs of 500 ml pasteurised milk a year in Bangladesh <span class="muted">(illustrative)</span>.</td><td>Pick <b>60 packs</b> of Aarong 500 ml milk from <b>60 different shops</b>.</td></tr>
+        <tr><td>A <b>nut-bolt factory</b> makes 10 million bolts a year.</td><td>Pick <b>200 bolts</b> at random across all shifts and measure each one's diameter.</td></tr>
+        <tr><td><b>Bangladesh</b> produces about <b>2–3 billion T-shirts</b> a year for export (approx.).</td><td>Each buying house inspects a sample of every order, <b>as per AQL, which is about 3%</b>, to check it meets their specs.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide " data-type="pop" data-part="p" aria-label="Symbols">
+  <div class="content wide">
+    <p class="tag">1 · Population and sample</p>
+    <h2>Same idea, two sets of symbols</h2>
+    <table class="tbl sym">
+      <thead><tr><th></th><th>Population (the truth we want)</th><th>Sample (what we measure)</th></tr></thead>
+      <tbody>
+        <tr><td>Mean</td><td><b>μ</b> (mu)</td><td><b>x̄</b> (x-bar)</td></tr>
+        <tr><td>Standard deviation</td><td><b>σ</b> (sigma)</td><td><b>s</b></td></tr>
+        <tr><td>Size</td><td><b>N</b></td><td><b>n</b></td></tr>
+      </tbody>
+    </table>
+    <p class="note">We use the sample's numbers (x̄, s) to learn about the population's numbers (μ, σ).</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-samp" data-type="samp" data-part="p" aria-label="Sampling distribution">
+  <div class="content wide">
+    <p class="tag">2 · Sampling distribution</p>
+    <h2>One sample is not the whole story</h2>
+    <p class="lead">If we take a <b>new sample</b>, we get a slightly <b>different mean</b>. Take many samples, write down each mean, and those means form their own distribution: the <b>sampling distribution of the mean</b>.</p>
+    <div class="grid two ex">
+      <div><b>Example 1 · Aarong milk</b><span>Every week, QC picks 60 packs and records the average volume. Week 1: 499.6 ml, week 2: 500.3 ml, week 3: 500.1 ml … After a year we have 52 averages, and they cluster tightly around 500 ml.</span></div>
+      <div><b>Example 2 · Bolts</b><span>Each shift, 30 bolts are measured and the average diameter is recorded: 10.02 mm, 9.98 mm, 10.01 mm … The shift averages bunch up around 10 mm, much closer together than single bolts do.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide top" data-type="samp" data-part="p" aria-label="Sampling simulation">
+  <div class="content wide">
+    <p class="tag">2 · Sampling distribution · try it</p>
+    <h2>Sample means become bell-shaped</h2>
+    <div class="sim">
+      <p class="simcap popcap">Population: waiting time at an agent shop (minutes). It is <b>skewed</b>, not bell-shaped.</p>
+      <div class="simhead">
+        <div class="sh-left">Each bar counts averages of 30 waiting times, not single waiting time.<br><span class="eq">x̄ = <span class="fr"><span>Σx</span><span>n</span></span>, n = 30</span></div>
+        <div class="sh-mid"><span class="eq">Mean of x̄ = <span class="fr"><span>Σx̄</span><span>k</span></span></span> <b id="simmean">–</b><br>SD of x̄ <b id="simsd">–</b><span class="exp">Expected ≈ 4.00 and 0.73</span></div>
+        <div class="sh-right"><span class="badge" id="simcount">0</span> rounds so far</div>
+      </div>
+      <svg id="popsvg" class="simsvg" viewBox="0 0 400 170" aria-label="Skewed population histogram"></svg>
+      <div class="simright">
+        <svg id="meansvg" class="simsvg" viewBox="0 0 400 170" aria-label="Histogram of sample averages"></svg>
+        <div class="simwarn" id="simwarn" role="alert" hidden><button type="button" class="simwarn-x" aria-label="Close">×</button><b>Limit reached: 9,999 rounds.</b><br>No more can be added. Press Reset to start again.</div>
+      </div>
+      <div></div>
+      <div class="simbtns"><button type="button" class="pdf-btn" data-sim="1">1 round of sampling (n = 30)</button><button type="button" class="pdf-btn" data-sim="100">100 rounds of sampling</button><button type="button" class="pdf-btn" data-sim="0">Reset</button>
+        <div class="trythem" id="trythem" role="note"><span>Try them</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide top" data-type="samp" data-part="p" aria-label="Central Limit Theorem">
+  <div class="content wide">
+    <p class="tag">2 · From sampling distribution to normal</p>
+    <h2>Central Limit Theorem</h2>
+    <div class="fbox big-f">
+      <div class="f">If the population is normal, <u>or</u> the sample size n ≥ 30,<br>then the sample means follow a <b>normal distribution</b>.</div>
+    </div>
+    <div class="grid three ex clt">
+      <div><b>Centre</b><span>The averages centre on the population mean μ.</span></div>
+      <div class="wide2"><b>Spread: averages are steadier than single items</b><span>One bolt can be far from 10 mm, but in an average of 25 bolts the big ones and small ones cancel out.<br>Spread of averages = <b class="k">σ ÷ √n</b><br>Single bolts: σ = 0.1 mm → averages of 25 bolts: 0.1 ÷ √25 = 0.1 ÷ 5 = <b class="k">0.02 mm</b></span></div>
+      <div><b>Shape</b><span>Bell-shaped, even when single items are skewed.</span></div>
+    </div>
+    <p class="note">This is why the normal distribution sits at the heart of statistics.</p>
+  </div>
+</section>
+
+<section class="slide " id="sec-norm" data-type="norm" data-part="p" aria-label="The bell curve">
+  <div class="content wide">
+    <p class="tag">3 · The normal distribution</p>
+    <h2>The bell curve</h2>
+    <div class="visual">
+      <figure><img class="bellimg" src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0ibWFpbi1zdmciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIxMjAwIiBoZWlnaHQ9Ijk2MCIgdmlld0JveD0iMCAwIDEyMDAgOTYwIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI5NjAiIHN0eWxlPSJmaWxsOiAjZmZmZmZmOyIvPjxkZWZzIGlkPSJkZWZzLWRlNzMwMSI+PGcgY2xhc3M9ImNsaXBzIj48Y2xpcFBhdGggaWQ9ImNsaXBkZTczMDF4eXBsb3QiIGNsYXNzPSJwbG90Y2xpcCI+PHJlY3Qgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXgiPjxyZWN0IHg9IjEyMCIgeT0iMCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iODAwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXkiPjxyZWN0IHg9IjAiIHk9IjE1MCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48Y2xpcFBhdGggY2xhc3M9ImF4ZXNjbGlwIiBpZD0iY2xpcGRlNzMwMXh5Ij48cmVjdCB4PSIxMjAiIHk9IjE1MCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIi8+PC9jbGlwUGF0aD48L2c+PGcgY2xhc3M9ImdyYWRpZW50cyIvPjxnIGNsYXNzPSJwYXR0ZXJucyIvPjwvZGVmcz48ZyBjbGFzcz0iYmdsYXllciI+PHJlY3QgY2xhc3M9ImJnIiB4PSIxMjAiIHk9IjE1MCIgd2lkdGg9IjEwMjAiIGhlaWdodD0iNTYwIiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7IHN0cm9rZS13aWR0aDogMDsiLz48L2c+PGcgY2xhc3M9ImxheWVyLWJlbG93Ij48ZyBjbGFzcz0iaW1hZ2VsYXllciIvPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJjYXJ0ZXNpYW5sYXllciI+PGcgY2xhc3M9InN1YnBsb3QgeHkiPjxnIGNsYXNzPSJsYXllci1zdWJwbG90Ij48ZyBjbGFzcz0ic2hhcGVsYXllciIvPjxnIGNsYXNzPSJpbWFnZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJtaW5vci1ncmlkbGF5ZXIiPjxnIGNsYXNzPSJ4Ii8+PGcgY2xhc3M9InkiLz48L2c+PGcgY2xhc3M9ImdyaWRsYXllciI+PGcgY2xhc3M9IngiPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTY3LjY1LDApIiBkPSJNMCwxNTB2NTYwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieGdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwNS42Njk5OTk5OTk5OTk5NiwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InhncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTgxLjcsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE5LjcxLDApIiBkPSJNMCwxNTB2NTYwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieGdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InhncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5OTUuNzQsMCkiIGQ9Ik0wLDE1MHY1NjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEzMy43NSwwKSIgZD0iTTAsMTUwdjU2MCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PC9nPjxnIGNsYXNzPSJ5Ij48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjI0LjQ0KSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCw1NjYuNzQpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDUwOS4wMykiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNDUxLjMzKSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwzOTMuNjIpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDMzNS45MTk5OTk5OTk5OTk5NikiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieWdyaWQgY3Jpc3AiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjc4LjIxMDAwMDAwMDAwMDA0KSIgZD0iTTEyMCwwaDEwMjAiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ5Z3JpZCBjcmlzcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwyMjAuNTEpIiBkPSJNMTIwLDBoMTAyMCIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9InlncmlkIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2Mi44MSkiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48L2c+PC9nPjxnIGNsYXNzPSJ6ZXJvbGluZWxheWVyIj48cGF0aCBjbGFzcz0ieXpsIHpsIGNyaXNwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDY4Mi4xNSkiIGQ9Ik0xMjAsMGgxMDIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoNjgsIDY4LCA2OCk7IHN0cm9rZS1vcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsiLz48L2c+PGcgY2xhc3M9ImxheWVyLWJldHdlZW4iPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PGcgY2xhc3M9ImltYWdlbGF5ZXIiLz48L2c+PHBhdGggY2xhc3M9InhsaW5lcy1iZWxvdyIvPjxwYXRoIGNsYXNzPSJ5bGluZXMtYmVsb3ciLz48ZyBjbGFzcz0ib3ZlcmxpbmVzLWJlbG93Ii8+PGcgY2xhc3M9InhheGlzbGF5ZXItYmVsb3ciLz48ZyBjbGFzcz0ieWF4aXNsYXllci1iZWxvdyIvPjxnIGNsYXNzPSJvdmVyYXhlcy1iZWxvdyIvPjxnIGNsYXNzPSJvdmVycGxvdCI+PGcgY2xhc3M9Inh5IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMjAsMTUwKSI+PGcgY2xhc3M9ImJhcmxheWVyIG1sYXllciI+PGcgY2xhc3M9InRyYWNlIGJhcnMiIHN0eWxlPSJvcGFjaXR5OiAwLjU1OyI+PGcgY2xhc3M9InBvaW50cyI+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNOC43Nyw1MzIuMTVWNTIwLjZIMTA0LjQ4VjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTEwOS41Miw1MzIuMTVWNDkxLjc1SDIwNS4yM1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48ZyBjbGFzcz0icG9pbnQiPjxwYXRoIGQ9Ik0yMTAuMjcsNTMyLjE1VjM0Ny40OUgzMDUuOThWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNMzExLjAyLDUzMi4xNVYxMzkuNzZINDA2LjczVjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTQxMS43Nyw1MzIuMTVWNTMuMkg1MDcuNDhWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNNTEyLjUyLDUzMi4xNVYxMTAuOUg2MDguMjNWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNNjEzLjI3LDUzMi4xNVYzOTkuNDNINzA4Ljk4VjUzMi4xNVoiIGNsaXAtcGF0aD0idXJsKCNjbGlwZGU3MzAxeHlwbG90KSIgc3R5bGU9InZlY3Rvci1lZmZlY3Q6IG5vbmU7IG9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMXB4OyBmaWxsOiByZ2IoMzEsIDE4NCwgMjA1KTsgZmlsbC1vcGFjaXR5OiAxOyBzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludCI+PHBhdGggZD0iTTcxNC4wMiw1MzIuMTVWNDc0LjQ0SDgwOS43M1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48ZyBjbGFzcz0icG9pbnQiPjxwYXRoIGQ9Ik04MTQuNzcsNTMyLjE1VjUyNi4zOEg5MTAuNDhWNTMyLjE1WiIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAxcHg7IGZpbGw6IHJnYigzMSwgMTg0LCAyMDUpOyBmaWxsLW9wYWNpdHk6IDE7IHN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsiLz48L2c+PGcgY2xhc3M9InBvaW50Ij48cGF0aCBkPSJNOTE1LjUyLDUzMi4xNVY1MjYuMzhIMTAxMS4yM1Y1MzIuMTVaIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48L2c+PC9nPjwvZz48ZyBjbGFzcz0ic2NhdHRlcmxheWVyIG1sYXllciI+PGcgY2xhc3M9InRyYWNlIHNjYXR0ZXIgdHJhY2U2YzI2YTIiIHN0eWxlPSJzdHJva2UtbWl0ZXJsaW1pdDogMjsgb3BhY2l0eTogMTsiPjxnIGNsYXNzPSJmaWxscyIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIi8+PGcgY2xhc3M9ImVycm9yYmFycyIvPjxnIGNsYXNzPSJsaW5lcyI+PHBhdGggY2xhc3M9ImpzLWxpbmUiIGQ9Ik01Ni42Myw1MjAuNkwxNTcuMzgsNDkxLjc1TDI1OC4xMywzNDcuNDlMMzU4Ljg4LDEzOS43Nkw0NTkuNjMsNTMuMkw1NjAuMzgsMTEwLjlMNjYxLjEzLDM5OS40M0w3NjEuODgsNDc0LjQ0TDg2Mi42Myw1MjYuMzhMOTYzLjM4LDUyNi4zOCIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIiBzdHlsZT0idmVjdG9yLWVmZmVjdDogbm9uZTsgZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoMjE5LCA2OSwgNjkpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLWRhc2hhcnJheTogM3B4LCAzcHg7IHN0cm9rZS13aWR0aDogMi41cHg7IG9wYWNpdHk6IDE7Ii8+PC9nPjxnIGNsYXNzPSJwb2ludHMiPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTYuNjMsNTIwLjYpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTU3LjM4LDQ5MS43NSkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PHBhdGggY2xhc3M9InBvaW50IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTguMTMsMzQ3LjQ5KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM1OC44OCwxMzkuNzYpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDU5LjYzLDUzLjIpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTYwLjM4LDExMC45KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY2MS4xMywzOTkuNDMpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjxwYXRoIGNsYXNzPSJwb2ludCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzYxLjg4LDQ3NC40NCkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PHBhdGggY2xhc3M9InBvaW50IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4NjIuNjMsNTI2LjM4KSIgZD0iTTQuNSwwQTQuNSw0LjUgMCAxLDEgMCwtNC41QTQuNSw0LjUgMCAwLDEgNC41LDBaIiBzdHlsZT0ib3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAwcHg7IGZpbGw6IHJnYigyMTksIDY5LCA2OSk7IGZpbGwtb3BhY2l0eTogMTsiLz48cGF0aCBjbGFzcz0icG9pbnQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDk2My4zOCw1MjYuMzgpIiBkPSJNNC41LDBBNC41LDQuNSAwIDEsMSAwLC00LjVBNC41LDQuNSAwIDAsMSA0LjUsMFoiIHN0eWxlPSJvcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDBweDsgZmlsbDogcmdiKDIxOSwgNjksIDY5KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0idGV4dCIvPjwvZz48ZyBjbGFzcz0idHJhY2Ugc2NhdHRlciB0cmFjZTdkZTg2YiIgc3R5bGU9InN0cm9rZS1taXRlcmxpbWl0OiAyOyBvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImZpbGxzIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiLz48ZyBjbGFzcz0iZXJyb3JiYXJzIi8+PGcgY2xhc3M9ImxpbmVzIj48cGF0aCBjbGFzcz0ianMtbGluZSIgZD0iTTcuMjIsNTI5LjkyTDQzLjE2LDUyNy4wN0w0NS4xNiw1MjYuODRMNjkuMTIsNTIzLjMyTDcxLjEyLDUyMi45NUw5My4wOCw1MTcuOUw5NS4wOCw1MTcuMzRMMTEzLjA1LDUxMS40TDExNS4wNSw1MTAuNjNMMTMxLjAyLDUwMy41N0wxMzMuMDIsNTAyLjU2TDE0OSw0OTMuNDNMMTUwLjk5LDQ5Mi4xNUwxNjYuOTcsNDgwLjU5TDE2OC45Nyw0NzguOTdMMTg0Ljk0LDQ2NC42M0wxODYuOTQsNDYyLjY1TDIwMC45Miw0NDcuNTZMMjAyLjkxLDQ0NS4yM0wyMTguODksNDI0Ljg4TDIyMC44OSw0MjIuMTJMMjM2Ljg2LDM5OC40TDIzOC44NiwzOTUuMjJMMjU2LjgzLDM2NC42MUwyNTguODMsMzYwLjk5TDI3OC44LDMyMi42NEwyODAuNzksMzE4LjZMMzA0Ljc2LDI2OC4wNEwzMDYuNzUsMjYzLjY5TDM2NC42NiwxMzguMzlMMzY2LjY2LDEzNC40TDM4NC42MywxMDAuNzZMMzg2LjYzLDk3LjMxTDQwMC42MSw3NS4wM0w0MDIuNiw3Mi4xNUw0MTQuNTksNTYuNTJMNDE2LjU4LDU0LjIyTDQyNi41Nyw0NC4wNkw0MjguNTYsNDIuMzFMNDM4LjU1LDM1LjAzTDQ0MC41NSwzMy44OEw0NDguNTMsMzAuMjhMNDUwLjUzLDI5LjY0TDQ1OC41MiwyOC4xMkw0NjAuNTIsMjguMDFMNDY4LjUsMjguNkw0NzAuNSwyOS4wMkw0NzguNDksMzEuNzFMNDgwLjQ4LDMyLjY0TDQ4OC40NywzNy4zOUw0OTAuNDcsMzguODNMNTAwLjQ1LDQ3LjQ4TDUwMi40NSw0OS41TDUxMi40Myw2MC45NEw1MTQuNDMsNjMuNDlMNTI2LjQxLDgwLjQ4TDUyOC40MSw4My41OEw1NDIuMzksMTA3LjJMNTQ0LjM5LDExMC44Mkw1NjIuMzYsMTQ1Ljc0TDU2NC4zNSwxNDkuODNMNTg4LjMyLDIwMS4xOEw1OTAuMzEsMjA1LjU4TDY0MC4yNCwzMTMuNzlMNjQyLjIzLDMxNy44Nkw2NjQuMiwzNjAuMzNMNjY2LjIsMzYzLjk2TDY4NC4xNywzOTQuNjRMNjg2LjE3LDM5Ny44Mkw3MDIuMTQsNDIxLjYyTDcwNC4xNCw0MjQuMzhMNzIwLjExLDQ0NC44TDcyMi4xMSw0NDcuMTRMNzM4LjA5LDQ2NC4yN0w3NDAuMDgsNDY2LjIyTDc1Ni4wNiw0ODAuM0w3NTguMDUsNDgxLjg4TDc3NC4wMyw0OTMuMkw3NzYuMDMsNDk0LjQ2TDc5Miw1MDMuMzlMNzk0LDUwNC4zN0w4MTEuOTcsNTEyLjAyTDgxMy45Nyw1MTIuNzRMODMxLjk0LDUxOC4zNUw4MzMuOTQsNTE4Ljg3TDg1NS45LDUyMy42MUw4NTcuOSw1MjMuOTZMODgzLjg2LDUyNy40Nkw4ODUuODYsNTI3LjY2TDkxNy44MSw1MzBMOTE5LjgsNTMwLjFMOTYzLjc0LDUzMS40N0w5NjUuNzMsNTMxLjUxTDEwMDMuNjgsNTMxLjkyIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiIHN0eWxlPSJ2ZWN0b3ItZWZmZWN0OiBub25lOyBmaWxsOiBub25lOyBzdHJva2U6IHJnYig0NiwgMTM5LCA4Nyk7IHN0cm9rZS1vcGFjaXR5OiAxOyBzdHJva2Utd2lkdGg6IDMuNXB4OyBvcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0icG9pbnRzIiBjbGlwLXBhdGg9InVybCgjY2xpcGRlNzMwMXh5cGxvdCkiLz48ZyBjbGFzcz0idGV4dCIgY2xpcC1wYXRoPSJ1cmwoI2NsaXBkZTczMDF4eXBsb3QpIi8+PC9nPjwvZz48L2c+PC9nPjxwYXRoIGNsYXNzPSJ4bGluZXMtYWJvdmUgY3Jpc3AiIGQ9IiIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZS13aWR0aDogMXB4OyBzdHJva2U6IHJnYigwLCAwLCAwKTsgc3Ryb2tlLW9wYWNpdHk6IDA7Ii8+PHBhdGggY2xhc3M9InlsaW5lcy1hYm92ZSBjcmlzcCIgZD0iIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlLXdpZHRoOiAxcHg7IHN0cm9rZTogcmdiKDAsIDAsIDApOyBzdHJva2Utb3BhY2l0eTogMDsiLz48ZyBjbGFzcz0ib3ZlcmxpbmVzLWFib3ZlIi8+PGcgY2xhc3M9InhheGlzbGF5ZXItYWJvdmUiPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2Ny42NSwwKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inh0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMCw3MTF2NSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzA1LjY2OTk5OTk5OTk5OTk2LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU4MS43LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3MTkuNzEsMCkiIHN0eWxlPSJzdHJva2U6IHJnYigxMjgsIDEyOCwgMTI4KTsgc3Ryb2tlLW9wYWNpdHk6IDAuMzU7IHN0cm9rZS13aWR0aDogMXB4OyIvPjxwYXRoIGNsYXNzPSJ4dGljayB0aWNrcyBjcmlzcCIgZD0iTTAsNzExdjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inh0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMCw3MTF2NSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTk1Ljc0LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48cGF0aCBjbGFzcz0ieHRpY2sgdGlja3MgY3Jpc3AiIGQ9Ik0wLDcxMXY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTMzLjc1LDApIiBzdHlsZT0ic3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyBzdHJva2Utd2lkdGg6IDFweDsiLz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNjcuNjUsMCkiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7Ij4yMDwvdGV4dD48L2c+PGcgY2xhc3M9Inh0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIwIiB5PSI3MzUuMiIgc3R5bGU9ImZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxNnB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgd2hpdGUtc3BhY2U6IHByZTsgb3BhY2l0eTogMTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwNS42Njk5OTk5OTk5OTk5NiwwKSI+MzA8L3RleHQ+PC9nPjxnIGNsYXNzPSJ4dGljayI+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iNzM1LjIiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDMuNjgsMCkiPjQwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTgxLjcsMCkiPjUwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE5LjcxLDApIj42MDwvdGV4dD48L2c+PGcgY2xhc3M9Inh0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIwIiB5PSI3MzUuMiIgc3R5bGU9ImZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxNnB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgd2hpdGUtc3BhY2U6IHByZTsgb3BhY2l0eTogMTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg1Ny43MiwwKSI+NzA8L3RleHQ+PC9nPjxnIGNsYXNzPSJ4dGljayI+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iNzM1LjIiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5OTUuNzQsMCkiPjgwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieHRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjAiIHk9IjczNS4yIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyBvcGFjaXR5OiAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEzMy43NSwwKSI+OTA8L3RleHQ+PC9nPjwvZz48ZyBjbGFzcz0ieWF4aXNsYXllci1hYm92ZSI+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjgyLjE1KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNjI0LjQ0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNTY2Ljc0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNTA5LjAzKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsNDUxLjMzKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMzkzLjYyKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMzM1LjkxOTk5OTk5OTk5OTk2KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjc4LjIxMDAwMDAwMDAwMDA0KSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMjIwLjUxKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PHBhdGggY2xhc3M9Inl0aWNrIHRpY2tzIGNyaXNwIiBkPSJNMTE5LDBoLTUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMTYyLjgxKSIgc3R5bGU9InN0cm9rZTogcmdiKDEyOCwgMTI4LCAxMjgpOyBzdHJva2Utb3BhY2l0eTogMC4zNTsgc3Ryb2tlLXdpZHRoOiAxcHg7Ii8+PGcgY2xhc3M9Inl0aWNrIj48dGV4dCB0ZXh0LWFuY2hvcj0iZW5kIiB4PSIxMTAuOCIgeT0iNS42IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDY4Mi4xNSkiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7Ij4wPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDYyNC40NCkiPjEwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDU2Ni43NCkiPjIwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDUwOS4wMykiPjMwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDQ1MS4zMykiPjQwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDM5My42MikiPjUwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDMzNS45MTk5OTk5OTk5OTk5NikiPjYwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDI3OC4yMTAwMDAwMDAwMDAwNCkiPjcwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDIyMC41MSkiPjgwPC90ZXh0PjwvZz48ZyBjbGFzcz0ieXRpY2siPjx0ZXh0IHRleHQtYW5jaG9yPSJlbmQiIHg9IjExMC44IiB5PSI1LjYiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7IG9wYWNpdHk6IDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2Mi44MSkiPjkwPC90ZXh0PjwvZz48L2c+PGcgY2xhc3M9Im92ZXJheGVzLWFib3ZlIi8+PC9nPjwvZz48ZyBjbGFzcz0icG9sYXJsYXllciIvPjxnIGNsYXNzPSJzbWl0aGxheWVyIi8+PGcgY2xhc3M9InRlcm5hcnlsYXllciIvPjxnIGNsYXNzPSJnZW9sYXllciIvPjxnIGNsYXNzPSJmdW5uZWxhcmVhbGF5ZXIiLz48ZyBjbGFzcz0icGllbGF5ZXIiLz48ZyBjbGFzcz0iaWNpY2xlbGF5ZXIiLz48ZyBjbGFzcz0idHJlZW1hcGxheWVyIi8+PGcgY2xhc3M9InN1bmJ1cnN0bGF5ZXIiLz48ZyBjbGFzcz0iZ2xpbWFnZXMiLz48ZGVmcyBpZD0idG9wZGVmcy1kZTczMDEiPjxnIGNsYXNzPSJjbGlwcyIvPjxjbGlwUGF0aCBpZD0ibGVnZW5kZGU3MzAxIj48cmVjdCB3aWR0aD0iNDE4IiBoZWlnaHQ9IjM0IiB4PSIwIiB5PSIwIi8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xhc3M9ImxheWVyLWFib3ZlIj48ZyBjbGFzcz0iaW1hZ2VsYXllciI+PC9nPjxnIGNsYXNzPSJzaGFwZWxheWVyIi8+PC9nPjxnIGNsYXNzPSJpbmZvbGF5ZXIiPjxnIGNsYXNzPSJsZWdlbmQiIHBvaW50ZXItZXZlbnRzPSJhbGwiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQyMSw4Ny45OTk5OTk5OTk5OTk5NykiPjxyZWN0IGNsYXNzPSJiZyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiB3aWR0aD0iNDE4IiBoZWlnaHQ9IjM0IiB4PSIwIiB5PSIwIiBzdHlsZT0ic3Ryb2tlOiByZ2IoNjgsIDY4LCA2OCk7IHN0cm9rZS1vcGFjaXR5OiAxOyBmaWxsOiByZ2IoMCwgMCwgMCk7IGZpbGwtb3BhY2l0eTogMDsgc3Ryb2tlLXdpZHRoOiAwcHg7Ii8+PGcgY2xhc3M9InNjcm9sbGJveCIgdHJhbnNmb3JtPSIiIGNsaXAtcGF0aD0idXJsKCNsZWdlbmRkZTczMDEpIj48ZyBjbGFzcz0iZ3JvdXBzIj48ZyBjbGFzcz0idHJhY2VzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDE2LjkpIiBzdHlsZT0ib3BhY2l0eTogMTsiPjx0ZXh0IGNsYXNzPSJsZWdlbmR0ZXh0IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQwIiB5PSI2LjI0IiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyI+SGlzdG9ncmFtPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAwLjU1OyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiLz48ZyBjbGFzcz0ibGVnZW5kc3ltYm9scyI+PGcgY2xhc3M9ImxlZ2VuZHBvaW50cyI+PHBhdGggY2xhc3M9ImxlZ2VuZHVuZGVmaW5lZCIgZD0iTTYsNkgtNlYtNkg2WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAsMCkiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDFweDsgZmlsbDogcmdiKDMxLCAxODQsIDIwNSk7IGZpbGwtb3BhY2l0eTogMTsgc3Ryb2tlOiByZ2IoMTI4LCAxMjgsIDEyOCk7IHN0cm9rZS1vcGFjaXR5OiAwLjM1OyIvPjwvZz48L2c+PC9nPjxyZWN0IGNsYXNzPSJsZWdlbmR0b2dnbGUiIHg9IjAiIHk9Ii0xMS45IiB3aWR0aD0iMTE5LjgyODEyNSIgaGVpZ2h0PSIyMy44IiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7Ii8+PC9nPjxnIGNsYXNzPSJ0cmFjZXMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEyMi4zMjgxMjUsMTYuOSkiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PHRleHQgY2xhc3M9ImxlZ2VuZHRleHQiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iNDAiIHk9IjYuMjQiIHN0eWxlPSJmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IHdoaXRlLXNwYWNlOiBwcmU7Ij5GcmVxLiBQb2x5Z29uPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiPjxwYXRoIGNsYXNzPSJqcy1saW5lIiBkPSJNNSwwaDMwIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoMjE5LCA2OSwgNjkpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLWRhc2hhcnJheTogM3B4LCAzcHg7IHN0cm9rZS13aWR0aDogMi41cHg7Ii8+PC9nPjxnIGNsYXNzPSJsZWdlbmRzeW1ib2xzIj48ZyBjbGFzcz0ibGVnZW5kcG9pbnRzIj48cGF0aCBjbGFzcz0ic2NhdHRlcnB0cyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAsMCkiIGQ9Ik00LjUsMEE0LjUsNC41IDAgMSwxIDAsLTQuNUE0LjUsNC41IDAgMCwxIDQuNSwwWiIgc3R5bGU9Im9wYWNpdHk6IDE7IHN0cm9rZS13aWR0aDogMHB4OyBmaWxsOiByZ2IoMjE5LCA2OSwgNjkpOyBmaWxsLW9wYWNpdHk6IDE7Ii8+PC9nPjwvZz48L2c+PHJlY3QgY2xhc3M9ImxlZ2VuZHRvZ2dsZSIgeD0iMCIgeT0iLTExLjkiIHdpZHRoPSIxNDQuOTIxODc1IiBoZWlnaHQ9IjIzLjgiIHN0eWxlPSJmaWxsOiByZ2IoMCwgMCwgMCk7IGZpbGwtb3BhY2l0eTogMDsiLz48L2c+PGcgY2xhc3M9InRyYWNlcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY5Ljc1LDE2LjkpIiBzdHlsZT0ib3BhY2l0eTogMTsiPjx0ZXh0IGNsYXNzPSJsZWdlbmR0ZXh0IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQwIiB5PSI2LjI0IiBzdHlsZT0iZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDE2cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyB3aGl0ZS1zcGFjZTogcHJlOyI+Tm9ybWFsIEN1cnZlPC90ZXh0PjxnIGNsYXNzPSJsYXllcnMiIHN0eWxlPSJvcGFjaXR5OiAxOyI+PGcgY2xhc3M9ImxlZ2VuZGZpbGwiLz48ZyBjbGFzcz0ibGVnZW5kbGluZXMiPjxwYXRoIGNsYXNzPSJqcy1saW5lIiBkPSJNNSwwaDMwIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiByZ2IoNDYsIDEzOSwgODcpOyBzdHJva2Utb3BhY2l0eTogMTsgc3Ryb2tlLXdpZHRoOiAzLjVweDsiLz48L2c+PGcgY2xhc3M9ImxlZ2VuZHN5bWJvbHMiPjxnIGNsYXNzPSJsZWdlbmRwb2ludHMiLz48L2c+PC9nPjxyZWN0IGNsYXNzPSJsZWdlbmR0b2dnbGUiIHg9IjAiIHk9Ii0xMS45IiB3aWR0aD0iMTQ0LjkyMTg3NSIgaGVpZ2h0PSIyMy44IiBzdHlsZT0iZmlsbDogcmdiKDAsIDAsIDApOyBmaWxsLW9wYWNpdHk6IDA7Ii8+PC9nPjwvZz48L2c+PHJlY3QgY2xhc3M9InNjcm9sbGJhciIgcng9IjIwIiByeT0iMyIgd2lkdGg9IjAiIGhlaWdodD0iMCIgeD0iMCIgeT0iMCIgc3R5bGU9ImZpbGw6IHJnYigxMjgsIDEzOSwgMTY0KTsgZmlsbC1vcGFjaXR5OiAxOyIvPjwvZz48ZyBjbGFzcz0iZy1ndGl0bGUiPjx0ZXh0IGNsYXNzPSJndGl0bGUiIHg9IjYwMCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLTAuM2VtIiBzdHlsZT0ib3BhY2l0eTogMTsgZm9udC1mYW1pbHk6ICdGSyBHcm90ZXNrIE5ldWUnOyBmb250LXNpemU6IDI4cHg7IGZpbGw6IHJnYigxMTUsIDExNSwgMTE1KTsgZmlsbC1vcGFjaXR5OiAxOyBmb250LXdlaWdodDogMTAwMDsgd2hpdGUtc3BhY2U6IHByZTsiPjx0c3BhbiBjbGFzcz0ibGluZSIgZHk9Ii0xLjY1ZW0iIHg9IjYwMCIgeT0iMTAwIj5IaXN0b2dyYW0g4oaSIEZyZXEuIFBvbHlnb24g4oaSIE5vcm1hbCBDdXJ2ZTwvdHNwYW4+PHRzcGFuIGNsYXNzPSJsaW5lIiBkeT0iLTAuMzQ5OTk5OTk5OTk5OTk5ODdlbSIgeD0iNjAwIiB5PSIxMDAiPjx0c3BhbiBzdHlsZT0iZm9udC1zaXplOjE2cHg7Zm9udC13ZWlnaHQ6bm9ybWFsOyI+bj0zMDAsIE1lYW49NTAsIFNEPTEwIHwgMiBkZWNpbWFsIHBsYWNlczwvdHNwYW4+PC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJnLXh0aXRsZSI+PHRleHQgY2xhc3M9Inh0aXRsZSIgeD0iNjMwIiB5PSI5MzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJvcGFjaXR5OiAxOyBmb250LWZhbWlseTogJ0ZLIEdyb3Rlc2sgTmV1ZSc7IGZvbnQtc2l6ZTogMTlweDsgZmlsbDogcmdiKDExNSwgMTE1LCAxMTUpOyBmaWxsLW9wYWNpdHk6IDE7IGZvbnQtd2VpZ2h0OiA2MDA7IHdoaXRlLXNwYWNlOiBwcmU7Ij5WYWx1ZTwvdGV4dD48L2c+PGcgY2xhc3M9ImcteXRpdGxlIj48dGV4dCBjbGFzcz0ieXRpdGxlIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAsNjMuNjkzNzUsNDMwKSIgeD0iNjMuNjkzNzUiIHk9IjQzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9Im9wYWNpdHk6IDE7IGZvbnQtZmFtaWx5OiAnRksgR3JvdGVzayBOZXVlJzsgZm9udC1zaXplOiAxOXB4OyBmaWxsOiByZ2IoMTE1LCAxMTUsIDExNSk7IGZpbGwtb3BhY2l0eTogMTsgZm9udC13ZWlnaHQ6IDYwMDsgd2hpdGUtc3BhY2U6IHByZTsiPkZyZXF1ZW5jeTwvdGV4dD48L2c+PC9nPjxnIGlkPSJzaWdtYS1iYW5kcyIgc3R5bGU9ImZvbnQtZmFtaWx5OiBzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sICdTZWdvZSBVSScsIEFyaWFsLCBzYW5zLXNlcmlmOyI+PGRlZnM+PG1hcmtlciBpZD0ic2ItYXJyb3ciIHZpZXdCb3g9IjAgMCAxMCAxMCIgcmVmWD0iOSIgcmVmWT0iNSIgbWFya2VyV2lkdGg9IjciIG1hcmtlckhlaWdodD0iNyIgb3JpZW50PSJhdXRvLXN0YXJ0LXJldmVyc2UiPjxwYXRoIGQ9Ik0wLDBMMTAsNUwwLDEwWiIgZmlsbD0iIzFmMWYxZiIvPjwvbWFya2VyPjwvZGVmcz48bGluZSB4MT0iMTY3LjY3IiB5MT0iNjgyLjE1IiB4Mj0iMTY3LjY3IiB5Mj0iNjc2LjU1IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGxpbmUgeDE9IjMwNS42OCIgeTE9IjY4Mi4xNSIgeDI9IjMwNS42OCIgeTI9IjYxMy45MyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxsaW5lIHgxPSI0NDMuNjkiIHkxPSI2ODIuMTUiIHgyPSI0NDMuNjkiIHkyPSIzNzYuNDAiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48bGluZSB4MT0iNzE5LjcxIiB5MT0iNjgyLjE1IiB4Mj0iNzE5LjcxIiB5Mj0iMzc2LjQwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGxpbmUgeDE9Ijg1Ny43MiIgeTE9IjY4Mi4xNSIgeDI9Ijg1Ny43MiIgeTI9IjYxMy45MyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxsaW5lIHgxPSI5OTUuNzMiIHkxPSI2ODIuMTUiIHgyPSI5OTUuNzMiIHkyPSI2NzYuNTUiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48bGluZSB4MT0iNTgxLjciIHkxPSI2ODIuMTUiIHgyPSI1ODEuNyIgeTI9IjE3OC4wNSIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWRhc2hhcnJheT0iOSA3Ii8+PHRleHQgeD0iNTEyLjcwIiB5PSI0NzAuNDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjhweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjM0LjElPC90ZXh0Pjx0ZXh0IHg9IjM3NC42OSIgeT0iNjExLjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjI0cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4xMy42JTwvdGV4dD48bGluZSB4MT0iMjA2LjY4IiB5MT0iNjA0LjAwIiB4Mj0iMjM2LjY4IiB5Mj0iNjU1LjAwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjx0ZXh0IHg9IjIwMi42OCIgeT0iNTk2LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjIycHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4yLjElPC90ZXh0PjxsaW5lIHgxPSIxNDAuMDciIHkxPSI2MTcuMTQiIHgyPSIxNDAuMDciIHkyPSI2NzQuMTQiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjc2ItYXJyb3cpIi8+PHRleHQgeD0iMTQwLjA3IiB5PSI2MDkuMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjJweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjAuMSU8L3RleHQ+PHRleHQgeD0iNjUwLjcxIiB5PSI0NzAuNDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjhweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjM0LjElPC90ZXh0Pjx0ZXh0IHg9Ijc4OC43MiIgeT0iNjExLjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjI0cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4xMy42JTwvdGV4dD48bGluZSB4MT0iOTU2LjczIiB5MT0iNjA0LjAwIiB4Mj0iOTI2LjczIiB5Mj0iNjU1LjAwIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjx0ZXh0IHg9Ijk2MC43MyIgeT0iNTk2LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjIycHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij4yLjElPC90ZXh0PjxsaW5lIHgxPSIxMDIzLjMzIiB5MT0iNjE3LjE0IiB4Mj0iMTAyMy4zMyIgeTI9IjY3NC4xNCIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjEuOCIgbWFya2VyLWVuZD0idXJsKCNzYi1hcnJvdykiLz48dGV4dCB4PSIxMDIzLjMzIiB5PSI2MDkuMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MjJweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPjAuMSU8L3RleHQ+PHRleHQgeD0iMTY3LjY3IiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs684oiSM8+DPC90ZXh0Pjx0ZXh0IHg9IjMwNS42OCIgeT0iNzY0LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij7OvOKIkjLPgzwvdGV4dD48dGV4dCB4PSI0NDMuNjkiIHk9Ijc2NC4wMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjYwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo1cHg7c3Ryb2tlLWxpbmVqb2luOnJvdW5kOyI+zrziiJLPgzwvdGV4dD48dGV4dCB4PSI1ODEuNzAiIHk9Ijc2NC4wMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjYwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo1cHg7c3Ryb2tlLWxpbmVqb2luOnJvdW5kOyI+zrw8L3RleHQ+PHRleHQgeD0iNzE5LjcxIiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs68K8+DPC90ZXh0Pjx0ZXh0IHg9Ijg1Ny43MiIgeT0iNzY0LjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NjAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjVweDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ij7OvCsyz4M8L3RleHQ+PHRleHQgeD0iOTk1LjczIiB5PSI3NjQuMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo2MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NXB4O3N0cm9rZS1saW5lam9pbjpyb3VuZDsiPs68KzPPgzwvdGV4dD48bGluZSB4MT0iNDQzLjY5IiB5MT0iODA0IiB4Mj0iNzE5LjcxIiB5Mj0iODA0IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIgbWFya2VyLXN0YXJ0PSJ1cmwoI3NiLWFycm93KSIgbWFya2VyLWVuZD0idXJsKCNzYi1hcnJvdykiLz48bGluZSB4MT0iNDQzLjY5IiB5MT0iNzk1IiB4Mj0iNDQzLjY5IiB5Mj0iODEzIiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI3MTkuNzEiIHkxPSI3OTUiIHgyPSI3MTkuNzEiIHkyPSI4MTMiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNTgxLjciIHk9Ijc5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgc3R5bGU9ImZvbnQtc2l6ZToxOXB4O2ZvbnQtd2VpZ2h0OjcwMDtmaWxsOiMxZjFmMWY7cGFpbnQtb3JkZXI6c3Ryb2tlO3N0cm9rZTojZmZmO3N0cm9rZS13aWR0aDo2cHg7Ij42OC4zJSB3aXRoaW4gwrExz4M8L3RleHQ+PGxpbmUgeDE9IjMwNS42OCIgeTE9Ijg0NiIgeDI9Ijg1Ny43MiIgeTI9Ijg0NiIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiIG1hcmtlci1zdGFydD0idXJsKCNzYi1hcnJvdykiIG1hcmtlci1lbmQ9InVybCgjc2ItYXJyb3cpIi8+PGxpbmUgeDE9IjMwNS42OCIgeTE9IjgzNyIgeDI9IjMwNS42OCIgeTI9Ijg1NSIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iODU3LjcyIiB5MT0iODM3IiB4Mj0iODU3LjcyIiB5Mj0iODU1IiBzdHJva2U9IiMxZjFmMWYiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjU4MS43IiB5PSI4MzkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0eWxlPSJmb250LXNpemU6MTlweDtmb250LXdlaWdodDo3MDA7ZmlsbDojMWYxZjFmO3BhaW50LW9yZGVyOnN0cm9rZTtzdHJva2U6I2ZmZjtzdHJva2Utd2lkdGg6NnB4OyI+OTUuNCUgd2l0aGluIMKxMs+DPC90ZXh0PjxsaW5lIHgxPSIxNjcuNjciIHkxPSI4ODgiIHgyPSI5OTUuNzMiIHkyPSI4ODgiIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIiBtYXJrZXItc3RhcnQ9InVybCgjc2ItYXJyb3cpIiBtYXJrZXItZW5kPSJ1cmwoI3NiLWFycm93KSIvPjxsaW5lIHgxPSIxNjcuNjciIHkxPSI4NzkiIHgyPSIxNjcuNjciIHkyPSI4OTciIHN0cm9rZT0iIzFmMWYxZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9Ijk5NS43MyIgeTE9Ijg3OSIgeDI9Ijk5NS43MyIgeTI9Ijg5NyIgc3Ryb2tlPSIjMWYxZjFmIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI1ODEuNyIgeT0iODgxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHlsZT0iZm9udC1zaXplOjE5cHg7Zm9udC13ZWlnaHQ6NzAwO2ZpbGw6IzFmMWYxZjtwYWludC1vcmRlcjpzdHJva2U7c3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjZweDsiPjk5LjclIHdpdGhpbiDCsTPPgzwvdGV4dD48L2c+PC9zdmc+" alt="Histogram, frequency polygon and normal curve (mean 50, SD 10) with areas between each σ: 34.1%, 13.6%, 2.1%, 0.1% on each side"><figcaption>300 values, mean 50, SD 10: the histogram's outline approaches the smooth normal curve</figcaption></figure>
+      <div class="side"><p class="big">A normal distribution is fixed by just <b>two numbers</b>:</p><p class="big"><b>μ</b> = centre<br><b>σ</b> = spread</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide " data-type="norm" data-part="p" aria-label="Three properties">
+  <div class="content wide">
+    <p class="tag">3 · The normal distribution</p>
+    <h2>Three properties</h2>
+    <div class="props">
+      <div><span class="num">1</span><div><b>Symmetric bell shape</b><span>The left half mirrors the right half. Mean = median = mode, all at the peak.</span></div></div>
+      <div><span class="num">2</span><div><b>Tails never touch the axis</b><span>The curve gets closer and closer to zero on both sides but never reaches it.</span></div></div>
+      <div><span class="num">3</span><div><b>Total area = 1 (100%)</b><span>Area under the curve is probability. About 68% lies within ±1σ, 95% within ±2σ and 99.7% within ±3σ.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide " data-type="norm" data-part="p" aria-label="Empirical rule">
+  <div class="content wide">
+    <p class="tag">3 · The normal distribution · empirical rule</p>
+    <h2>68 – 95 – 99.7 in real data</h2>
+    <p class="lead">The 300 values in the normal distribution chart on slide 9 (mean 50, SD 10):</p>
+    <table class="tbl">
+      <thead><tr><th>Range</th><th>Interval</th><th>Expected</th><th>Actual</th></tr></thead>
+      <tbody>
+        <tr><td>±1σ</td><td>40 – 60</td><td>68.0%</td><td>71.0%</td></tr>
+        <tr><td>±2σ</td><td>30 – 70</td><td>95.0%</td><td>96.0%</td></tr>
+        <tr><td>±3σ</td><td>20 – 80</td><td>99.7%</td><td>99.3%</td></tr>
+      </tbody>
+    </table>
+    <p class="note"><b>Bolts:</b> if diameters have μ = 10 mm and σ = 0.1 mm, then 99.7% of bolts fall between 9.7 mm and 10.3 mm.</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-z" data-type="z" data-part="p" aria-label="Z-score">
+  <div class="content wide">
+    <p class="tag">4 · The Z-score</p>
+    <h2>Z = how many σ from the mean</h2>
+    <div class="fbox big-f"><div class="f">Z = (X − μ) ÷ σ</div></div>
+    <div class="grid two ex">
+      <div><b>Example · Aarong milk</b><span>μ = 500 ml, σ = 4 ml. One pack holds 508 ml.<br>Z = (508 − 500) ÷ 4 = <b>+2.00</b>, so it's 2σ <i>above</i> the mean.</span></div>
+      <div><b>Example · Aarong milk</b><span>Another pack holds 495 ml.<br>Z = (495 − 500) ÷ 4 = <b>−1.25</b>, so it's 1.25σ <i>below</i> the mean.</span></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="slide " id="sec-check" data-type="check" data-part="p" aria-label="Why check normality">
+  <div class="content wide">
+    <p class="tag">5 · Is my data normal?</p>
+    <h2>Why we must check first</h2>
+    <p class="lead">The Z-table's areas (34.1%, 13.6%, 2.1% …) are only correct when the data is <b>bell-shaped</b>. If the data is skewed, the table gives wrong probabilities.</p>
+    <div class="flow"><span>Check the shape</span><span>→</span><span>Roughly normal?</span><span>→</span><span>Use Z and the Z-table</span></div>
+  </div>
+</section>
+
+<section class="slide top" data-type="check" data-part="p" aria-label="Skewness and kurtosis">
+  <div class="content wide">
+    <p class="tag">5 · Is my data normal?</p>
+    <h2>Skewness and kurtosis</h2>
+    <table class="tbl">
+      <thead><tr><th>Measure</th><th>What it checks</th><th>Ideal</th><th>Tolerable</th></tr></thead>
+      <tbody>
+        <tr><td><b>Skewness</b></td><td>Is one tail longer than the other?</td><td>0</td><td>between ±1 and ±2</td></tr>
+        <tr><td><b>Kurtosis</b></td><td>Are the tails too heavy or too light (peak too sharp or too flat)?</td><td>0</td><td>between ±1 and ±2</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Kurtosis here means <b>excess kurtosis</b>, which is 0 for a normal curve. Some books report raw kurtosis, where normal = 3.</p>
+    <p class="small muted">Formal tests also exist, such as <b>Shapiro–Wilk</b> and <b>Kolmogorov–Smirnov</b>. For classroom practice we use skewness and kurtosis.</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-infer" data-type="infer" data-part="p" aria-label="What normality lets us do">
+  <div class="content wide">
+    <p class="tag">6 · What normality lets us do</p>
+    <h2>What can we say once data is normal?</h2>
+    <div class="props">
+      <div><span class="num">1</span><div><b>About single items</b><span>If the pack volumes are normal, we can say: "About 10.6% of Aarong packs will hold less than 495 ml." This is true for future packs too, as long as the factory keeps working the same way.</span></div></div>
+      <div><span class="num">2</span><div><b>About the average of all packs</b><span>Averages of samples are normal (when the data is normal, or the sample has 30 or more items). So from one sample we can say: "We are 95% sure the true average of all packs is between 498.2 and 500.2 ml." This is called a confidence interval.</span></div></div>
+    </div>
+    <p class="note">This is <b>inference</b>: a careful estimate with a stated level of confidence. It is not a forecast.</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-table" data-type="table" data-part="p" aria-label="Reading the Z-table">
+  <div class="content wide">
+    <p class="tag">7 · Reading the Z-table</p>
+    <h2>Row + column = your Z</h2>
+    <p class="lead">Open the <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a>. It gives the <b>area to the LEFT</b> of Z. Split Z into a row part (first decimal) and a column part (second decimal).</p>
+    <div class="grid two ex">
+      <div><b>Positive Z = 1.23</b><span>1.23 = 1.2 + 0.03<br>→ row <b>1.2</b>, column <b>.03</b></span></div>
+      <div><b>Negative Z = −1.25</b><span>Go one row further down: −1.3 + 0.05 = −1.25<br>→ row <b>−1.3</b>, column <b>.05</b></span></div>
+    </div>
+    <p class="note">Once you have the row and the column, <b>the area is the value where the row and column meet</b>.</p>
+    <p class="small muted">This method is for our Z-Table. Some printed tables arrange negative values differently.</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-worked" data-type="worked" data-part="p" aria-label="Worked example 1">
+  <div class="content wide">
+    <p class="tag">8 · Worked example 1 of 4 · Less than (left side)</p>
+    <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
+    <p class="question">What percentage of packs hold <b>less than 495 ml</b>?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (495 − 500) ÷ 4 = −1.25<br>Z-table: row −1.3, column .05 → 0.1056<br>P(X &lt; 495) = <b>10.56%</b></p></div>
+    <p class="note">The table already gives the left area: read it straight off. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+  </div>
+</section>
+
+<section class="slide top" data-type="worked" data-part="p" aria-label="Worked example 2">
+  <div class="content wide">
+    <p class="tag">8 · Worked example 2 of 4 · More than (right side)</p>
+    <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
+    <p class="question">What percentage of packs hold <b>more than 508 ml</b>?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (508 − 500) ÷ 4 = 2.00<br>Z-table: row 2.0, column .00 → 0.9772 (left area)<br>P(X &gt; 508) = 1 − 0.9772 = 0.0228 = <b>2.28%</b></p></div>
+    <p class="note">Right side = 1 − left side. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+  </div>
+</section>
+
+<section class="slide top" data-type="worked" data-part="p" aria-label="Worked example 3">
+  <div class="content wide">
+    <p class="tag">8 · Worked example 3 of 4 · Between two values</p>
+    <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
+    <p class="question">What percentage of packs hold <b>between 494 and 506 ml</b>?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (494 − 500) ÷ 4 = −1.50 → row −1.5, column .00 → 0.0668<br>Z₂ = (506 − 500) ÷ 4 = 1.50 → row 1.5, column .00 → 0.9332<br>P = 0.9332 − 0.0668 = 0.8664 = <b>86.64%</b></p></div>
+    <p class="note">Larger left area − smaller left area. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+  </div>
+</section>
+
+<section class="slide top" data-type="worked" data-part="p" aria-label="Worked example 4">
+  <div class="content wide">
+    <p class="tag">8 · Worked example 4 of 4 · Finding X from a percentage</p>
+    <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
+    <p class="question">Below what volume are the <b>lowest 10%</b> of packs?</p>
+    <div class="solution"><p class="slabel">Solution</p><p>Find 0.1000 inside the table: closest is 0.1003 at row −1.3, column .02 → Z = −1.3 + 0.02 = −1.28<br>X = μ + Z · σ = 500 + (−1.28 × 4) = <b>494.88 ml</b></p></div>
+    <p class="note">Work backwards: area → Z → X. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-ci" data-type="ci" data-part="p" aria-label="Confidence interval">
+  <div class="content wide">
+    <p class="tag">9 · Confidence interval</p>
+    <h2>Estimating the population mean</h2>
+    <div class="fbox big-f"><div class="f">CI = x̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%)</p></div>
+    <div class="solution"><p class="slabel">Example</p><p>60 Aarong packs from 60 shops: x̄ = 499.2 ml, σ = 4 ml.<br>
+    E = 1.96 × (4 ÷ √60) = 1.96 × 0.516 = 1.01<br>
+    95% CI = 499.2 ± 1.01 = <b>(498.19, 500.21) ml</b></p></div>
+    <p class="note">Meaning: we are 95% confident the true average volume of <b>all</b> Aarong 500 ml packs is between 498.19 and 500.21 ml.</p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-wrap" data-type="wrap" data-part="p" aria-label="Summary">
+  <div class="content wide">
+    <p class="tag">10 · Summary</p>
+    <h2>The path we followed</h2>
+    <div class="flow vertical">
+      <span><b>Population → sample</b>: we measure a part to learn about the whole.</span>
+      <span><b>Sampling distribution</b>: sample means form their own distribution.</span>
+      <span><b>Central Limit Theorem</b>: those means are normal when the population is normal or n ≥ 30.</span>
+      <span><b>Normal curve</b>: two parameters (μ, σ), three properties, 68–95–99.7.</span>
+      <span><b>Check normality</b>: skewness and kurtosis ideally 0, tolerable ±1 to ±2.</span>
+      <span><b>Z-score and Z-table</b>: probabilities for items, confidence intervals for the mean.</span>
+    </div>
+    <p class="note">Next: <a class="zt" href="practice.html">Practice problems ↗</a></p>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ================= NAVIGATION ================= */
+var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+var cur = 0;
+function show(n, fromHash) {
+  cur = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach(function (s, i) { s.classList.toggle("active", i === cur); });
+  slides[cur].scrollTop = 0;
+  document.getElementById("counter").textContent = (cur + 1) + " / " + slides.length;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === slides.length - 1;
+  document.getElementById("progress").style.width = ((cur + 1) / slides.length * 100) + "%";
+  if (typeof drawer !== "undefined" && drawer && drawerOpen()) markHere();
+  if (!fromHash) { try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) {} }
+}
+function step(d) { show(cur + d); }
+function fromHash() { var n = parseInt((location.hash || "").slice(1), 10); show(isNaN(n) ? 0 : n - 1, true); }
+window.addEventListener("hashchange", fromHash);
+document.getElementById("prev").onclick = function () { step(-1); };
+document.getElementById("next").onclick = function () { step(1); };
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "ArrowRight" || e.key === "PageDown") { step(1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { step(-1); e.preventDefault(); }
+  else if (e.key === "Home") { show(0); e.preventDefault(); }
+  else if (e.key === "End") { show(slides.length - 1); e.preventDefault(); }
+});
+var tx = null, ty = null;
+document.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener("touchend", function (e) {
+  if (tx === null) return;
+  var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  tx = ty = null;
+}, { passive: true });
+/* ================= CONTENTS DRAWER ================= */
+var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), tocBtn = document.getElementById("toc-btn");
+function setDrawer(open) {
+  document.documentElement.classList.toggle("drawer-open", open);
+  drawer.setAttribute("aria-hidden", open ? "false" : "true");
+  tocBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  tocBtn.title = open ? "Close contents (C or Esc)" : "Open contents (C)";
+  scrim.hidden = !open;
+  if (open) markHere();
+}
+function drawerOpen() { return document.documentElement.classList.contains("drawer-open"); }
+function markHere() {
+  var s = slides[cur], type = s.getAttribute("data-type"), part = s.getAttribute("data-part");
+  Array.prototype.forEach.call(drawer.querySelectorAll(".dlist li"), function (li) {
+    var on = li.getAttribute("data-type") === type;
+    li.classList.toggle("here", on);
+    Array.prototype.forEach.call(li.querySelectorAll("a"), function (a) { a.classList.toggle("here", on && a.getAttribute("data-part") === part); });
+  });
+}
+tocBtn.addEventListener("click", function () { setDrawer(!drawerOpen()); });
+scrim.addEventListener("click", function () { setDrawer(false); });
+document.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Escape" && drawerOpen()) setDrawer(false);
+  else if (e.key === "c" || e.key === "C") setDrawer(!drawerOpen());
+});
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest("[data-goto]");
+  if (!a) return;
+  e.preventDefault();
+  var el = document.getElementById(a.getAttribute("data-goto"));
+  if (el) show(slides.indexOf(el));
+  setDrawer(false);
+});
+fromHash();
+
+/* ================= THEME + FULLSCREEN ================= */
+(function () {
+  var root = document.documentElement;
+  function systemDark() { return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; }
+  function isDark() { var t = root.getAttribute("data-theme"); return t ? t === "dark" : systemDark(); }
+  function paint() {
+    var d = isDark();
+    root.classList.toggle("is-dark", d); root.classList.toggle("is-light", !d);
+    var b = document.getElementById("theme");
+    var t = d ? "Switch to light theme" : "Switch to dark theme";
+    b.setAttribute("aria-label", t); b.title = t;
+  }
+  document.getElementById("theme").addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("nd-theme", next); } catch (e) {}
+    paint();
+  });
+  if (window.matchMedia) { try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint); } catch (e) {} }
+  paint();
+
+  var fsb = document.getElementById("fs");
+  if (root.requestFullscreen || root.webkitRequestFullscreen) root.classList.add("can-fs");
+  function inFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function syncFs() { root.classList.toggle("is-fs", inFs()); var t = inFs() ? "Exit full screen (F)" : "Full screen (F)"; fsb.setAttribute("aria-label", t); fsb.title = t; }
+  function toggleFs() {
+    try {
+      if (inFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+    } catch (e) {}
+  }
+  fsb.addEventListener("click", toggleFs);
+  document.addEventListener("fullscreenchange", syncFs);
+  document.addEventListener("webkitfullscreenchange", syncFs);
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "f" || e.key === "F") toggleFs();
+  });
+  syncFs();
+})();
+
+/* ================= FONT SIZE (A− / A+) ================= */
+(function () {
+  var MIN = -3, MAX = 5, n = 0;
+  try { var v = parseInt(localStorage.getItem("nd-fsize"), 10); if (!isNaN(v)) n = Math.max(MIN, Math.min(MAX, v)); } catch (e) {}
+  function apply(x) {
+    n = Math.max(MIN, Math.min(MAX, x));
+    document.documentElement.style.setProperty("--fz", (1 + n * 0.08).toFixed(2));
+    document.getElementById("fz-down").disabled = n <= MIN;
+    document.getElementById("fz-up").disabled = n >= MAX;
+    try { localStorage.setItem("nd-fsize", n); } catch (e) {}
+  }
+  document.getElementById("fz-down").onclick = function () { apply(n - 1); };
+  document.getElementById("fz-up").onclick = function () { apply(n + 1); };
+  apply(n);
+})();
+
+/* ================= SAMPLING SIMULATION ================= */
+(function () {
+  var pop = document.getElementById("popsvg"), ms = document.getElementById("meansvg");
+  if (!pop) return;
+  var NS = "http://www.w3.org/2000/svg";
+  function draw(svg, counts, lo, hi, ticks) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = 400, H = 170, L = 10, B = 145, top = 12, n = counts.length, bw = (W - 2 * L) / n;
+    var mx = Math.max.apply(null, counts.concat([1]));
+    counts.forEach(function (c, i) {
+      var h = (B - top) * c / mx, r = document.createElementNS(NS, "rect");
+      r.setAttribute("x", L + i * bw + 1); r.setAttribute("width", Math.max(bw - 2, 1));
+      r.setAttribute("y", B - h); r.setAttribute("height", h); svg.appendChild(r);
+    });
+    var ax = document.createElementNS(NS, "line"); ax.setAttribute("x1", L); ax.setAttribute("x2", W - L); ax.setAttribute("y1", B); ax.setAttribute("y2", B); svg.appendChild(ax);
+    ticks.forEach(function (t) {
+      var x = L + (t - lo) / (hi - lo) * (W - 2 * L), tx = document.createElementNS(NS, "text");
+      tx.setAttribute("x", x); tx.setAttribute("y", B + 17); tx.setAttribute("text-anchor", "middle"); tx.textContent = t; svg.appendChild(tx);
+    });
+  }
+  function wait() { return -4 * Math.log(1 - Math.random()); }   /* skewed: mean 4 minutes */
+  var pc = new Array(30).fill(0);
+  for (var i = 0; i < 20000; i++) { var v = wait(); if (v < 15) pc[Math.floor(v / 0.5)]++; }
+  draw(pop, pc, 0, 15, [0, 3, 6, 9, 12, 15]);
+  var means = [], LO = 2, HI = 6, BINS = 32, MAX = 9999, warnTimer = null;
+  var warn = document.getElementById("simwarn");
+  function showWarn() { warn.hidden = false; clearTimeout(warnTimer); warnTimer = setTimeout(function () { warn.hidden = true; }, 6000); }
+  warn.querySelector(".simwarn-x").addEventListener("click", function (e) { e.stopPropagation(); warn.hidden = true; });
+  function redraw() {
+    var c = new Array(BINS).fill(0), n = means.length, sum = 0, ss = 0;
+    means.forEach(function (m) { sum += m; var k = Math.floor((m - LO) / (HI - LO) * BINS); if (k >= 0 && k < BINS) c[k]++; });
+    draw(ms, c, LO, HI, [2, 3, 4, 5, 6]);
+    var mean = n ? sum / n : 0;
+    means.forEach(function (m) { ss += (m - mean) * (m - mean); });
+    document.getElementById("simcount").textContent = n;
+    document.getElementById("simmean").textContent = n ? mean.toFixed(2) : "–";
+    document.getElementById("simsd").textContent = n > 1 ? Math.sqrt(ss / (n - 1)).toFixed(2) : "–";
+  }
+  function take(k) {
+    var room = MAX - means.length;
+    if (room <= 0) { showWarn(); return; }
+    k = Math.min(k, room);
+    for (var j = 0; j < k; j++) { var s = 0; for (var q = 0; q < 30; q++) s += wait(); means.push(s / 30); }
+    redraw();
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-sim]"); if (!b) return;
+    var k = +b.getAttribute("data-sim");
+    if (k === 0) { means = []; warn.hidden = true; redraw(); } else take(k);
+  });
+  redraw();
+})();
+</script>
+</body>
+</html>
