@@ -192,7 +192,7 @@
   .tbl th { background: var(--note-bg); }
   .tbl.sym td:nth-child(n+2) { font-size: var(--fs-big); }
   .grid.ex span { font-size: var(--fs-body); opacity: 1; line-height: 1.45; }
-  .grid.three.clt { grid-template-columns: 1fr 2.4fr 1fr; }
+  .grid.three.clt { grid-template-columns: .9fr 3fr .9fr; }
   .clt b.k { display: inline; color: var(--fg); }
   .big-f { margin: .4em 0 .9em; }
   .big-f .f { font-size: var(--fs-big); line-height: 1.5; }
@@ -233,7 +233,67 @@
   @media (prefers-reduced-motion: reduce) { .trythem span { animation: none; } }
   @media print { .simbtns { display: none !important; } }
   .simbtns .pdf-btn { font-size: var(--fs-sm); height: auto; padding: .3em .9em; }
-  @media (max-width: 760px) { .toc.two-col, .sim, .grid.three.clt { grid-template-columns: 1fr; } .badge { max-width: 52px; } .sim > .popcap { order: 1; } .sim > #popsvg { order: 2; } .sim > .simhead { order: 3; } .sim > .simright { order: 4; } .sim > .simbtns { order: 5; } }
+  @media (max-width: 760px) { .toc.two-col, .sim, .grid.three.clt { grid-template-columns: 1fr; } .badge { max-width: 52px; } .sim > .popcap { order: 1; } .sim > .simhead { order: 3; } .sim > .simright { order: 4; } .sim > .simbtns { order: 5; } }
+
+  /* ---------- slide 7 tabs, sample card, sqrt(n) slides ---------- */
+  .simtabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: .35em; }
+  .simtab { border: 0; padding: .25em .9em; font-size: var(--fs-sm); font-weight: 700; }
+  .simtab + .simtab { border-left: 1px solid var(--line); }
+  .simtab[aria-selected="true"] { background: var(--note); color: var(--bg); }
+  .simtab.ping { animation: tabping 1s ease-in-out 2; }
+  @keyframes tabping { 50% { box-shadow: inset 0 0 0 3px var(--note); } }
+  .tabtxt { font-size: var(--fs-sm); }
+  .tabtxt b.v { color: var(--note); font-variant-numeric: tabular-nums; }
+  .simleft { position: relative; }
+  .simsvg[hidden], .tabtxt[hidden] { display: none; }
+  .simsvg rect.hit { fill: var(--fg); opacity: 1; }
+  .simsvg .outline { fill: none; stroke: var(--fg); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: .55; }
+  .simsvg line.xbar { stroke: var(--fg); stroke-width: 2; stroke-dasharray: 6 4; }
+  .simsvg text.xlab { font-weight: 700; }
+  .simnote { grid-column: 1 / -1; margin-top: .2em; }
+  .tryit { background: var(--note-bg); }
+  .cmp-h { margin-top: .5em; }
+  .rootn { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2vw; align-items: center; }
+  .rootn9 { display: grid; grid-template-columns: 1fr 1fr; gap: 2vw; align-items: start; }
+  @media (max-width: 760px) { .rootn9 { grid-template-columns: 1fr; } }
+  .r9h { font-weight: 700; color: var(--note); margin-bottom: .4em; }
+  svg.walk { width: 100%; max-height: 46vh; }
+  .walk .wgrid line { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+  .walk .wstep { stroke: var(--fg); stroke-width: 4; }
+  .walk .whead, .walk .wdot { fill: var(--fg); }
+  .walk .wdiag { stroke: var(--note); stroke-width: 4; stroke-dasharray: 10 6; }
+  .walk text { fill: var(--fg); font-size: 17px; font-family: inherit; }
+  .walk text.wb { font-weight: 700; }
+  .walk text.wn { fill: var(--note); font-weight: 700; font-size: 20px; }
+  .grid.ex b.k, .props b.k { display: inline; color: var(--fg); font-size: inherit; }
+  @media (max-width: 760px) { .rootn { grid-template-columns: 1fr; } .sim > .simleft { order: 2; } .sim > .simnote { order: 6; } .simhead { grid-template-columns: 1fr 1fr; } .sh-mid { grid-column: 1 / -1; grid-row: 1; text-align: left; } .sh-right { text-align: left; } }
+  @media print { .simtabs, .simnote { display: none !important; } #popsvg { display: block !important; } #sampsvg { display: none !important; } #txt-pop { display: block !important; } #txt-samp { display: none !important; } }
+  /* ---------- standard error slide ---------- */
+  .se-top { display: flex; flex-wrap: wrap; align-items: center; gap: .4em 1.2em; font-size: var(--fs-sm); margin-bottom: .4em; }
+  .se-top p { flex: 1 1 30em; }
+  .se-chips { display: inline-flex; align-items: center; gap: 6px; }
+  .se-chips .pdf-btn, .se-btns .pdf-btn { font-size: var(--fs-sm); height: auto; padding: .25em .8em; }
+  .se-chips .pdf-btn { min-width: 3.2em; font-weight: 700; }
+  .se-chips .pdf-btn[aria-pressed="true"] { background: var(--note); border-color: var(--note); color: var(--bg); }
+  .se-nums { border: 2px solid var(--note); border-radius: 12px; padding: .35em .8em; font-size: var(--fs-sm); line-height: 1.5; margin-bottom: .5em; }
+  .se-nums .nh { font-weight: 700; }
+  .se-nums .vals { font-variant-numeric: tabular-nums; word-spacing: 2px; overflow-wrap: anywhere; }
+  .se-nums .more { opacity: .7; }
+  .se-nums .sum { font-variant-numeric: tabular-nums; }
+  .se-nums .sum b { font-size: 1.25em; }
+  .se-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .4em 2vw; align-items: start; }
+  .se-cap { font-size: var(--fs-sm); line-height: 1.35; margin-bottom: .25em; min-height: 2.7em; }
+  .se-cap .badge { height: 1.35em; font-size: inherit; min-width: 1.6em; }
+  .se-grid .simsvg { max-height: 22vh; display: block; }
+  .simsvg line.mu { stroke-dasharray: 4 4; stroke-width: 1.4; }
+  .simsvg text.mul { font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+  .se-box { border: 2px solid var(--note); background: var(--note-bg); border-radius: 12px; padding: .25em .7em; margin-top: .4em; font-size: var(--fs-sm); line-height: 1.35; }
+  .se-box .v { font-weight: 800; font-size: 1.3em; font-variant-numeric: tabular-nums; }
+  .se-box .from { opacity: .7; font-size: .68em; font-weight: 400; }
+  .se-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: .6em; font-size: var(--fs-sm); }
+  .se-btns .muted { flex-basis: 100%; }
+  @media (max-width: 760px) { .se-grid { grid-template-columns: 1fr; } }
+  @media print { .se-btns, .se-chips { display: none !important; } }
 </style>
 </head>
 <body>
@@ -261,7 +321,7 @@
   <div class="dfoot">
     <a href="#" data-goto="toc">Contents slide</a>
     <a href="practice.html">Practice problems</a>
-    <a href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Open the Z-table ↗</a>
+    <a href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Open the Z-table ↗</a>
   </div>
 </aside>
 
@@ -340,25 +400,33 @@
   </div>
 </section>
 
-<section class="slide top" data-type="samp" data-part="p" aria-label="Sampling simulation">
+<section class="slide top" id="sec-sim" data-type="samp" data-part="p" aria-label="Sampling simulation">
   <div class="content wide">
     <p class="tag">2 · Sampling distribution · try it</p>
     <h2>Sample means become bell-shaped</h2>
     <div class="sim">
-      <p class="simcap popcap">Population: waiting time at an agent shop (minutes). It is <b>skewed</b>, not bell-shaped.</p>
+      <div class="simcap popcap">
+        <div class="simtabs" role="tablist" aria-label="Left chart"><button type="button" role="tab" class="simtab" id="tab-pop" aria-selected="true" aria-controls="popsvg">Population</button><button type="button" role="tab" class="simtab" id="tab-samp" aria-selected="false" aria-controls="sampsvg">This sample</button></div>
+        <p class="tabtxt" id="txt-pop">Waiting time at an agent shop (minutes). It is <b>skewed</b>, not bell-shaped. <span class="eq">μ = 4, σ = 4</span></p>
+        <p class="tabtxt" id="txt-samp" hidden>The latest sample of 30 waiting times. <span id="samptxt">Press a sampling button to draw one.</span></p>
+      </div>
       <div class="simhead">
         <div class="sh-left">Each bar counts averages of 30 waiting times, not single waiting time.<br><span class="eq">x̄ = <span class="fr"><span>Σx</span><span>n</span></span>, n = 30</span></div>
-        <div class="sh-mid"><span class="eq">Mean of x̄ = <span class="fr"><span>Σx̄</span><span>k</span></span></span> <b id="simmean">–</b><br>SD of x̄ <b id="simsd">–</b><span class="exp">Expected ≈ 4.00 and 0.73</span></div>
+        <div class="sh-mid"><span class="eq">Mean of x̄ = <span class="fr"><span>Σx̄</span><span>k</span></span></span> <b id="simmean">–</b><br>SD of x̄ = Standard error (SE) <b id="simsd">–</b><span class="exp">Expected mean ≈ 4.00<br>Expected SE = σ ÷ √n = 4 ÷ √30 ≈ 0.73</span></div>
         <div class="sh-right"><span class="badge" id="simcount">0</span> rounds so far</div>
       </div>
-      <svg id="popsvg" class="simsvg" viewBox="0 0 400 170" aria-label="Skewed population histogram"></svg>
+      <div class="simleft">
+        <svg id="popsvg" class="simsvg" viewBox="0 0 400 170" role="tabpanel" aria-labelledby="tab-pop" aria-label="Skewed population histogram"></svg>
+        <svg id="sampsvg" class="simsvg" viewBox="0 0 400 170" role="tabpanel" aria-labelledby="tab-samp" aria-label="The latest sample of 30 waiting times" hidden></svg>
+      </div>
       <div class="simright">
-        <svg id="meansvg" class="simsvg" viewBox="0 0 400 170" aria-label="Histogram of sample averages"></svg>
+        <svg id="meansvg" class="simsvg" viewBox="0 0 400 170" aria-label="Histogram of sample averages on the same 0 to 15 minute axis"></svg>
         <div class="simwarn" id="simwarn" role="alert" hidden><button type="button" class="simwarn-x" aria-label="Close">×</button><b>Limit reached: 9,999 rounds.</b><br>No more can be added. Press Reset to start again.</div>
       </div>
       <div></div>
       <div class="simbtns"><button type="button" class="pdf-btn" data-sim="1">1 round of sampling (n = 30)</button><button type="button" class="pdf-btn" data-sim="100">100 rounds of sampling</button><button type="button" class="pdf-btn" data-sim="0">Reset</button>
         <div class="trythem" id="trythem" role="note"><span>Try them</span></div></div>
+      <p class="simcap simnote">Both charts use the same 0–15 minute axis. Averages move up and down much less than single waiting times, because very long and very short waits cancel out. <b>SE = how far a sample average usually is from the true average.</b></p>
     </div>
   </div>
 </section>
@@ -372,10 +440,90 @@
     </div>
     <div class="grid three ex clt">
       <div><b>Centre</b><span>The averages centre on the population mean μ.</span></div>
-      <div class="wide2"><b>Spread: averages are steadier than single items</b><span>One bolt can be far from 10 mm, but in an average of 25 bolts the big ones and small ones cancel out.<br>Spread of averages = <b class="k">σ ÷ √n</b><br>Single bolts: σ = 0.1 mm → averages of 25 bolts: 0.1 ÷ √25 = 0.1 ÷ 5 = <b class="k">0.02 mm</b></span></div>
+      <div class="wide2"><b>Spread: averages are steadier than single items</b><span>Bolts: <b class="k">μ = 10 mm</b>. One bolt usually misses 10 mm by <b class="k">σ = 0.1 mm</b> (e.g. 9.9 or 10.1).<br>An average of 25 bolts is still about 10 mm, but usually misses by only 0.1 ÷ √25 = 0.1 ÷ 5 = <b class="k">0.020 mm</b> (e.g. 9.98 or 10.02).<br>This usual miss of the average, <b class="k">σ ÷ √n</b>, is the <b class="k">standard error (SE)</b>.</span></div>
       <div><b>Shape</b><span>Bell-shaped, even when single items are skewed.</span></div>
     </div>
     <p class="note">This is why the normal distribution sits at the heart of statistics.</p>
+    <p class="note tryit"><b>Try it:</b> on <a class="zt" href="#" data-goto="sec-se">slide <span data-slideno="sec-se">11</span></a>, press <b>100 rounds of sampling</b> and compare the typical error with <b>4 ÷ √30 = 0.730</b>.</p>
+  </div>
+</section>
+
+<section class="slide top" data-type="samp" data-part="p" aria-label="Why averages spread less">
+  <div class="content wide">
+    <p class="tag">2 · Where √n comes from</p>
+    <h2>Why do averages spread less?</h2>
+    <div class="rootn9">
+      <div>
+        <p class="r9h">Why averages spread less</p>
+        <div class="props">
+          <div><span class="num">1</span><div><b>Ups and downs cancel</b><span>In a sample of 30 waits, some are long and some are short. When we add them, the long ones and the short ones partly cancel.</span></div></div>
+          <div><span class="num">2</span><div><b>So an average is steadier than one item</b><span>One wait can be far from 4 minutes. An average of 30 waits rarely is, because one very long wait is pulled back by the short ones.</span></div></div>
+        </div>
+      </div>
+      <div>
+        <p class="r9h">Where √n comes from</p>
+        <div class="props">
+          <div><span class="num">3</span><div><b>The total grows slower than n</b><span>If all waits were long together, the total of n waits would spread n times as much as one wait. They are not: some go up, some go down, and most of the pushes cancel. What is left grows only with √n: 4 items spread 2 times as much as one item, 25 items 5 times, 100 items 10 times.</span></div></div>
+          <div><span class="num">4</span><div><b>The average divides by n</b><span>The average is the total ÷ n. So it spreads √n ÷ n = 1 ÷ √n times as much as one item. That gives <b class="k">σ ÷ √n</b>.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide top" data-type="samp" data-part="p" aria-label="From the total to the average">
+  <div class="content wide">
+    <p class="tag">2 · Where √n comes from</p>
+    <h2>From the total to the average: σ ÷ √n</h2>
+    <div class="fbox big-f">
+      <div class="f">Spread of the total of n items = √n × σ</div>
+      <div class="f">Average = total ÷ n</div>
+      <div class="f">Spread of the average = √n × σ ÷ n = <u>σ ÷ √n</u> = standard error (SE)</div>
+    </div>
+    <div class="grid two ex">
+      <div><b>Example · Bolts</b><span>μ = 10 mm, σ = 0.1 mm, n = 25.<br>Total of 25 bolts ≈ 250 mm, usually misses by √25 × 0.1 = 0.500 mm.<br>Average ≈ 10 mm, usually misses by 0.500 ÷ 25 = <b class="k">0.020 mm</b> = 0.1 ÷ √25.</span></div>
+      <div><b>Example · Waiting times (slide <span data-slideno="sec-sim">7</span>)</b><span>σ = 4 minutes, n = 30.<br>SE = 4 ÷ √30 = 4 ÷ 5.477 = <b class="k">0.730 minutes</b>.<br>That is the SE the simulation finds after many rounds.</span></div>
+    </div>
+    <p class="note"><b>SE = how far a sample average usually is from the true average.</b></p>
+  </div>
+</section>
+
+<section class="slide top" id="sec-se" data-type="samp" data-part="p" aria-label="Standard error simulation">
+  <div class="content wide">
+    <p class="tag">2 · Standard error · try it</p>
+    <h2>How far does our average usually miss?</h2>
+    <div class="se-top">
+      <p>x̄ is our guess for μ. The gap <b>x̄ − μ</b> is our <b>miss</b>, called an <b>error</b>. <b>Standard error = the usual size of our miss when we use x̄ for μ.</b> Waiting times: <span class="eq">μ = 4, σ = 4</span>.</p>
+      <div class="se-chips" role="group" aria-label="Sample size"><b>Sample size n:</b><button type="button" class="pdf-btn" data-se-n="10">10</button><button type="button" class="pdf-btn" data-se-n="30">30</button><button type="button" class="pdf-btn" data-se-n="120">120</button></div>
+    </div>
+    <div class="se-nums" aria-live="polite"><span class="nh" id="se-head"></span> <span class="vals" id="se-vals"></span> <span class="more" id="se-more"></span><div class="sum" id="se-sum"></div></div>
+    <div class="se-grid">
+      <div>
+        <p class="se-cap"><b>This round's sample: <span class="se-nl">30</span> waiting times</b><br>dashed line: population, μ = 4, σ = 4</p>
+        <svg id="se-one" class="simsvg" viewBox="0 0 400 170" role="img" aria-label="This round's sample of waiting times over the population shape"></svg>
+        <div class="se-box">Usual distance of one waiting time from μ: <span class="v">σ = 4.000</span></div>
+        <div class="se-btns"><button type="button" class="pdf-btn" data-se-sim="1">1 round of sampling</button><button type="button" class="pdf-btn" data-se-sim="10">10 rounds of sampling</button><button type="button" class="pdf-btn" data-se-sim="100">100 rounds of sampling</button><button type="button" class="pdf-btn" data-se-sim="0">Reset</button><span class="muted">Typical error: square each miss, average them, take the square root.</span></div>
+      </div>
+      <div>
+        <p class="se-cap"><b>Each round = 1 sample of <span class="se-nl">30</span> waiting times → 1 average</b><br><span class="badge" id="se-count">0</span> averages so far</p>
+        <svg id="se-avg" class="simsvg" viewBox="0 0 400 170" role="img" aria-label="Histogram of sample averages on the same 0 to 15 minute axis"></svg>
+        <div class="se-box">Formula σ ÷ √n: <span class="v" id="se-formula">4 ÷ √30 = 4 ÷ 5.477 = 0.730</span></div>
+        <div class="se-box">This sample's error: <b id="se-err">–</b><br>Typical error so far: <span class="v" id="se-typ">–</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide top" data-type="samp" data-part="p" aria-label="Two extreme cases">
+  <div class="content wide">
+    <p class="tag">2 · Where √n comes from</p>
+    <h2>Two extreme cases</h2>
+    <div class="grid three ex">
+      <div><b>Nothing cancels</b><span>All items are always high together or low together. The average moves as much as one item.<br>Spread = <b class="k">σ</b></span></div>
+      <div><b>Real random data</b><span>Highs and lows are independent, so they partly cancel.<br>Spread = <b class="k">σ ÷ √n</b></span></div>
+      <div><b>Everything cancels</b><span>Every high item is matched exactly by a low one. The average never moves.<br>Spread = <b class="k">0</b></span></div>
+    </div>
+    <p class="note">When n = 1, SE = σ ÷ √1 = σ. The average of one item is just that item, so one formula covers both cases.</p>
   </div>
 </section>
 
@@ -406,7 +554,7 @@
   <div class="content wide">
     <p class="tag">3 · The normal distribution · empirical rule</p>
     <h2>68 – 95 – 99.7 in real data</h2>
-    <p class="lead">The 300 values in the normal distribution chart on slide 9 (mean 50, SD 10):</p>
+    <p class="lead">The 300 values in the normal distribution chart on <a class="zt" href="#" data-goto="sec-norm">slide <span data-slideno="sec-norm">12</span></a> (mean 50, SD 10):</p>
     <table class="tbl">
       <thead><tr><th>Range</th><th>Interval</th><th>Expected</th><th>Actual</th></tr></thead>
       <tbody>
@@ -473,13 +621,12 @@
   <div class="content wide">
     <p class="tag">7 · Reading the Z-table</p>
     <h2>Row + column = your Z</h2>
-    <p class="lead">Open the <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a>. It gives the <b>area to the LEFT</b> of Z. Split Z into a row part (first decimal) and a column part (second decimal).</p>
+    <p class="lead">Open the <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Z-Table ↗</a>. It gives the <b>area to the LEFT</b> of Z. Split Z into a row part (first decimal) and a column part (second decimal).</p>
     <div class="grid two ex">
       <div><b>Positive Z = 1.23</b><span>1.23 = 1.2 + 0.03<br>→ row <b>1.2</b>, column <b>.03</b></span></div>
-      <div><b>Negative Z = −1.25</b><span>Go one row further down: −1.3 + 0.05 = −1.25<br>→ row <b>−1.3</b>, column <b>.05</b></span></div>
+      <div><b>Negative Z = −1.25</b><span>−1.25 = −1.2 − 0.05<br>→ row <b>−1.2</b>, column <b>.05</b></span></div>
     </div>
     <p class="note">Once you have the row and the column, <b>the area is the value where the row and column meet</b>.</p>
-    <p class="small muted">This method is for our Z-Table. Some printed tables arrange negative values differently.</p>
   </div>
 </section>
 
@@ -488,8 +635,8 @@
     <p class="tag">8 · Worked example 1 of 4 · Less than (left side)</p>
     <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
     <p class="question">What percentage of packs hold <b>less than 495 ml</b>?</p>
-    <div class="solution"><p class="slabel">Solution</p><p>Z = (495 − 500) ÷ 4 = −1.25<br>Z-table: row −1.3, column .05 → 0.1056<br>P(X &lt; 495) = <b>10.56%</b></p></div>
-    <p class="note">The table already gives the left area: read it straight off. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+    <div class="solution"><p class="slabel">Solution</p><p>Z = (495 − 500) ÷ 4 = −1.25<br>Z-table: row −1.2, column .05 → 0.1056<br>P(X &lt; 495) = <b>10.56%</b></p></div>
+    <p class="note">The table already gives the left area: read it straight off. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Z-Table ↗</a> · <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">See it on the Z calculator ↗</a></p>
   </div>
 </section>
 
@@ -499,7 +646,7 @@
     <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
     <p class="question">What percentage of packs hold <b>more than 508 ml</b>?</p>
     <div class="solution"><p class="slabel">Solution</p><p>Z = (508 − 500) ÷ 4 = 2.00<br>Z-table: row 2.0, column .00 → 0.9772 (left area)<br>P(X &gt; 508) = 1 − 0.9772 = 0.0228 = <b>2.28%</b></p></div>
-    <p class="note">Right side = 1 − left side. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+    <p class="note">Right side = 1 − left side. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Z-Table ↗</a> · <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">See it on the Z calculator ↗</a></p>
   </div>
 </section>
 
@@ -509,7 +656,7 @@
     <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
     <p class="question">What percentage of packs hold <b>between 494 and 506 ml</b>?</p>
     <div class="solution"><p class="slabel">Solution</p><p>Z₁ = (494 − 500) ÷ 4 = −1.50 → row −1.5, column .00 → 0.0668<br>Z₂ = (506 − 500) ÷ 4 = 1.50 → row 1.5, column .00 → 0.9332<br>P = 0.9332 − 0.0668 = 0.8664 = <b>86.64%</b></p></div>
-    <p class="note">Larger left area − smaller left area. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+    <p class="note">Larger left area − smaller left area. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Z-Table ↗</a> · <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">See it on the Z calculator ↗</a></p>
   </div>
 </section>
 
@@ -518,20 +665,25 @@
     <p class="tag">8 · Worked example 4 of 4 · Finding X from a percentage</p>
     <p class="setup">Aarong 500 ml packs: <b>μ = 500 ml</b>, <b>σ = 4 ml</b>, volumes are normal.</p>
     <p class="question">Below what volume are the <b>lowest 10%</b> of packs?</p>
-    <div class="solution"><p class="slabel">Solution</p><p>Find 0.1000 inside the table: closest is 0.1003 at row −1.3, column .02 → Z = −1.3 + 0.02 = −1.28<br>X = μ + Z · σ = 500 + (−1.28 × 4) = <b>494.88 ml</b></p></div>
-    <p class="note">Work backwards: area → Z → X. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">Z-Table ↗</a></p>
+    <div class="solution"><p class="slabel">Solution</p><p>Find 0.1000 inside the table: closest is 0.1003 at row −1.2, column .08 → Z = −1.28<br>X = μ + Z · σ = 500 + (−1.28 × 4) = <b>494.88 ml</b></p></div>
+    <p class="note">Work backwards: area → Z → X. <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table_print" target="_blank" rel="noopener">Z-Table ↗</a> · <a class="zt" href="https://research-toolkit.netlify.app/stat_tools/z_table" target="_blank" rel="noopener">See it on the Z calculator ↗</a></p>
   </div>
 </section>
 
-<section class="slide top" id="sec-ci" data-type="ci" data-part="p" aria-label="Confidence interval">
+<section class="slide top dense" id="sec-ci" data-type="ci" data-part="p" aria-label="Confidence interval">
   <div class="content wide">
     <p class="tag">9 · Confidence interval</p>
     <h2>Estimating the population mean</h2>
-    <div class="fbox big-f"><div class="f">CI = x̄ ± Z* · (σ ÷ √n)</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%)</p></div>
+    <div class="fbox big-f"><div class="f">CI = x̄ ± Z* · SE, where SE = σ ÷ √n</div><p>Z* = 1.645 (90%) · 1.96 (95%) · 2.576 (99%)</p></div>
     <div class="solution"><p class="slabel">Example</p><p>60 Aarong packs from 60 shops: x̄ = 499.2 ml, σ = 4 ml.<br>
-    E = 1.96 × (4 ÷ √60) = 1.96 × 0.516 = 1.01<br>
+    SE = 4 ÷ √60 = 0.516, so E = 1.96 × 0.516 = 1.01<br>
     95% CI = 499.2 ± 1.01 = <b>(498.19, 500.21) ml</b></p></div>
     <p class="note">Meaning: we are 95% confident the true average volume of <b>all</b> Aarong 500 ml packs is between 498.19 and 500.21 ml.</p>
+    <p class="setup cmp-h"><b>σ or SE?</b> Study hours of 50 students: x̄ = 3.2 hours, σ = 0.8 hours.</p>
+    <div class="grid two ex cmp">
+      <div><b>Most students (one student, use σ)</b><span>3.2 ± 1.96 × 0.8 = <b class="k">1.63 – 4.77 hours</b></span></div>
+      <div><b>True average (use SE = 0.8 ÷ √50 = 0.113)</b><span>3.2 ± 1.96 × 0.113 = <b class="k">2.98 – 3.42 hours</b></span></div>
+    </div>
   </div>
 </section>
 
@@ -683,56 +835,201 @@ fromHash();
 
 /* ================= SAMPLING SIMULATION ================= */
 (function () {
-  var pop = document.getElementById("popsvg"), ms = document.getElementById("meansvg");
+  var pop = document.getElementById("popsvg"), samp = document.getElementById("sampsvg"), ms = document.getElementById("meansvg");
   if (!pop) return;
   var NS = "http://www.w3.org/2000/svg";
-  function draw(svg, counts, lo, hi, ticks) {
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
-    var W = 400, H = 170, L = 10, B = 145, top = 12, n = counts.length, bw = (W - 2 * L) / n;
-    var mx = Math.max.apply(null, counts.concat([1]));
-    counts.forEach(function (c, i) {
-      var h = (B - top) * c / mx, r = document.createElementNS(NS, "rect");
-      r.setAttribute("x", L + i * bw + 1); r.setAttribute("width", Math.max(bw - 2, 1));
-      r.setAttribute("y", B - h); r.setAttribute("height", h); svg.appendChild(r);
-    });
-    var ax = document.createElementNS(NS, "line"); ax.setAttribute("x1", L); ax.setAttribute("x2", W - L); ax.setAttribute("y1", B); ax.setAttribute("y2", B); svg.appendChild(ax);
-    ticks.forEach(function (t) {
-      var x = L + (t - lo) / (hi - lo) * (W - 2 * L), tx = document.createElementNS(NS, "text");
-      tx.setAttribute("x", x); tx.setAttribute("y", B + 17); tx.setAttribute("text-anchor", "middle"); tx.textContent = t; svg.appendChild(tx);
-    });
+  var W = 400, H = 170, L = 10, B = 145, TOP = 14, LO = 0, HI = 15, TICKS = [0, 3, 6, 9, 12, 15];
+  function X(v) { return L + (v - LO) / (HI - LO) * (W - 2 * L); }
+  function mk(svg, name, attrs, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    svg.appendChild(e); return e;
   }
-  function wait() { return -4 * Math.log(1 - Math.random()); }   /* skewed: mean 4 minutes */
-  var pc = new Array(30).fill(0);
+  /* bars on the shared 0-15 axis; opts.max fixes the y scale, opts.hit marks one bar, opts.outline draws a dashed shape */
+  function draw(svg, counts, opts) {
+    opts = opts || {};
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var n = counts.length, bw = (W - 2 * L) / n;
+    var mx = Math.max(opts.max || 0, Math.max.apply(null, counts.concat([1])));
+    counts.forEach(function (c, i) {
+      if (!c) return;
+      var h = (B - TOP) * c / mx;
+      mk(svg, "rect", { x: L + i * bw + (bw > 4 ? 1 : 0), width: Math.max(bw - (bw > 4 ? 2 : 0), 1), y: B - h, height: h, "class": i === opts.hit ? "hit" : "" });
+    });
+    if (opts.outline) {
+      var ob = (W - 2 * L) / opts.outline.length, d = "M" + L + " " + B;
+      opts.outline.forEach(function (c, i) { var y = B - (B - TOP) * c / mx; d += "L" + (L + i * ob) + " " + y + "L" + (L + (i + 1) * ob) + " " + y; });
+      mk(svg, "path", { d: d + "L" + (W - L) + " " + B, "class": "outline" });
+    }
+    mk(svg, "line", { x1: L, x2: W - L, y1: B, y2: B });
+    TICKS.forEach(function (t) { mk(svg, "text", { x: X(t), y: B + 17, "text-anchor": "middle" }, t); });
+  }
+  function xbar(svg, v, label) {
+    var x = X(Math.min(HI, v));
+    mk(svg, "line", { x1: x, x2: x, y1: TOP - 4, y2: B, "class": "xbar" });
+    mk(svg, "text", { x: x + 5, y: TOP + 6, "class": "xlab" }, label);
+  }
+  function wait() { return -4 * Math.log(1 - Math.random()); }   /* skewed: mean 4, SD 4 minutes */
+
+  /* population: 30 bins of 0.5 minutes */
+  var PB = 30, pc = new Array(PB).fill(0);
   for (var i = 0; i < 20000; i++) { var v = wait(); if (v < 15) pc[Math.floor(v / 0.5)]++; }
-  draw(pop, pc, 0, 15, [0, 3, 6, 9, 12, 15]);
-  var means = [], LO = 2, HI = 6, BINS = 32, MAX = 9999, warnTimer = null;
+  draw(pop, pc);
+  /* expected count per 0.5-minute bin in a sample of 30, used as the faint outline on the sample card */
+  var expect = []; for (var b = 0; b < PB; b++) expect.push(30 * (Math.exp(-b * 0.5 / 4) - Math.exp(-(b + 1) * 0.5 / 4)));
+
+  /* tabs */
+  var tabPop = document.getElementById("tab-pop"), tabSamp = document.getElementById("tab-samp");
+  function setTab(which) {
+    var s = which === "samp";
+    tabPop.setAttribute("aria-selected", s ? "false" : "true");
+    tabSamp.setAttribute("aria-selected", s ? "true" : "false");
+    pop.toggleAttribute("hidden", s); samp.toggleAttribute("hidden", !s);
+    document.getElementById("txt-pop").hidden = s; document.getElementById("txt-samp").hidden = !s;
+  }
+  tabPop.addEventListener("click", function () { setTab("pop"); });
+  tabSamp.addEventListener("click", function () { setTab("samp"); });
+
+  var means = [], last = null, MB = 60, MAX = 9999, warnTimer = null, shownSample = false;
   var warn = document.getElementById("simwarn");
   function showWarn() { warn.hidden = false; clearTimeout(warnTimer); warnTimer = setTimeout(function () { warn.hidden = true; }, 6000); }
   warn.querySelector(".simwarn-x").addEventListener("click", function (e) { e.stopPropagation(); warn.hidden = true; });
+
+  function drawSample() {
+    var txt = document.getElementById("samptxt");
+    if (!last) { draw(samp, new Array(PB).fill(0), { outline: expect, max: 8 }); txt.textContent = "Press a sampling button to draw one."; return; }
+    var c = new Array(PB).fill(0), sum = 0, ss = 0;
+    last.forEach(function (v) { sum += v; c[Math.min(PB - 1, Math.floor(v / 0.5))]++; });
+    var m = sum / last.length;
+    last.forEach(function (v) { ss += (v - m) * (v - m); });
+    var sd = Math.sqrt(ss / (last.length - 1));
+    draw(samp, c, { outline: expect, max: 8 });
+    xbar(samp, m, "x̄ = " + m.toFixed(2));
+    txt.innerHTML = "This sample: x̄ = <b class=\"v\">" + m.toFixed(2) + "</b>, s = <b class=\"v\">" + sd.toFixed(2) + "</b> (population σ = 4; each sample's s is near σ, not exact). Dashed line = population shape.";
+  }
   function redraw() {
-    var c = new Array(BINS).fill(0), n = means.length, sum = 0, ss = 0;
-    means.forEach(function (m) { sum += m; var k = Math.floor((m - LO) / (HI - LO) * BINS); if (k >= 0 && k < BINS) c[k]++; });
-    draw(ms, c, LO, HI, [2, 3, 4, 5, 6]);
+    var c = new Array(MB).fill(0), n = means.length, sum = 0, ss = 0, hit = -1;
+    means.forEach(function (m) { sum += m; var k = Math.floor((m - LO) / (HI - LO) * MB); if (k >= 0 && k < MB) c[k]++; });
+    if (n) hit = Math.floor((means[n - 1] - LO) / (HI - LO) * MB);
+    draw(ms, c, { hit: hit });
+    if (n) xbar(ms, means[n - 1], "latest x̄ = " + means[n - 1].toFixed(2));
     var mean = n ? sum / n : 0;
     means.forEach(function (m) { ss += (m - mean) * (m - mean); });
     document.getElementById("simcount").textContent = n;
     document.getElementById("simmean").textContent = n ? mean.toFixed(2) : "–";
     document.getElementById("simsd").textContent = n > 1 ? Math.sqrt(ss / (n - 1)).toFixed(2) : "–";
+    drawSample();
   }
   function take(k) {
     var room = MAX - means.length;
     if (room <= 0) { showWarn(); return; }
     k = Math.min(k, room);
-    for (var j = 0; j < k; j++) { var s = 0; for (var q = 0; q < 30; q++) s += wait(); means.push(s / 30); }
+    for (var j = 0; j < k; j++) {
+      var one = [], s = 0;
+      for (var q = 0; q < 30; q++) { var v = wait(); one.push(v); s += v; }
+      means.push(s / 30); last = one;
+    }
     redraw();
+    /* first round after loading or Reset: show the sample card once, then leave the tab to the teacher */
+    if (!shownSample) { shownSample = true; setTab("samp"); tabSamp.classList.remove("ping"); void tabSamp.offsetWidth; tabSamp.classList.add("ping"); }
   }
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("[data-sim]"); if (!b) return;
     var k = +b.getAttribute("data-sim");
-    if (k === 0) { means = []; warn.hidden = true; redraw(); } else take(k);
+    if (k === 0) { means = []; last = null; shownSample = false; warn.hidden = true; setTab("pop"); redraw(); } else take(k);
   });
   redraw();
 })();
+
+/* ================= STANDARD ERROR SIMULATION ================= */
+(function () {
+  var one = document.getElementById("se-one"), avg = document.getElementById("se-avg");
+  if (!one) return;
+  var NS = "http://www.w3.org/2000/svg", W = 400, L = 10, B = 145, TOP = 14, LO = 0, HI = 15, TICKS = [0, 3, 6, 9, 12, 15];
+  var MU = 4, SIG = 4, PB = 30, AB = 120, SHOW = 30, MAX = 9999;
+  var nS = 30, means = [], last = null;
+  function X(v) { return L + (v - LO) / (HI - LO) * (W - 2 * L); }
+  function mk(svg, name, attrs, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    svg.appendChild(e); return e;
+  }
+  function draw(svg, counts, hit, outline) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var bw = (W - 2 * L) / counts.length;
+    var mx = Math.max.apply(null, counts.concat(outline || []).concat([1]));
+    counts.forEach(function (c, i) {
+      if (!c) return;
+      var h = (B - TOP) * c / mx;
+      mk(svg, "rect", { x: L + i * bw + (bw > 4 ? 1 : 0), width: Math.max(bw - (bw > 4 ? 2 : 0), 1), y: B - h, height: h, "class": i === hit ? "hit" : "" });
+    });
+    if (outline) {
+      var ob = (W - 2 * L) / outline.length, d = "M" + L + " " + B;
+      outline.forEach(function (c, i) { var y = B - (B - TOP) * c / mx; d += "L" + (L + i * ob) + " " + y + "L" + (L + (i + 1) * ob) + " " + y; });
+      mk(svg, "path", { d: d + "L" + (W - L) + " " + B, "class": "outline" });
+    }
+    mk(svg, "line", { x1: X(MU), x2: X(MU), y1: TOP - 6, y2: B, "class": "mu" });
+    mk(svg, "text", { x: X(MU) + 4, y: TOP + 4, "class": "mul" }, "μ = 4");
+    mk(svg, "line", { x1: L, x2: W - L, y1: B, y2: B });
+    TICKS.forEach(function (t) { mk(svg, "text", { x: X(t), y: B + 17, "text-anchor": "middle" }, t); });
+  }
+  function wait() { return Math.round(-4 * Math.log(1 - Math.random()) * 100) / 100; }   /* skewed: mean 4, SD 4; 2 decimals so hand sums match */
+  function outline() { var o = []; for (var b = 0; b < PB; b++) o.push(nS * (Math.exp(-b * 0.5 / 4) - Math.exp(-(b + 1) * 0.5 / 4))); return o; }
+  function f3(v) { return v.toFixed(3); }
+  function q(id) { return document.getElementById(id); }
+  function redraw() {
+    var c1 = new Array(PB).fill(0), sum = 0;
+    if (last) last.forEach(function (v) { sum += v; c1[Math.min(PB - 1, Math.floor(v / 0.5))]++; });
+    draw(one, c1, -1, outline());
+    var c = new Array(AB).fill(0), n = means.length, hit = -1, ss = 0;
+    means.forEach(function (m) { var k = Math.floor((m - LO) / (HI - LO) * AB); if (k >= 0 && k < AB) c[k]++; ss += (m - MU) * (m - MU); });
+    if (n) hit = Math.floor((means[n - 1] - LO) / (HI - LO) * AB);
+    draw(avg, c, hit);
+    var rt = Math.sqrt(nS);
+    Array.prototype.forEach.call(document.querySelectorAll(".se-nl"), function (e) { e.textContent = nS; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-se-n]"), function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-se-n") === nS ? "true" : "false"); });
+    q("se-count").textContent = n.toLocaleString("en-US");
+    q("se-formula").textContent = "4 ÷ √" + nS + " = 4 ÷ " + f3(rt) + " = " + f3(SIG / rt);
+    if (n) {
+      var e = means[n - 1] - MU;
+      q("se-err").textContent = "x̄ − μ = " + f3(means[n - 1]) + " − 4 = " + (e >= 0 ? "+" : "−") + f3(Math.abs(e));
+      q("se-typ").innerHTML = f3(Math.sqrt(ss / n)) + ' <span class="from">from ' + n.toLocaleString("en-US") + (n === 1 ? " average" : " averages") + "</span>";
+    } else { q("se-err").textContent = "–"; q("se-typ").textContent = "–"; }
+    if (!last) {
+      q("se-head").textContent = "Latest round:";
+      q("se-vals").textContent = "press “1 round of sampling” to draw a sample of " + nS + " waiting times.";
+      q("se-more").textContent = ""; q("se-sum").textContent = ""; return;
+    }
+    q("se-head").textContent = "Round " + n.toLocaleString("en-US") + ", the " + nS + " waiting times:";
+    q("se-vals").textContent = last.slice(0, SHOW).map(function (v) { return v.toFixed(2); }).join(", ") + (nS > SHOW ? ", …" : "");
+    q("se-more").textContent = nS > SHOW ? "(" + (nS - SHOW) + " more not shown; the sum and the average use all " + nS + ")" : "";
+    q("se-sum").innerHTML = "Sum = " + sum.toFixed(2) + " &nbsp;→&nbsp; x̄ = " + sum.toFixed(2) + " ÷ " + nS + " = <b>" + f3(sum / nS) + "</b>";
+  }
+  function rounds(k) {
+    k = Math.min(k, MAX - means.length);
+    for (var i = 0; i < k; i++) {
+      var s1 = [], s = 0;
+      for (var j = 0; j < nS; j++) { var v = wait(); s1.push(v); s += v; }
+      means.push(s / nS); last = s1;
+    }
+    redraw();
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-se-n],[data-se-sim]"); if (!b) return;
+    if (b.hasAttribute("data-se-n")) { nS = +b.getAttribute("data-se-n"); means = []; last = null; redraw(); return; }
+    var k = +b.getAttribute("data-se-sim");
+    if (k === 0) { means = []; last = null; redraw(); } else rounds(k);
+  });
+  redraw();
+})();
+
+/* ================= SLIDE NUMBERS IN TEXT ================= */
+Array.prototype.forEach.call(document.querySelectorAll("[data-slideno]"), function (sp) {
+  var el = document.getElementById(sp.getAttribute("data-slideno"));
+  if (el && slides.indexOf(el) >= 0) sp.textContent = slides.indexOf(el) + 1;
+});
 </script>
 </body>
 </html>
