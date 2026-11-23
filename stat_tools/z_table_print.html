@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standard Normal Distribution Z-Table (A4 2-Page Handout)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: #000000;
+      background: #ffffff;
+      padding: 12px 16px;
+      line-height: 1.2;
+    }
+
+    /* Top bar with only Save as PDF button */
+    .print-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .print-btn {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .print-btn:hover {
+      background: #f1f5f9;
+    }
+
+    /* Page container for 2-page A4 split with pinned bottom footer */
+    .sheet-page {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto 24px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    /* Header + SVG Curve + Lookup Rule */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1.5px solid #000000;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+    }
+
+    .title-area {
+      flex: 1.15;
+    }
+
+    .title-area h1 {
+      font-size: 14pt;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .title-area p {
+      font-size: 8.8pt;
+    }
+
+    .curve-area {
+      flex: 0.85;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lookup-box {
+      flex: 1.25;
+      border: 1px solid #000000;
+      padding: 4px 7px;
+      font-size: 8.5pt;
+      line-height: 1.25;
+    }
+
+    .lookup-box strong.box-title {
+      display: block;
+      font-size: 9pt;
+      text-decoration: underline;
+      margin-bottom: 1px;
+    }
+
+    .table-caption {
+      font-size: 10pt;
+      font-weight: 700;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Main Z-Tables: 10.5pt font */
+    table.z-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      font-size: 10.5pt;
+      line-height: 1.15;
+    }
+
+    table.z-table th,
+    table.z-table td {
+      border: 1px solid #444444;
+      text-align: center;
+      padding: 2.2px 3px;
+    }
+
+    /* Slightly tighter vertical padding on Page 2 to fit Critical Values cleanly */
+    .page-2 table.z-table th,
+    .page-2 table.z-table td {
+      padding: 1.65px 3px;
+      line-height: 1.1;
+    }
+
+    table.z-table thead th {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      border-top: 1.5px solid #000000;
+      border-bottom: 1.5px solid #000000;
+    }
+
+    table.z-table td.z-col {
+      font-weight: 700;
+      border-right: 1.5px solid #000000;
+      width: 48px;
+    }
+
+    /* Subtle B&W horizontal guide every 5 rows */
+    table.z-table tbody tr:nth-child(5n) td {
+      border-bottom: 1.3px solid #000000;
+    }
+
+    /* Transposed Critical Values Table */
+    .crit-section {
+      margin-top: 6px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .crit-title {
+      font-size: 9pt;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    table.crit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      font-size: 8.8pt;
+      line-height: 1.12;
+    }
+
+    table.crit-table th,
+    table.crit-table td {
+      border: 1px solid #000000;
+      text-align: center;
+      padding: 2px 4px;
+    }
+
+    table.crit-table th {
+      text-align: left;
+      padding-left: 6px;
+      font-weight: 700;
+      width: 145px;
+    }
+
+    /* Centered Page x of Y Footer */
+    .page-footer {
+      text-align: center;
+      font-size: 9pt;
+      font-weight: 600;
+      padding-top: 5px;
+      margin-top: 6px;
+      border-top: 1px solid #888888;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 6mm 9mm;
+      }
+      body {
+        padding: 0;
+      }
+      .print-bar {
+        display: none !important;
+      }
+      .sheet-page {
+        max-width: 100%;
+        margin: 0;
+        /* Exact printable height of A4 (297mm - 12mm top/bottom margins = 285mm) */
+        height: 283mm;
+        overflow: hidden;
+      }
+    }
+  </style>
+
+  <!-- Screen-only styling. Nothing below applies when printing or saving as PDF:
+       the print output is exactly the black-and-white A4 layout above. -->
+  <style>
+    .screen-only { display: none; }
+    @media print { .screen-only, .tabs, .back-link { display: none !important; } }
+
+    @media screen {
+      :root {
+        --accent: #1f4e79;
+        --accent-soft: #eaf2fb;
+        --line: #d7deea;
+        --muted: #5b6777;
+        --warm: #fdf1dc;
+        --warm-strong: #f3b54a;
+      }
+      body { background: #f4f7fb; color: #1f2a37; padding: 0 16px 24px; }
+      .screen-only { display: block; }
+
+      /* Top bar: back link, tabs, print button */
+      .print-bar {
+        position: sticky; top: 0; z-index: 20;
+        max-width: 780px; margin: 0 auto 14px;
+        padding: 10px 0;
+        justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: rgba(244, 247, 251, .94);
+        -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      }
+      .back-link {
+        color: var(--accent); font-weight: 700; font-size: 14px; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 6px;
+      }
+      .back-link:hover { text-decoration: underline; }
+      .print-btn {
+        background: var(--accent); color: #fff; border: 0;
+        border-radius: 999px; padding: 10px 18px; font-size: 14px;
+        box-shadow: 0 2px 8px rgba(31, 78, 121, .25);
+        transition: transform .08s, background .15s;
+      }
+      .print-btn:hover { background: #2f6ea8; }
+      .print-btn:active { transform: scale(.96); }
+      .tabs { display: none; }
+
+      /* Sheets look like cards on screen */
+      .sheet-page {
+        background: #fff; border: 1px solid var(--line); border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(31, 42, 55, .08);
+        padding: 16px 18px 12px;
+      }
+      .top-header { border-bottom: 2px solid var(--accent); }
+      .title-area h1 { color: var(--accent); }
+      .curve-area svg path[fill="#cbd5e1"] { fill: var(--accent); fill-opacity: .35; }
+      .curve-area svg path[fill="none"] { stroke: #13263d; }
+      .curve-area svg line:nth-of-type(3) { stroke: #b42318; }
+      .curve-area svg text[font-style="italic"] { fill: #b42318; }
+      .lookup-box { background: var(--accent-soft); border-color: #b9c6d8; border-radius: 10px; }
+      .lookup-box strong.box-title { color: var(--accent); }
+      .table-caption { color: var(--accent); }
+
+      table.z-table th, table.z-table td { border-color: var(--line); }
+      table.z-table thead th {
+        background: var(--accent); color: #fff;
+        border-top-color: var(--accent); border-bottom-color: var(--accent);
+      }
+      table.z-table td.z-col { background: var(--accent-soft); color: var(--accent); border-right-color: var(--accent); }
+      table.z-table tbody tr:nth-child(even) td:not(.z-col) { background: #f8fafd; }
+      table.z-table tbody tr:nth-child(5n) td { border-bottom: 1.6px solid #7f9cc0; }
+      table.z-table td { cursor: default; transition: background .1s; }
+
+      /* Row/column guide when you hover or tap a cell (no search) */
+      table.z-table td.hl-line { background: var(--warm) !important; }
+      table.z-table td.z-col.hl-line { background: var(--warm-strong) !important; color: #13263d; }
+      table.z-table thead th.hl-line { background: var(--warm-strong); color: #13263d; }
+      table.z-table td.hl-cell { background: var(--warm-strong) !important; color: #13263d; font-weight: 700; box-shadow: inset 0 0 0 2px #b9770e; }
+
+      .crit-title { color: var(--accent); }
+      table.crit-table th, table.crit-table td { border-color: #b9c6d8; }
+      table.crit-table th { background: var(--accent-soft); color: var(--accent); }
+      table.crit-table strong { color: var(--accent); }
+
+      .page-footer { color: var(--muted); border-top-color: var(--line); }
+    }
+
+    /* Phones and small tablets */
+    @media screen and (max-width: 760px) {
+      body { padding: 0 10px 18px; }
+      .print-bar { padding: 8px 0; gap: 8px; }
+      .tabs {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+        order: 3; flex: 1 1 100%;
+        background: var(--accent-soft); border-radius: 999px; padding: 4px;
+      }
+      .tabs button {
+        border: 0; background: transparent; border-radius: 999px;
+        padding: 9px 6px; font: 700 13.5px "Segoe UI", Roboto, Arial, sans-serif;
+        color: var(--accent); cursor: pointer;
+      }
+      .tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
+      body[data-tab="pos"] .page-2 { display: none; }
+      body[data-tab="neg"] .page-1 { display: none; }
+
+      .sheet-page { padding: 12px 10px 8px; margin-bottom: 14px; }
+      .top-header { flex-wrap: wrap; gap: 8px; }
+      .title-area { flex: 1 1 100%; }
+      .curve-area { flex: 0 0 auto; }
+      .lookup-box { flex: 1 1 190px; font-size: 13px; }
+      .lookup-box strong.box-title { font-size: 14px; }
+      .title-area p { font-size: 13px; }
+      .table-caption { font-size: 12.5px; }
+
+      .tbl-scroll {
+        overflow: auto; max-height: 72vh;
+        border: 1px solid var(--line); border-radius: 10px;
+        -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+      }
+      table.z-table { min-width: 580px; font-size: 14px; border-collapse: separate; border-spacing: 0; }
+      table.z-table th, table.z-table td { border-width: 0 1px 1px 0; }
+      .page-2 table.z-table th, .page-2 table.z-table td,
+      table.z-table th, table.z-table td { padding: 6px 5px; }
+      table.z-table thead th { position: sticky; top: 0; z-index: 2; }
+      table.z-table td.z-col, table.z-table thead th:first-child {
+        position: sticky; left: 0; z-index: 1;
+        box-shadow: 2px 0 0 var(--accent);
+      }
+      table.z-table thead th:first-child { z-index: 3; }
+
+      .crit-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table.crit-table { min-width: 560px; font-size: 13px; }
+      table.crit-table th { position: sticky; left: 0; }
+    }
+  </style>
+</head>
+<body data-tab="pos">
+
+  <div class="print-bar">
+    <a class="back-link" href="z_table.html">&larr; Z Calculator</a>
+    <div class="tabs" role="tablist" aria-label="Table half">
+      <button type="button" role="tab" id="tabPos" aria-selected="true" data-tab="pos">Positive z</button>
+      <button type="button" role="tab" id="tabNeg" aria-selected="false" data-tab="neg">Negative z &amp; critical</button>
+    </div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <!-- PAGE 1: POSITIVE Z-VALUES -->
+  <div class="sheet-page page-1">
+    <div class="page-content">
+      <div class="top-header" id="headerPage1"></div>
+      <div class="table-caption">Positive Z-Scores (0.00 to +3.49) &mdash; Left-Tail Area <em>P</em>(<em>Z</em> &le; <em>z</em>)</div>
+      <div class="tbl-scroll"><table class="z-table" id="posTable"></table></div>
+    </div>
+    <div class="page-footer">Page 1 of 2</div>
+  </div>
+
+  <!-- PAGE 2: NEGATIVE Z-VALUES + TRANSPOSED CRITICAL VALUES -->
+  <div class="sheet-page page-2 page-break">
+    <div class="page-content">
+      <div class="top-header" id="headerPage2"></div>
+      <div class="table-caption">Negative Z-Scores (&minus;3.49 to &minus;0.00) &mdash; Left-Tail Area <em>P</em>(<em>Z</em> &le; <em>z</em>)</div>
+      <div class="tbl-scroll"><table class="z-table" id="negTable"></table></div>
+
+      <div class="crit-section">
+        <div class="crit-title">Confidence Interval Critical Values (Two-Tailed <em>Z</em>*)</div>
+        <div class="crit-scroll"><table class="crit-table">
+          <tr>
+            <th>Confidence Level</th>
+            <td>80%</td>
+            <td>85%</td>
+            <td>90%</td>
+            <td>95%</td>
+            <td>98%</td>
+            <td>99%</td>
+            <td>99.9%</td>
+          </tr>
+          <tr>
+            <th>&alpha; (Two-Tailed)</th>
+            <td>0.20</td>
+            <td>0.15</td>
+            <td>0.10</td>
+            <td>0.05</td>
+            <td>0.02</td>
+            <td>0.01</td>
+            <td>0.001</td>
+          </tr>
+          <tr>
+            <th>&alpha;/2 (One-Tail Area)</th>
+            <td>0.100</td>
+            <td>0.075</td>
+            <td>0.050</td>
+            <td>0.025</td>
+            <td>0.010</td>
+            <td>0.005</td>
+            <td>0.0005</td>
+          </tr>
+          <tr>
+            <th>Critical <em>z</em>*</th>
+            <td><strong>&plusmn;1.282</strong></td>
+            <td><strong>&plusmn;1.440</strong></td>
+            <td><strong>&plusmn;1.645</strong></td>
+            <td><strong>&plusmn;1.960</strong></td>
+            <td><strong>&plusmn;2.326</strong></td>
+            <td><strong>&plusmn;2.576</strong></td>
+            <td><strong>&plusmn;3.291</strong></td>
+          </tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="page-footer">Page 2 of 2</div>
+  </div>
+
+  <script>
+    // Shared Header + Left-Shaded Normal Distribution Curve SVG for both pages
+    const sharedHeaderHTML = `
+      <div class="title-area">
+        <h1>Standard Normal Table</h1>
+        <p>Cumulative left-tail area: <strong><em>P</em>(<em>Z</em> &le; <em>z</em>)</strong></p>
+        <p><em>z</em> = (<em>x</em> &minus; &mu;) / &sigma;</p>
+      </div>
+      <div class="curve-area">
+        <svg width="165" height="60" viewBox="0 0 180 70" xmlns="http://www.w3.org/2000/svg" aria-label="Left-shaded normal distribution curve">
+          <!-- Shaded left tail up to z (x = 112) -->
+          <path d="M 10 56
+                   C 30 56, 44 53, 58 38
+                   C 70 24, 80 10, 90 10
+                   C 100 10, 106 18, 112 27
+                   L 112 56 Z"
+                fill="#cbd5e1" stroke="none" />
+          <!-- Full bell curve outline -->
+          <path d="M 10 56
+                   C 30 56, 44 53, 58 38
+                   C 70 24, 80 10, 90 10
+                   C 100 10, 110 24, 122 38
+                   C 136 53, 150 56, 170 56"
+                fill="none" stroke="#000000" stroke-width="1.4" />
+          <!-- Baseline -->
+          <line x1="6" y1="56" x2="174" y2="56" stroke="#000000" stroke-width="1.2" />
+          <!-- Mean dashed line at 0 -->
+          <line x1="90" y1="10" x2="90" y2="56" stroke="#000000" stroke-width="0.9" stroke-dasharray="2,2" />
+          <!-- Cutoff line at z -->
+          <line x1="112" y1="27" x2="112" y2="56" stroke="#000000" stroke-width="1.4" />
+          <!-- Labels -->
+          <text x="90" y="67" font-size="9.5" text-anchor="middle" font-family="Arial, sans-serif">0</text>
+          <text x="112" y="67" font-size="9.5" font-weight="bold" font-style="italic" text-anchor="middle" font-family="Arial, sans-serif">z</text>
+          <text x="74" y="45" font-size="8.5" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif">Area</text>
+        </svg>
+      </div>
+      <div class="lookup-box">
+        <strong class="box-title">Lookup Rule</strong>
+        Row = sign + first two digits &nbsp;|&nbsp; Col = 2nd decimal<br>
+        &bull; <em>z</em> = +1.96 &rarr; Row <strong>1.9</strong>, Col <strong>.06</strong> = <strong>0.9750</strong><br>
+        &bull; <em>z</em> = &minus;1.55 &rarr; Row <strong>&minus;1.5</strong>, Col <strong>.05</strong> = <strong>0.0606</strong>
+      </div>
+    `;
+
+    document.getElementById("headerPage1").innerHTML = sharedHeaderHTML;
+    document.getElementById("headerPage2").innerHTML = sharedHeaderHTML;
+
+    // High-precision Error Function (Abramowitz & Stegun 7.1.26, max error < 1.5e-7)
+    function erf(x) {
+      const sign = x >= 0 ? 1 : -1;
+      x = Math.abs(x);
+      const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+      const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+      const t = 1.0 / (1.0 + p * x);
+      const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+      return sign * y;
+    }
+
+    function normalCDF(z) {
+      return 0.5 * (1 + erf(z / Math.SQRT2));
+    }
+
+    function buildTable(tableId, isNegative) {
+      const table = document.getElementById(tableId);
+      let html = "<thead><tr><th><em>z</em></th>";
+      for (let c = 0; c <= 9; c++) {
+        html += `<th>.0${c}</th>`;
+      }
+      html += "</tr></thead><tbody>";
+
+      if (!isNegative) {
+        // Positive: 0.0 up to 3.4
+        for (let i = 0; i <= 34; i++) {
+          const tenths = (i / 10).toFixed(1);
+          html += `<tr><td class="z-col">${tenths}</td>`;
+          for (let c = 0; c <= 9; c++) {
+            const zVal = i / 10 + c / 100;
+            html += `<td>${normalCDF(zVal).toFixed(4)}</td>`;
+          }
+          html += "</tr>";
+        }
+      } else {
+        // Negative: -3.4 down to -0.0
+        for (let i = 34; i >= 0; i--) {
+          const tenths = (i / 10).toFixed(1);
+          html += `<tr><td class="z-col">&minus;${tenths}</td>`;
+          for (let c = 0; c <= 9; c++) {
+            const zVal = -(i / 10 + c / 100);
+            html += `<td>${normalCDF(zVal).toFixed(4)}</td>`;
+          }
+          html += "</tr>";
+        }
+      }
+
+      html += "</tbody>";
+      table.innerHTML = html;
+    }
+
+    buildTable("posTable", false);
+    buildTable("negTable", true);
+
+    // ---------- Screen-only helpers (no effect on print) ----------
+    // Tabs for phones
+    (function () {
+      var tabs = document.querySelectorAll('.tabs button');
+      Array.prototype.forEach.call(tabs, function (b) {
+        b.addEventListener('click', function () {
+          document.body.setAttribute('data-tab', b.getAttribute('data-tab'));
+          Array.prototype.forEach.call(tabs, function (x) { x.setAttribute('aria-selected', String(x === b)); });
+          window.scrollTo({ top: 0 });
+        });
+      });
+    })();
+
+    // Row and column guide on hover (desktop) or tap (phone)
+    (function () {
+      function clear() {
+        Array.prototype.forEach.call(document.querySelectorAll('.hl-line, .hl-cell'), function (el) {
+          el.classList.remove('hl-line', 'hl-cell');
+        });
+      }
+      function mark(td) {
+        clear();
+        if (!td || td.classList.contains('z-col')) return;
+        var tr = td.parentNode, table = tr.closest('table');
+        var col = Array.prototype.indexOf.call(tr.children, td);
+        Array.prototype.forEach.call(tr.children, function (c) { c.classList.add('hl-line'); });
+        Array.prototype.forEach.call(table.querySelectorAll('tr'), function (r) {
+          if (r.children[col]) r.children[col].classList.add('hl-line');
+        });
+        td.classList.remove('hl-line');
+        td.classList.add('hl-cell');
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('table.z-table'), function (t) {
+        t.addEventListener('mouseover', function (e) { mark(e.target.closest('tbody td')); });
+        t.addEventListener('mouseleave', clear);
+        t.addEventListener('click', function (e) { mark(e.target.closest('tbody td')); });
+      });
+      window.addEventListener('beforeprint', clear);
+    })();
+  </script>
+</body>
+</html>
